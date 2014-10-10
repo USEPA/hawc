@@ -80,7 +80,6 @@ class DataPivot(models.Model):
             return self.datapivotquery.get_data_url()
 
 
-
 class DataPivotUpload(DataPivot):
     file = models.FileField(upload_to='data_pivot',
                             help_text="The data should be in unicode-text format, tab delimited (this is a standard output type in Microsoft Excel).")
@@ -122,5 +121,41 @@ class DataPivotQuery(DataPivot):
         return url
 
 
+class DataPivotSubset(DataPivot):
+    evidence_type = models.PositiveSmallIntegerField(choices=STUDY_TYPE_CHOICES,
+                                                     default=0) #0: Animal Bioassay
+    units = models.ForeignKey('animal.doseunits', blank=True, null=True)
+    endpoints = models.ManyToManyField("self",
+                                       symmetrical=False,
+                                       blank=True, null=True)
+
+    def get_download_url(self):
+        # AJS TO CHANGE
+        # request an Excel file for download
+        url = None
+        if self.evidence_type == 0:  # Animal Bioassay:
+            url = reverse('animal:endpoints_flatfile', kwargs={'pk': self.assessment.pk}) + \
+                          '?dose_pk={dpk}'.format(dpk=self.datapivotquery.units.pk)
+        elif self.evidence_type == 1:  # Epidemiology
+            url = reverse('epi:ao_flat', kwargs={'pk': self.assessment.pk})
+        elif self.evidence_type == 2:  # In Vitro
+            url = reverse('invitro:endpoints_flat', kwargs={'pk': self.assessment.pk})
+
+        if url is None:
+            raise Http404
+
+        return url
+
+    def get_data_url(self):
+        # AJS TO CHANGE
+        # request a tsv instead of Excel default
+        url = self.get_download_url()
+        if self.evidence_type == 0:  # Animal Bioassay:
+            return url + "&output=tsv"
+        else:
+            return url + "?output=tsv"
+
+
 reversion.register(DataPivotUpload)
 reversion.register(DataPivotQuery)
+reversion.register(DataPivotSubset)

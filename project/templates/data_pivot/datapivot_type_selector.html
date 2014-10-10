@@ -18,14 +18,38 @@
 
   <hr>
 
-  <p class="lead">Option #1 (Query-based)</p>
-  <p class='help-block'>Create a data-pivot based on querying information off the HAWC database for this assessment. Your settings will always be applied to this query; but it will contain the latest information from the database, so the visualization may change from time to time.</p>
+  <p class="lead">Option #1: All endpoints (Query-based)</p>
+  <p class='help-block'>
+    Create a data-pivot by selecting all data of a particular study-design in the
+    database. This is a full data-download of all available data in HAWC for a
+    particular assessment and study-design, but can be filtered to include a
+    smaller subset of data. Your visualization settings will always be applied
+    to the dataset; therefore the visualization may change if additional data
+    is added, but will always include the latest data from the HAWC database.
+  </p>
   <a href="{% url 'data_pivot:new-query' assessment.pk %}" class="btn btn-primary">Select Option #1</a>
 
   <hr>
 
-  <p class="lead">Option #2 (Input-file)</p>
-  <p class='help-block'>Create a data-pivot based on an uploaded file of data. Your settings will always be applied to the uploaded dataset; therefore the visualization will be constant, but will not use the latest information from the HAWC database.</p>
-  <a href="{% url 'data_pivot:new-file' assessment.pk %}" class="btn btn-primary">Select Option #2</a>
+  <p class="lead">Option #2: Subset of endpoints (Query-based)</p>
+  <p class='help-block'>
+    Create a data-pivot by selecting specific endpoints to be included into a
+    data pivot. This design should be used to select a subset of endpoints
+    <i>a priori</i>. Your visualization settings will always be applied to the
+    dataset; therefore the visualization may change if the selected-endpoints
+    change, but will always include the latest data from the HAWC database.
+  </p>
+  <a href="{% url 'data_pivot:new-query-subset' assessment.pk %}" class="btn btn-primary">Select Option #2</a>
+
+  <hr>
+
+  <p class="lead">Option #3: Input file (Input-file)</p>
+  <p class='help-block'>
+    Create a data-pivot based on an uploaded file of data.
+    Your visualization settings will always be applied to the dataset; therefore
+    the visualization may change if additional data is added, but will always
+    include the latest data from the HAWC database.
+  </p>
+  <a href="{% url 'data_pivot:new-file' assessment.pk %}" class="btn btn-primary">Select Option #3</a>
 
 {% endblock %}
