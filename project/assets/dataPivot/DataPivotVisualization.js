@@ -199,6 +199,64 @@ class DataPivotVisualization extends D3Plot {
             {offset: true, editable: this.editable});
         this.add_menu();
         this.trigger_resize();
+        this.log_row_order();
+    }
+
+    log_row_order(){
+
+        let datarows = this.datarows,
+            overrides = this.dp_settings.row_overrides,
+            hasOffset = _.chain(overrides)
+                .pluck('offset')
+                .map((d)=>d!== 0)
+                .any()
+                .value();
+
+        if (!hasOffset){
+            console.log(false);
+            return;
+        }
+
+        let fullData = _.chain(this.dp_data)
+                .filter(
+                  _.partial(
+                    DataPivotVisualization.shouldInclude,
+                    _,
+                    this.settings.bars,
+                    this.dp_settings.datapoint_settings
+                  )
+                ).value(),
+            currentOverrides = _.indexBy(overrides, 'pk'),
+            currentIndex = {};
+
+        datarows.forEach((d)=>currentIndex[d._dp_pk] = d._dp_index);
+
+        let newOverrides = fullData.map((d) => {
+            // get matching override
+            let pk = d._dp_pk,
+                override = currentOverrides[pk],
+                index = currentIndex[pk];
+
+            if (override === undefined){
+                override = {
+                    pk,
+                    offset: 0,
+                    include: true,
+                    text_style: '---',
+                    symbol_style: '---',
+                    line_style: '---',
+                };
+            }
+
+            if (index === undefined){
+                override.include = false;
+            } else {
+                override.index = index;
+            }
+            return override;
+        });
+        console.log(window.JSON.stringify(newOverrides));
+
     }
 
     set_font_style(){
