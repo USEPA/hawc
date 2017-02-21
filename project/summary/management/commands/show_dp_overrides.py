@@ -10,10 +10,12 @@ class Command(BaseCommand):
     help = HELP_TEXT
 
     def handle(self, *args, **options):
-        for dp in DataPivot.objects.order_by('id').all():
+        for dp in DataPivot.objects.order_by('assessment_id', 'id').all():
             try:
-                settings = json.loads(dp.settings)
+                if dp.settings != 'undefined':
+                    settings = json.loads(dp.settings)
             except:
+                self.stdout.write('Failed: {}\n'.format(dp.settings))
                 settings = None
             if settings:
                 for row in settings['row_overrides']:
