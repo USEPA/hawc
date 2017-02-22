@@ -227,7 +227,8 @@ class DataPivotVisualization extends D3Plot {
                   )
                 ).value(),
             currentOverrides = _.indexBy(overrides, 'pk'),
-            currentIndex = {};
+            currentIndex = {},
+            rowOrder = _.pluck(datarows, '_dp_pk');
 
         datarows.forEach((d)=>currentIndex[d._dp_pk] = d._dp_index);
 
@@ -255,7 +256,10 @@ class DataPivotVisualization extends D3Plot {
             }
             return override;
         });
-        console.log(window.JSON.stringify(newOverrides));
+        $('#dp_display')
+            .after(`<code id="newOverrides">${window.JSON.stringify(newOverrides)}</code>
+                    <br/>
+                    <code id="rowOrder">${window.JSON.stringify({_dp_pk: rowOrder})}</code>`);
 
     }
 
