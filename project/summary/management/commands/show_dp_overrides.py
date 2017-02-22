@@ -46,4 +46,4 @@ class Command(BaseCommand):
                 })
 
         driver.close()
-        self.stdout.write(json.dumps(pivots, indent=2))
+        self.stdout.write(json.dumps(pivots))

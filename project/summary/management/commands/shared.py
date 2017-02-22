@@ -43,6 +43,7 @@ def get_pivots_with_overrides(hostname):
                     pivots.append({
                         'id': dp.id,
                         'url': '{}{}'.format(hostname, dp.get_absolute_url()),
+                        'original_settings': dp.settings,
                     })
                     break
     return pivots
