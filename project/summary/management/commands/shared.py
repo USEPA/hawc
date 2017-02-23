@@ -50,7 +50,7 @@ def get_pivots_with_overrides(hostname):
 
 
 def get_content(driver, url):
-    timeout = 120
+    timeout = 300  # 5 min
     time_interval = 2
 
     driver.get(url)
@@ -67,6 +67,10 @@ def get_content(driver, url):
             row_order = driver.find_element_by_id('rowOrder')
         except Exception:
             pass
+
+        loader = driver.find_element_by_id('loading_div')
+        if 'display: none;' in loader.get_attribute('style'):
+            break
 
         if elapsed_time > timeout:
             break

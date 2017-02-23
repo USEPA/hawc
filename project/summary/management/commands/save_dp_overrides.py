@@ -36,6 +36,7 @@ class Command(BaseCommand):
             if row_order is None:
                 pivot.update({
                     'error': True,
+                    'html': dp_display.get_attribute('innerHTML'),
                 })
             else:
                 pivot.update({
