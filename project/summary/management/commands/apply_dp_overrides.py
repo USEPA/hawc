@@ -35,4 +35,4 @@ class Command(BaseCommand):
             dp.settings = json.dumps(settings)
 
             self.stdout.write('Updated #{}: {}'.format(id, url))
-            # dp.save()
+            dp.save()
