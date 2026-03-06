@@ -5,7 +5,6 @@ Utility toolbelt for testing HAWC.
 import json
 from io import BytesIO
 from pathlib import Path
-from typing import TypeVar
 
 import pandas as pd
 from django.contrib.auth.models import AnonymousUser
@@ -158,10 +157,7 @@ def df_to_form_data(key: str, df: pd.DataFrame) -> dict:
     return {key: SimpleUploadedFile("test.xlsx", f.getvalue())}
 
 
-ModelType = TypeVar("ModelType", bound=models.Model)
-
-
-def get_first(model_class: type[ModelType]) -> ModelType:
+def get_first[ModelType: models.Model](model_class: type[ModelType]) -> ModelType:
     """Return first instance of  model class"""
     first_obj = model_class.objects.all().first()
     if first_obj is None:
