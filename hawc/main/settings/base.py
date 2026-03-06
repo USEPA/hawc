@@ -86,6 +86,7 @@ MIDDLEWARE = (
     "django.middleware.security.SecurityMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "hawc.apps.common.middleware.MicrosoftOfficeLinkMiddleware",
+    "hawc.apps.common.middleware.ActivateTimezoneMiddleware",
     "hawc.apps.common.middleware.RequestLogMiddleware",
     "hawc.apps.common.middleware.ThreadLocalMiddleware",
 )
@@ -250,6 +251,7 @@ WAGTAIL_ENABLE_UPDATE_CHECK = False
 WAGTAIL_ALLOW_UNICODE_SLUGS = False
 
 # Logging configuration
+DEFAULT_EXCEPTION_REPORTER = "hawc.apps.common.exceptions.ExceptionReporter"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
@@ -332,7 +334,7 @@ PUBMED_API_KEY = os.getenv("PUBMED_API_KEY")
 PUBMED_MAX_QUERY_SIZE = 10000
 
 # CCTE API key
-CCTE_API_KEY = os.getenv("CCTE_API_KEY")
+EPA_COMPTOX_API_KEY = os.getenv("EPA_COMPTOX_API_KEY")
 
 # HERO API key
 HERO_API_KEY = os.getenv("HERO_API_KEY")

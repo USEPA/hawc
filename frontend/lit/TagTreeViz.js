@@ -1,9 +1,9 @@
 import * as d3 from "d3";
-import {action, computed, observable, toJS} from "mobx";
+import {action, computed, makeObservable, observable, toJS} from "mobx";
 import {observer} from "mobx-react";
 import PropTypes from "prop-types";
 import React, {Component} from "react";
-import ReactDOM from "react-dom";
+import {createRoot} from "react-dom/client";
 import D3Plot from "shared/utils/D3Plot";
 import HAWCModal from "shared/utils/HAWCModal";
 import HAWCUtils from "shared/utils/HAWCUtils";
@@ -40,6 +40,7 @@ class VizState {
     @observable nodeOffsets = {};
 
     constructor(options) {
+        makeObservable(this);
         this.options = options;
     }
     @computed
@@ -118,7 +119,8 @@ class TagTreeViz extends D3Plot {
     }
 
     build_options() {
-        ReactDOM.render(<VizOptions viz={this} store={this.stateStore} />, this.options_div.get(0));
+        const root = createRoot(this.options_div.get(0));
+        root.render(<VizOptions viz={this} store={this.stateStore} />);
     }
 
     set_defaults() {

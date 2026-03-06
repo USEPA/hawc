@@ -18,6 +18,7 @@ hawc/gitcommit.json
 hawc/main/settings/local.py
 package-lock.json
 uv.lock
+CLAUDE.md
 
 # folders
 *.egg-info/
@@ -28,6 +29,8 @@ uv.lock
 .ruff_cache/
 .venv/
 .vscode/
+.serena/
+.claude/
 /data/
 docs/site
 __pycache__/

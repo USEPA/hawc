@@ -1,4 +1,4 @@
-import {action, observable} from "mobx";
+import {action, makeObservable, observable} from "mobx";
 import {observer} from "mobx-react";
 import PropTypes from "prop-types";
 import React, {Component} from "react";
@@ -8,6 +8,10 @@ class DescriptionStore {
     // A global toggle to show/hide metric descriptions
     @observable show = false;
     @action.bound toggle = () => (this.show = !this.show);
+
+    constructor() {
+        makeObservable(this);
+    }
 }
 
 // singleton store; shared across all components
@@ -15,15 +19,20 @@ const store = new DescriptionStore();
 
 @observer
 class MetricToggle extends Component {
+    constructor(props) {
+        super(props);
+        this.node = React.createRef();
+    }
     render() {
         return (
             <button
                 type="button"
                 title="Show/hide description"
                 className="float-right btn btn-sm btn-light"
+                ref={this.node}
                 onClick={() => {
                     store.toggle();
-                    h.maybeScrollIntoView(this, {yOffset: -50, animate: true});
+                    h.maybeScrollIntoView(this.node.current);
                 }}>
                 <i className={store.show ? "fa fa-fw fa-compress" : "fa fa-fw fa-expand"}></i>
                 &nbsp;{store.show ? "Hide details" : "Show details"}
