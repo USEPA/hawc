@@ -316,10 +316,12 @@ class AssessmentModulesForm(forms.ModelForm):
             "enable_summary_tables",
             "enable_visuals",
             "enable_downloads",
+            "enable_observations",
             "noel_name",
             "rob_name",
             "vocabulary",
             "epi_version",
+            "animal_version",
         )
         model = models.Assessment
 
@@ -329,6 +331,9 @@ class AssessmentModulesForm(forms.ModelForm):
             "enable_risk_of_bias"
         ].label = f"Enable {self.instance.get_rob_name_display().lower()}"
         self.fields["vocabulary"].choices = VocabularyNamespace.display_choices()
+
+        if not settings.HAWC_FEATURES.ENABLE_BIOASSAY_V2:
+            self.fields.pop("animal_version")
 
     @property
     def helper(self):
@@ -347,10 +352,24 @@ class AssessmentModulesForm(forms.ModelForm):
         )
         helper.add_row("enable_literature_review", 3, "col-lg-4")
         helper.add_row("enable_risk_of_bias", 3, "col-lg-4")
-        helper.add_row("enable_visuals", 2, "col-lg-6")
+        helper.add_row("enable_visuals", 3, "col-lg-4")
         helper.add_row("noel_name", 3, "col-lg-4")
-        helper.add_row("epi_version", 1, "col-lg-4")
+        helper.add_row(
+            "epi_version", 2 if settings.HAWC_FEATURES.ENABLE_BIOASSAY_V2 else 1, "col-lg-4"
+        )
         return helper
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        enable_observations = cleaned_data.get("enable_observations")
+        vocabulary = cleaned_data.get("vocabulary")
+
+        if enable_observations and vocabulary != VocabularyNamespace.ToxRefDB:
+            message = f"To enable observations, {VocabularyNamespace.ToxRefDB.label} must be used."
+            self.add_error("enable_observations", message)
+
+        return cleaned_data
 
 
 class AttachmentForm(forms.ModelForm):

@@ -44,6 +44,10 @@ uv pip install -e client
 # create a PostgreSQL database and superuser
 createuser --superuser --no-password hawc
 createdb -E UTF-8 -U hawc hawc
+
+# create test databases (required for running unit tests)
+createdb -T template0 -E UTF8 hawc-fixture
+createdb -T template0 -E UTF8 hawc-test
 ```
 
 For Windows, using Anaconda or Miniconda is preferred for additional dependencies:
@@ -76,9 +80,12 @@ pg_ctl -D pgdata initdb
 mkdir pgdata\logs
 pg_ctl -D pgdata -l pgdata\logs\logfile start
 
-:: create our superuser and main/test databases
+:: create a PostgreSQL database and superuser
 createuser --superuser --no-password hawc
 createdb -T template0 -E UTF8 hawc
+
+:: create test databases (required for running unit tests)
+createdb -T template0 -E UTF8 hawc-fixture
 createdb -T template0 -E UTF8 hawc-test
 ```
 
