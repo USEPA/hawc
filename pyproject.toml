@@ -123,6 +123,9 @@ exclude = [
 ]
 
 # --- --- --- --- --- --- --- --- --- --- FORMAT --- --- --- --- --- --- --- --- --- ---
+[tool.pyright]
+typeCheckingMode = "off"
+
 [tool.ruff]
 line-length = 100
 target-version = "py313"
@@ -243,6 +246,7 @@ cmd = "npm --prefix ./frontend run lint"
 
 [tool.poe.tasks.lint-html]
 help = "Check HTML formatting issues where possible"
+env = { PYTHONUTF8 = "1" }  # see https://github.com/rtts/djhtml/issues/122
 cmd = "djhtml --tabwidth 2 --check hawc/"
 
 [tool.poe.tasks.build]
