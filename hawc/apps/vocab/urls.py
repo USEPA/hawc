@@ -8,6 +8,8 @@ router = SimpleRouter()
 router.register("ehv", api.EhvTermViewSet, basename="ehv")
 router.register("toxrefdb", api.ToxRefDBTermViewSet, basename="toxrefdb")
 router.register("term", api.TermViewSet, basename="term")
+router.register("guideline", api.GuidelineViewSet, basename="guideline")
+router.register("guideline-profile", api.GuidelineProfileViewSet, basename="guideline-profile")
 
 app_name = "vocab"
 urlpatterns = [

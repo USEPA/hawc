@@ -36,6 +36,18 @@ class SimpleTermSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
+class GuidelineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Guideline
+        fields = "__all__"
+
+
+class GuidelineProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.GuidelineProfile
+        fields = "__all__"
+
+
 class EntitySerializer(serializers.ModelSerializer):
     def get_unique_together_validators(self):
         return []
