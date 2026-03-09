@@ -341,3 +341,116 @@ class TestEffectTagViewSet:
         url = reverse("assessment:api:effect-tag-list")
         response = team.post(url, {"name": "foo", "slug": "foo"}, format="json")
         assert response.status_code == 201
+
+
+@pytest.mark.django_db
+class TestSpeciesViewSet:
+    def test_list(self):
+        client = get_client("team", api=True)
+        url = reverse("assessment:api:species-list")
+        response = client.get(url)
+        assert response.status_code == 200
+        assert len(response.json()) > 0
+
+    def test_anon_read_allowed(self):
+        # authenticated users can read
+        client = get_client("reviewer", api=True)
+        url = reverse("assessment:api:species-list")
+        response = client.get(url)
+        assert response.status_code == 200
+
+    def test_anon_write_denied(self):
+        client = get_client(api=True)
+        url = reverse("assessment:api:species-list")
+        response = client.post(url, {"name": "Test Species"}, format="json")
+        assert response.status_code == 403
+
+    def test_crud(self):
+        client = get_client("team", api=True)
+        url = reverse("assessment:api:species-list")
+
+        # create
+        response = client.post(url, {"name": "Test Axolotl"}, format="json")
+        assert response.status_code == 201
+        species_id = response.data["id"]
+
+        # retrieve
+        detail_url = reverse("assessment:api:species-detail", args=(species_id,))
+        response = client.get(detail_url)
+        assert response.status_code == 200
+        assert response.data["name"] == "Test Axolotl"
+
+        # update (PATCH)
+        response = client.patch(detail_url, {"name": "Test Salamander"}, format="json")
+        assert response.status_code == 200
+        assert response.data["name"] == "Test Salamander"
+
+        # PUT not allowed
+        response = client.put(detail_url, {"name": "Test"}, format="json")
+        assert response.status_code == 405
+
+        # delete
+        response = client.delete(detail_url)
+        assert response.status_code == 204
+
+
+@pytest.mark.django_db
+class TestStrainViewSet:
+    def test_list(self):
+        client = get_client("team", api=True)
+        url = reverse("assessment:api:strain-list")
+        response = client.get(url)
+        assert response.status_code == 200
+        assert len(response.json()) > 0
+
+    def test_anon_write_denied(self):
+        client = get_client(api=True)
+        url = reverse("assessment:api:strain-list")
+        response = client.post(url, {"name": "Test Strain", "species": 1}, format="json")
+        assert response.status_code == 403
+
+    def test_crud(self):
+        client = get_client("team", api=True)
+        url = reverse("assessment:api:strain-list")
+
+        # create
+        response = client.post(url, {"name": "Test Strain XYZ", "species": 1}, format="json")
+        assert response.status_code == 201
+        strain_id = response.data["id"]
+
+        # retrieve
+        detail_url = reverse("assessment:api:strain-detail", args=(strain_id,))
+        response = client.get(detail_url)
+        assert response.status_code == 200
+        assert response.data["name"] == "Test Strain XYZ"
+
+        # update (PATCH)
+        response = client.patch(detail_url, {"name": "Test Strain ABC"}, format="json")
+        assert response.status_code == 200
+        assert response.data["name"] == "Test Strain ABC"
+
+        # delete
+        response = client.delete(detail_url)
+        assert response.status_code == 204
+
+
+@pytest.mark.django_db
+class TestDoseUnitsViewSet:
+    def test_list(self):
+        client = get_client("team", api=True)
+        url = reverse("animal:api:dose_units-list")
+        response = client.get(url)
+        assert response.status_code == 200
+
+    def test_anon_write_denied(self):
+        client = get_client(api=True)
+        url = reverse("animal:api:dose_units-list")
+        response = client.post(url, {"name": "test-units-xyz"}, format="json")
+        assert response.status_code == 403
+
+    def test_create(self):
+        client = get_client("team", api=True)
+        url = reverse("animal:api:dose_units-list")
+        response = client.post(url, {"name": "test-units-xyz"}, format="json")
+        assert response.status_code == 201
+        assert response.data["name"] == "test-units-xyz"

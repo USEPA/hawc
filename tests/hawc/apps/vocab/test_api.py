@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from hawc.apps.vocab.models import Term
+from hawc.apps.vocab.models import Guideline, GuidelineProfile, Term
 
 
 @pytest.mark.django_db
@@ -237,3 +237,109 @@ class TestTermViewSet:
         assert terms[0].id == response.json()[0]["id"] and terms[0].uid == response.json()[0]["uid"]
         # deprecated_on has been set on term 2
         assert terms[1].id == response.json()[1]["id"] and terms[1].deprecated_on is not None
+
+
+@pytest.mark.django_db
+class TestGuidelineViewSet:
+    def test_list(self):
+        url = reverse("vocab:api:guideline-list")
+        # anon cannot read
+        anon_client = APIClient()
+        assert anon_client.get(url).status_code == 403
+        # authenticated can read
+        client = APIClient()
+        assert client.login(username="team@hawcproject.org", password="pw") is True
+        resp = client.get(url)
+        assert resp.status_code == 200
+        assert isinstance(resp.json(), list)
+
+    def test_anon_write_denied(self):
+        url = reverse("vocab:api:guideline-list")
+        anon_client = APIClient()
+        resp = anon_client.post(url, {"id": 99999, "number": "999", "name": "Test", "profile_name": "test-anon"}, format="json")
+        assert resp.status_code == 403
+
+    def test_crud(self):
+        url = reverse("vocab:api:guideline-list")
+        client = APIClient()
+        assert client.login(username="team@hawcproject.org", password="pw") is True
+
+        # create
+        data = {"id": 99999, "number": "999.9999", "name": "Test Guideline", "profile_name": "test-crud"}
+        resp = client.post(url, data, format="json")
+        assert resp.status_code == 201
+        guideline_id = resp.json()["id"]
+        assert Guideline.objects.filter(id=guideline_id).exists()
+
+        # read
+        detail_url = f"{url}{guideline_id}/"
+        resp = client.get(detail_url)
+        assert resp.status_code == 200
+        assert resp.json()["name"] == "Test Guideline"
+
+        # update
+        resp = client.patch(detail_url, {"name": "Updated Guideline"}, format="json")
+        assert resp.status_code == 200
+        assert Guideline.objects.get(id=guideline_id).name == "Updated Guideline"
+
+        # delete
+        resp = client.delete(detail_url)
+        assert resp.status_code == 204
+        assert not Guideline.objects.filter(id=guideline_id).exists()
+
+
+@pytest.mark.django_db
+class TestGuidelineProfileViewSet:
+    def test_list(self):
+        url = reverse("vocab:api:guideline-profile-list")
+        anon_client = APIClient()
+        assert anon_client.get(url).status_code == 403
+        client = APIClient()
+        assert client.login(username="team@hawcproject.org", password="pw") is True
+        resp = client.get(url)
+        assert resp.status_code == 200
+        assert isinstance(resp.json(), list)
+
+    def test_anon_write_denied(self):
+        url = reverse("vocab:api:guideline-profile-list")
+        anon_client = APIClient()
+        guideline = Guideline.objects.first()
+        resp = anon_client.post(url, {"guideline": guideline.id, "description": "test"}, format="json")
+        assert resp.status_code == 403
+
+    def test_crud(self):
+        url = reverse("vocab:api:guideline-profile-list")
+        client = APIClient()
+        assert client.login(username="team@hawcproject.org", password="pw") is True
+
+        guideline = Guideline.objects.first()
+        term = Term.objects.first()
+
+        # create
+        data = {"guideline": guideline.id, "endpoint": term.id, "description": "Test Profile"}
+        resp = client.post(url, data, format="json")
+        assert resp.status_code == 201
+        profile_id = resp.json()["id"]
+        assert GuidelineProfile.objects.filter(id=profile_id).exists()
+
+        # read
+        detail_url = f"{url}{profile_id}/"
+        resp = client.get(detail_url)
+        assert resp.status_code == 200
+        assert resp.json()["description"] == "Test Profile"
+
+        # update
+        resp = client.patch(detail_url, {"description": "Updated Profile"}, format="json")
+        assert resp.status_code == 200
+        assert GuidelineProfile.objects.get(id=profile_id).description == "Updated Profile"
+
+        # filter by guideline
+        filter_url = f"{url}?guideline={guideline.id}"
+        resp = client.get(filter_url)
+        assert resp.status_code == 200
+        assert any(p["id"] == profile_id for p in resp.json())
+
+        # delete
+        resp = client.delete(detail_url)
+        assert resp.status_code == 204
+        assert not GuidelineProfile.objects.filter(id=profile_id).exists()

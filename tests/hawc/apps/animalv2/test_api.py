@@ -2276,3 +2276,165 @@ class TestStudyLevelValueViewSet:
             },
         )
         generic_test_scenarios(client, url, scenarios)
+
+
+@pytest.mark.django_db
+class TestObservationViewSet:
+    def test_permissions(self, db_keys):
+        url = reverse("animalv2:api:observation-list")
+        endpoint_term = generic_get_any(models.Endpoint).endpoint
+        data = {
+            "experiment": db_keys.animalv2_experiment,
+            "endpoint": endpoint_term.id,
+            "tested_status": False,
+            "reported_status": False,
+        }
+        generic_perm_tester(url, data)
+
+    def test_valid_requests(self, db_keys):
+        url = reverse("animalv2:api:observation-list")
+        client = get_client("team", api=True)
+
+        endpoint_term = generic_get_any(models.Endpoint).endpoint
+        data = {
+            "experiment": db_keys.animalv2_experiment,
+            "endpoint": endpoint_term.id,
+            "tested_status": False,
+            "reported_status": False,
+        }
+
+        just_created_obs_id = None
+
+        def obs_create_test(resp):
+            nonlocal just_created_obs_id
+
+            obs_id = resp.json()["id"]
+            obs = models.Observation.objects.get(id=obs_id)
+            assert obs.tested_status == data["tested_status"]
+
+            if just_created_obs_id is None:
+                just_created_obs_id = obs_id
+
+        def altered_obs_test(resp):
+            nonlocal just_created_obs_id
+
+            obs_id = resp.json()["id"]
+            obs = models.Observation.objects.get(id=obs_id)
+            assert obs.tested_status is True
+            assert obs_id == just_created_obs_id
+
+        def deleted_obs_test(resp):
+            nonlocal just_created_obs_id
+
+            assert resp.data is None
+
+            with pytest.raises(ObjectDoesNotExist):
+                models.Observation.objects.get(id=just_created_obs_id)
+
+        create_scenarios = (
+            {
+                "desc": "observation create",
+                "expected_code": 201,
+                "expected_keys": {"id", "experiment", "endpoint", "tested_status", "reported_status"},
+                "data": data,
+                "post_request_test": obs_create_test,
+            },
+        )
+        generic_test_scenarios(client, url, create_scenarios)
+
+        browse_scenarios = (
+            {
+                "desc": "observation browse",
+                "expected_code": 200,
+                "expected_keys": {"count", "results"},
+                "method": "GET",
+                "post_request_test": generate_browse_checker(2),
+                "url": f"{url}?assessment_id={db_keys.assessment_working}",
+            },
+            {
+                "desc": "observation browse on other assessment",
+                "expected_code": 200,
+                "expected_keys": {"count", "results"},
+                "method": "GET",
+                "post_request_test": generate_browse_checker(0),
+                "url": f"{url}?assessment_id={db_keys.assessment_client}",
+            },
+            {
+                "desc": "observation browse with experiment filter",
+                "expected_code": 200,
+                "expected_keys": {"count", "results"},
+                "method": "GET",
+                "post_request_test": generate_browse_checker(2),
+                "url": f"{url}?assessment_id={db_keys.assessment_working}&experiment={db_keys.animalv2_experiment}",
+            },
+            {
+                "desc": "observation browse without assessment id",
+                "expected_code": 400,
+                "method": "GET",
+                "expected_content": "Please provide an `assessment_id` argument",
+                "url": url,
+            },
+        )
+        generic_test_scenarios(client, None, browse_scenarios)
+
+        update_scenarios = (
+            {
+                "desc": "observation update",
+                "expected_code": 200,
+                "expected_keys": {"id", "experiment", "endpoint", "tested_status", "reported_status"},
+                "data": {"tested_status": True},
+                "method": "PATCH",
+                "post_request_test": altered_obs_test,
+            },
+        )
+        url = f"{url}{just_created_obs_id}/"
+        generic_test_scenarios(client, url, update_scenarios)
+
+        read_scenarios = (
+            {
+                "desc": "observation read",
+                "expected_code": 200,
+                "expected_keys": {"id", "experiment", "endpoint", "tested_status", "reported_status"},
+                "method": "GET",
+            },
+        )
+        generic_test_scenarios(client, url, read_scenarios)
+
+        delete_scenarios = (
+            {
+                "desc": "observation delete",
+                "expected_code": 204,
+                "method": "DELETE",
+                "post_request_test": deleted_obs_test,
+            },
+        )
+        generic_test_scenarios(client, url, delete_scenarios)
+
+    def test_bad_requests(self, db_keys):
+        url = reverse("animalv2:api:observation-list")
+        client = get_client("team", api=True)
+
+        scenarios = (
+            {
+                "desc": "invalid experiment",
+                "expected_code": 400,
+                "expected_keys": {"experiment"},
+                "expected_content": "does not exist",
+                "data": {"experiment": 999},
+            },
+            {
+                "desc": "invalid endpoint",
+                "expected_code": 400,
+                "expected_keys": {"endpoint"},
+                "expected_content": "does not exist",
+                "data": {"endpoint": 999},
+            },
+            {
+                "desc": "missing req'd fields",
+                "expected_code": 400,
+                "expected_keys": {"experiment", "endpoint"},
+                "expected_content": "required",
+                "data": {},
+            },
+        )
+        generic_test_scenarios(client, url, scenarios)
