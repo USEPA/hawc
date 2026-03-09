@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 from hawc.apps.animalv2 import constants, models
 from hawc.apps.assessment.models import DoseUnits, EffectTag, Log, Species, Strain
 from hawc.apps.study.models import Study
+from hawc.apps.vocab.models import Term
 
 from ..test_utils import get_client
 
@@ -2282,7 +2283,7 @@ class TestStudyLevelValueViewSet:
 class TestObservationViewSet:
     def test_permissions(self, db_keys):
         url = reverse("animalv2:api:observation-list")
-        endpoint_term = generic_get_any(models.Endpoint).endpoint
+        endpoint_term = Term.objects.first()
         data = {
             "experiment": db_keys.animalv2_experiment,
             "endpoint": endpoint_term.id,
@@ -2295,7 +2296,7 @@ class TestObservationViewSet:
         url = reverse("animalv2:api:observation-list")
         client = get_client("team", api=True)
 
-        endpoint_term = generic_get_any(models.Endpoint).endpoint
+        endpoint_term = Term.objects.first()
         data = {
             "experiment": db_keys.animalv2_experiment,
             "endpoint": endpoint_term.id,

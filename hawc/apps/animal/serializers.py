@@ -340,8 +340,26 @@ class EndpointSerializer(serializers.ModelSerializer):
         self._validate_term_and_text(data, "name_term", "name", "endpoint_name")
 
         # set animal_group on instance for cleaning rules
-        instance = models.Endpoint(animal_group=self.animal_group)
-        errors = forms.EndpointForm.clean_endpoint(instance, data)
+        if is_update:
+            clean_instance = self.instance
+            # For partial updates, use existing values for fields not being patched
+            clean_data = {}
+            for field_name in (
+                "observation_time",
+                "observation_time_units",
+                "litter_effects",
+                "litter_effect_notes",
+                "confidence_interval",
+                "variance_type",
+                "data_type",
+                "response_units",
+                "data_extracted",
+            ):
+                clean_data[field_name] = data.get(field_name, getattr(self.instance, field_name))
+            errors = forms.EndpointForm.clean_endpoint(clean_instance, clean_data)
+        else:
+            instance = models.Endpoint(animal_group=self.animal_group)
+            errors = forms.EndpointForm.clean_endpoint(instance, data)
         if errors:
             err = {k: [v] for k, v in errors.items()}
             raise serializers.ValidationError(err)

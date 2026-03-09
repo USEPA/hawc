@@ -152,6 +152,7 @@ class GuidelineViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GuidelineSerializer
     http_method_names = METHODS_NO_PUT
     permission_classes = (IsTeamMemberOrHigher,)
+    pagination_class = None
     lookup_value_regex = re_digits
 
 
@@ -161,5 +162,6 @@ class GuidelineProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GuidelineProfileSerializer
     http_method_names = METHODS_NO_PUT
     permission_classes = (IsTeamMemberOrHigher,)
+    pagination_class = None
     lookup_value_regex = re_digits
     filterset_fields = ("guideline",)
