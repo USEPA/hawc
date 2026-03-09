@@ -24,7 +24,12 @@ from ..constants import AssessmentViewSetPermissions
 from ..filterset import EffectTagFilterSet, GlobalChemicalsFilterSet
 from .filters import InAssessmentFilter
 from .helper import get_assessment_from_query
-from .permissions import AssessmentLevelPermissions, CleanupFieldsPermissions, user_can_edit_object
+from .permissions import (
+    AssessmentLevelPermissions,
+    CleanupFieldsPermissions,
+    IsTeamMemberOrHigher,
+    user_can_edit_object,
+)
 
 # all http methods except PUT
 METHODS_NO_PUT = ["get", "post", "patch", "delete", "head", "options", "trace"]
@@ -587,10 +592,23 @@ class DssToxViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets
         return self.model.objects.all()
 
 
-class StrainViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class SpeciesViewSet(viewsets.ModelViewSet):
+    model = models.Species
+    queryset = models.Species.objects.all()
+    serializer_class = serializers.SpeciesSerializer
+    pagination_class = DisabledPagination
+    http_method_names = METHODS_NO_PUT
+    permission_classes = (IsTeamMemberOrHigher,)
+    lookup_value_regex = re_digits
+
+
+class StrainViewSet(viewsets.ModelViewSet):
     model = models.Strain
     queryset = models.Strain.objects.all()
     serializer_class = serializers.StrainSerializer
-    pagination_class = None
+    pagination_class = DisabledPagination
+    http_method_names = METHODS_NO_PUT
+    permission_classes = (IsTeamMemberOrHigher,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("species",)
+    lookup_value_regex = re_digits
