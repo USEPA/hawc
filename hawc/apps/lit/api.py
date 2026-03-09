@@ -347,6 +347,7 @@ class ReferenceFilterTagViewSet(AssessmentRootedTagTreeViewSet):
 
 
 class ReferenceViewSet(
+    mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
@@ -355,6 +356,21 @@ class ReferenceViewSet(
     model = models.Reference
     serializer_class = serializers.ReferenceSerializer
     http_method_names = ["get", "post", "patch", "delete", "head", "options", "trace"]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return serializers.ReferenceCreateSerializer
+        return super().get_serializer_class()
+
+    @transaction.atomic
+    def perform_create(self, serializer):
+        super().perform_create(serializer)
+        create_object_log(
+            "Created",
+            serializer.instance,
+            serializer.instance.assessment_id,
+            self.request.user.id,
+        )
 
     def get_queryset(self):
         qs = super().get_queryset()
