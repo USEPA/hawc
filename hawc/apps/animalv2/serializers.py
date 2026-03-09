@@ -235,6 +235,12 @@ class DoseResponseAnimalLevelDataSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ObservationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Observation
+        fields = "__all__"
+
+
 class StudyLevelValueSerializer(IdLookupMixin, serializers.ModelSerializer):
     value_type = FlexibleChoiceField(choices=constants.StudyLevelTypeChoices.choices)
     units = serializers.SlugRelatedField(slug_field="name", queryset=DoseUnits.objects.all())

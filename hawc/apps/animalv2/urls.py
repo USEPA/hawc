@@ -22,6 +22,7 @@ router.register(
     api.DoseResponseAnimalLevelDataViewSet,
     basename="dose-response-animal-level-data",
 )
+router.register("observation", api.ObservationViewSet, basename="observation")
 router.register("study-level-value", api.StudyLevelValueViewSet, basename="study-level-value")
 
 app_name = "animalv2"

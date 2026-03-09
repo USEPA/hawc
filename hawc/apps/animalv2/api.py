@@ -82,6 +82,14 @@ class DoseResponseAnimalLevelDataViewSet(EditPermissionsCheckMixin, AssessmentEd
     filterset_fields = ("data_extraction",)
 
 
+class ObservationViewSet(EditPermissionsCheckMixin, AssessmentEditViewSet):
+    edit_check_keys = ["experiment"]
+    assessment_filter_args = "experiment__study__assessment"
+    model = models.Observation
+    serializer_class = serializers.ObservationSerializer
+    filterset_fields = ("experiment",)
+
+
 class StudyLevelValueViewSet(EditPermissionsCheckMixin, AssessmentEditViewSet):
     edit_check_keys = ["study"]
     assessment_filter_args = "study__assessment"
