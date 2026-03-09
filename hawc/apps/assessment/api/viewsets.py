@@ -249,10 +249,11 @@ class AssessmentRootedTagTreeViewSet(viewsets.ModelViewSet):
         return Response({"status": True})
 
 
-class DoseUnitsViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class DoseUnitsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
     model = models.DoseUnits
     serializer_class = serializers.DoseUnitsSerializer
     pagination_class = DisabledPagination
+    permission_classes = (IsTeamMemberOrHigher,)
     lookup_value_regex = re_digits
 
     def get_queryset(self):
