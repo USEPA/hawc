@@ -152,6 +152,30 @@ class AnimalClient(BaseClient):
         response_json = self.session.get(url, params=params).json()
         return pd.DataFrame(response_json)
 
+    def update_endpoint(self, endpoint_id: int, data: dict) -> dict:
+        """
+        Update an existing endpoint via PATCH.
+
+        Args:
+            endpoint_id (int): Endpoint ID
+            data (dict): fields to update
+
+        Returns:
+            dict: The resulting object, if update was successful
+        """
+        url = f"{self.session.root_url}/ani/api/endpoint/{endpoint_id}/"
+        return self.session.patch(url, data).json()
+
+    def delete_endpoint(self, endpoint_id: int) -> None:
+        """
+        Delete an endpoint.
+
+        Args:
+            endpoint_id (int): Endpoint ID
+        """
+        url = f"{self.session.root_url}/ani/api/endpoint/{endpoint_id}/"
+        self.session.delete(url)
+
     def metadata(self) -> dict:
         """
         Retrieves field choices for all animal models.

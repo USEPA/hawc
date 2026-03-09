@@ -107,6 +107,71 @@ class AssessmentClient(BaseClient):
         url = f"{self.session.root_url}/assessment/api/assessment/{assessment_id}/"
         return self.session.delete(url)
 
+    def list_species(self) -> list[dict]:
+        """
+        List all species.
+
+        Returns:
+            list[dict]: Species data
+        """
+        url = f"{self.session.root_url}/assessment/api/species/"
+        return self.session.get(url).json()
+
+    def create_species(self, data: dict) -> dict:
+        """
+        Create a new species.
+
+        Args:
+            data (dict): required metadata (name)
+
+        Returns:
+            dict: The created species
+        """
+        url = f"{self.session.root_url}/assessment/api/species/"
+        return self.session.post(url, data).json()
+
+    def list_strains(self, species_id: int | None = None) -> list[dict]:
+        """
+        List all strains, optionally filtered by species.
+
+        Args:
+            species_id (int, optional): Filter by species ID
+
+        Returns:
+            list[dict]: Strain data
+        """
+        url = f"{self.session.root_url}/assessment/api/strain/"
+        params = {}
+        if species_id is not None:
+            params["species"] = species_id
+        return self.session.get(url, params=params).json()
+
+    def create_strain(self, data: dict) -> dict:
+        """
+        Create a new strain.
+
+        Args:
+            data (dict): required metadata (name, species)
+
+        Returns:
+            dict: The created strain
+        """
+        url = f"{self.session.root_url}/assessment/api/strain/"
+        return self.session.post(url, data).json()
+
+    def create_dose_units(self, name: str) -> dict:
+        """
+        Create a new dose unit.
+
+        Args:
+            name (str): Name of the dose unit
+
+        Returns:
+            dict: The created dose unit
+        """
+        url = f"{self.session.root_url}/ani/api/dose-units/"
+        return self.session.post(url, {"name": name}).json()
+
     def effect_tag_create(self, name: str, slug: str) -> dict:
         """Create an effect tag.
 

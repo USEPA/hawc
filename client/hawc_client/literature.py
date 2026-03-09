@@ -36,6 +36,20 @@ class LiteratureClient(BaseClient):
         url = f"{self.session.root_url}/lit/api/search/"
         return self.session.post(url, payload).json()
 
+    def create_reference(self, data: dict) -> dict:
+        """
+        Create a manual reference (no external ID required).
+
+        Args:
+            data (dict): Reference data. Required: assessment, title.
+                Optional: authors_short, authors, year, journal, abstract, full_text_url.
+
+        Returns:
+            dict: The created reference
+        """
+        url = f"{self.session.root_url}/lit/api/reference/"
+        return self.session.post(url, data).json()
+
     def import_hero(self, assessment_id: int, title: str, description: str, ids: list[int]) -> dict:
         """
         Imports a list of HERO IDs as literature references for the given assessment.
