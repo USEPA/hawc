@@ -2,6 +2,7 @@ import logging
 from collections import ChainMap
 
 from django.db import models
+from django.db.models import Q
 from rest_framework import exceptions, permissions
 from rest_framework.request import Request
 
@@ -150,6 +151,21 @@ class JobPermissions(permissions.BasePermission):
             # other actions are object specific,
             # and will be caught by object permissions
             return True
+
+
+class IsTeamMemberOrHigher(permissions.BasePermission):
+    """Allow writes if user is a team member or PM on any assessment."""
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+        return (
+            request.user
+            and request.user.is_authenticated
+            and Assessment.objects.filter(
+                Q(project_manager=request.user) | Q(team_members=request.user)
+            ).exists()
+        )
 
 
 def check_assessment_query_permission(
