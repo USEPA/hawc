@@ -256,7 +256,11 @@ class TestGuidelineViewSet:
     def test_anon_write_denied(self):
         url = reverse("vocab:api:guideline-list")
         anon_client = APIClient()
-        resp = anon_client.post(url, {"id": 99999, "number": "999", "name": "Test", "profile_name": "test-anon"}, format="json")
+        resp = anon_client.post(
+            url,
+            {"id": 99999, "number": "999", "name": "Test", "profile_name": "test-anon"},
+            format="json",
+        )
         assert resp.status_code == 403
 
     def test_crud(self):
@@ -265,7 +269,12 @@ class TestGuidelineViewSet:
         assert client.login(username="team@hawcproject.org", password="pw") is True
 
         # create
-        data = {"id": 99999, "number": "999.9999", "name": "Test Guideline", "profile_name": "test-crud"}
+        data = {
+            "id": 99999,
+            "number": "999.9999",
+            "name": "Test Guideline",
+            "profile_name": "test-crud",
+        }
         resp = client.post(url, data, format="json")
         assert resp.status_code == 201
         guideline_id = resp.json()["id"]
@@ -304,7 +313,9 @@ class TestGuidelineProfileViewSet:
         url = reverse("vocab:api:guideline-profile-list")
         anon_client = APIClient()
         guideline = Guideline.objects.first()
-        resp = anon_client.post(url, {"guideline": guideline.id, "description": "test"}, format="json")
+        resp = anon_client.post(
+            url, {"guideline": guideline.id, "description": "test"}, format="json"
+        )
         assert resp.status_code == 403
 
     def test_crud(self):

@@ -310,17 +310,13 @@ class EndpointSerializer(serializers.ModelSerializer):
         # name or name_term must be given (skip on partial update not touching these fields)
         if not is_update:
             if data.get("name") is None and data.get("name_term") is None:
-                raise serializers.ValidationError(
-                    {"name": ["'name' or 'name_term' is required."]}
-                )
+                raise serializers.ValidationError({"name": ["'name' or 'name_term' is required."]})
         elif "name" in data or "name_term" in data:
             # on update, if either is being set, at least one must be non-null
             name = data.get("name", self.instance.name)
             name_term = data.get("name_term", self.instance.name_term)
             if name is None and name_term is None:
-                raise serializers.ValidationError(
-                    {"name": ["'name' or 'name_term' is required."]}
-                )
+                raise serializers.ValidationError({"name": ["'name' or 'name_term' is required."]})
 
         # Validate parent object
         if is_update:

@@ -2335,7 +2335,13 @@ class TestObservationViewSet:
             {
                 "desc": "observation create",
                 "expected_code": 201,
-                "expected_keys": {"id", "experiment", "endpoint", "tested_status", "reported_status"},
+                "expected_keys": {
+                    "id",
+                    "experiment",
+                    "endpoint",
+                    "tested_status",
+                    "reported_status",
+                },
                 "data": data,
                 "post_request_test": obs_create_test,
             },
@@ -2381,7 +2387,13 @@ class TestObservationViewSet:
             {
                 "desc": "observation update",
                 "expected_code": 200,
-                "expected_keys": {"id", "experiment", "endpoint", "tested_status", "reported_status"},
+                "expected_keys": {
+                    "id",
+                    "experiment",
+                    "endpoint",
+                    "tested_status",
+                    "reported_status",
+                },
                 "data": {"tested_status": True},
                 "method": "PATCH",
                 "post_request_test": altered_obs_test,
@@ -2394,7 +2406,13 @@ class TestObservationViewSet:
             {
                 "desc": "observation read",
                 "expected_code": 200,
-                "expected_keys": {"id", "experiment", "endpoint", "tested_status", "reported_status"},
+                "expected_keys": {
+                    "id",
+                    "experiment",
+                    "endpoint",
+                    "tested_status",
+                    "reported_status",
+                },
                 "method": "GET",
             },
         )

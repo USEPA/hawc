@@ -7,11 +7,11 @@ from rest_framework.exceptions import NotAcceptable
 from rest_framework.response import Response
 
 from ..assessment.api import (
+    METHODS_NO_PUT,
     AssessmentViewSet,
     BaseAssessmentViewSet,
     CleanupFieldsBaseViewSet,
     DoseUnitsViewSet,
-    METHODS_NO_PUT,
 )
 from ..assessment.constants import AssessmentViewSetPermissions
 from ..common.api.utils import get_published_only
