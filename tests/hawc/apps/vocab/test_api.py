@@ -241,32 +241,26 @@ class TestTermViewSet:
 
 @pytest.mark.django_db
 class TestGuidelineViewSet:
-    def test_list(self):
+    def test_permissions(self):
         url = reverse("vocab:api:guideline-list")
-        # anon cannot read
-        anon_client = APIClient()
-        assert anon_client.get(url).status_code == 403
-        # authenticated can read
-        client = APIClient()
-        assert client.login(username="team@hawcproject.org", password="pw") is True
-        resp = client.get(url)
+        # anon denied
+        assert APIClient().get(url).status_code == 403
+        # non-admin denied
+        team_client = APIClient()
+        assert team_client.login(username="team@hawcproject.org", password="pw") is True
+        data = {"id": 99999, "number": "999", "name": "Test", "profile_name": "test-anon"}
+        assert team_client.post(url, data, format="json").status_code == 403
+        # admin can list
+        admin_client = APIClient()
+        assert admin_client.login(username="admin@hawcproject.org", password="pw") is True
+        resp = admin_client.get(url)
         assert resp.status_code == 200
         assert isinstance(resp.json(), list)
-
-    def test_anon_write_denied(self):
-        url = reverse("vocab:api:guideline-list")
-        anon_client = APIClient()
-        resp = anon_client.post(
-            url,
-            {"id": 99999, "number": "999", "name": "Test", "profile_name": "test-anon"},
-            format="json",
-        )
-        assert resp.status_code == 403
 
     def test_crud(self):
         url = reverse("vocab:api:guideline-list")
         client = APIClient()
-        assert client.login(username="team@hawcproject.org", password="pw") is True
+        assert client.login(username="admin@hawcproject.org", password="pw") is True
 
         # create
         data = {
@@ -299,29 +293,27 @@ class TestGuidelineViewSet:
 
 @pytest.mark.django_db
 class TestGuidelineProfileViewSet:
-    def test_list(self):
+    def test_permissions(self):
         url = reverse("vocab:api:guideline-profile-list")
-        anon_client = APIClient()
-        assert anon_client.get(url).status_code == 403
-        client = APIClient()
-        assert client.login(username="team@hawcproject.org", password="pw") is True
-        resp = client.get(url)
+        # anon denied
+        assert APIClient().get(url).status_code == 403
+        # non-admin write denied
+        team_client = APIClient()
+        assert team_client.login(username="team@hawcproject.org", password="pw") is True
+        guideline = Guideline.objects.first()
+        data = {"guideline": guideline.id, "description": "test"}
+        assert team_client.post(url, data, format="json").status_code == 403
+        # admin can list
+        admin_client = APIClient()
+        assert admin_client.login(username="admin@hawcproject.org", password="pw") is True
+        resp = admin_client.get(url)
         assert resp.status_code == 200
         assert isinstance(resp.json(), list)
-
-    def test_anon_write_denied(self):
-        url = reverse("vocab:api:guideline-profile-list")
-        anon_client = APIClient()
-        guideline = Guideline.objects.first()
-        resp = anon_client.post(
-            url, {"guideline": guideline.id, "description": "test"}, format="json"
-        )
-        assert resp.status_code == 403
 
     def test_crud(self):
         url = reverse("vocab:api:guideline-profile-list")
         client = APIClient()
-        assert client.login(username="team@hawcproject.org", password="pw") is True
+        assert client.login(username="admin@hawcproject.org", password="pw") is True
 
         guideline = Guideline.objects.first()
         term = Term.objects.first()

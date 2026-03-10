@@ -345,28 +345,19 @@ class TestEffectTagViewSet:
 
 @pytest.mark.django_db
 class TestSpeciesViewSet:
-    def test_list(self):
-        client = get_client("team", api=True)
+    def test_permissions(self):
         url = reverse("assessment:api:species-list")
-        response = client.get(url)
-        assert response.status_code == 200
-        assert len(response.json()) > 0
-
-    def test_anon_read_allowed(self):
-        # authenticated users can read
-        client = get_client("reviewer", api=True)
-        url = reverse("assessment:api:species-list")
-        response = client.get(url)
-        assert response.status_code == 200
-
-    def test_anon_write_denied(self):
-        client = get_client(api=True)
-        url = reverse("assessment:api:species-list")
-        response = client.post(url, {"name": "Test Species"}, format="json")
-        assert response.status_code == 403
+        # anonymous denied
+        assert get_client(api=True).get(url).status_code == 403
+        # non-admin denied
+        assert (
+            get_client("team", api=True).post(url, {"name": "X"}, format="json").status_code == 403
+        )
+        # admin can list
+        assert get_client("admin", api=True).get(url).status_code == 200
 
     def test_crud(self):
-        client = get_client("team", api=True)
+        client = get_client("admin", api=True)
         url = reverse("assessment:api:species-list")
 
         # create
@@ -396,21 +387,18 @@ class TestSpeciesViewSet:
 
 @pytest.mark.django_db
 class TestStrainViewSet:
-    def test_list(self):
-        client = get_client("team", api=True)
+    def test_permissions(self):
         url = reverse("assessment:api:strain-list")
-        response = client.get(url)
-        assert response.status_code == 200
-        assert len(response.json()) > 0
-
-    def test_anon_write_denied(self):
-        client = get_client(api=True)
-        url = reverse("assessment:api:strain-list")
-        response = client.post(url, {"name": "Test Strain", "species": 1}, format="json")
-        assert response.status_code == 403
+        # anonymous denied
+        assert get_client(api=True).get(url).status_code == 403
+        # non-admin denied
+        data = {"name": "Test Strain", "species": 1}
+        assert get_client("team", api=True).post(url, data, format="json").status_code == 403
+        # admin can list
+        assert get_client("admin", api=True).get(url).status_code == 200
 
     def test_crud(self):
-        client = get_client("team", api=True)
+        client = get_client("admin", api=True)
         url = reverse("assessment:api:strain-list")
 
         # create
@@ -436,20 +424,19 @@ class TestStrainViewSet:
 
 @pytest.mark.django_db
 class TestDoseUnitsViewSet:
-    def test_list(self):
-        client = get_client("team", api=True)
+    def test_permissions(self):
         url = reverse("animal:api:dose_units-list")
-        response = client.get(url)
-        assert response.status_code == 200
-
-    def test_anon_write_denied(self):
-        client = get_client(api=True)
-        url = reverse("animal:api:dose_units-list")
-        response = client.post(url, {"name": "test-units-xyz"}, format="json")
-        assert response.status_code == 403
+        # anonymous denied
+        assert get_client(api=True).get(url).status_code == 403
+        # non-admin denied
+        assert (
+            get_client("team", api=True).post(url, {"name": "x"}, format="json").status_code == 403
+        )
+        # admin can list
+        assert get_client("admin", api=True).get(url).status_code == 200
 
     def test_create(self):
-        client = get_client("team", api=True)
+        client = get_client("admin", api=True)
         url = reverse("animal:api:dose_units-list")
         response = client.post(url, {"name": "test-units-xyz"}, format="json")
         assert response.status_code == 201
