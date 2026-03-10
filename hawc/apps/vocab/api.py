@@ -8,6 +8,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ..assessment.api import METHODS_NO_PUT
+from ..common.api.pagination import DisabledPagination
 from ..common.helper import FlatExport, re_digits, tryParseInt
 from ..common.renderers import PandasRenderers
 from ..common.serializers import check_ids
@@ -151,7 +152,7 @@ class GuidelineViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GuidelineSerializer
     http_method_names = METHODS_NO_PUT
     permission_classes = (IsAdminUser,)
-    pagination_class = None
+    pagination_class = DisabledPagination
     lookup_value_regex = re_digits
 
 
@@ -161,6 +162,6 @@ class GuidelineProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GuidelineProfileSerializer
     http_method_names = METHODS_NO_PUT
     permission_classes = (IsAdminUser,)
-    pagination_class = None
+    pagination_class = DisabledPagination
     lookup_value_regex = re_digits
     filterset_fields = ("guideline",)

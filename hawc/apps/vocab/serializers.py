@@ -40,12 +40,15 @@ class GuidelineSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Guideline
         fields = "__all__"
+        # id is intentionally writable; Guideline uses an explicit PositiveIntegerField primary
+        # key that maps to external EPA test-guideline numbering, so callers must supply it.
 
 
 class GuidelineProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.GuidelineProfile
         fields = "__all__"
+        read_only_fields = ("id",)
 
 
 class EntitySerializer(serializers.ModelSerializer):

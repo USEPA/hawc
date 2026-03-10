@@ -130,6 +130,33 @@ class AssessmentClient(BaseClient):
         url = f"{self.session.root_url}/assessment/api/species/"
         return self.session.post(url, data).json()
 
+    def update_species(self, species_id: int, data: dict) -> dict:
+        """
+        Update an existing species.
+
+        Args:
+            species_id (int): species ID
+            data (dict): fields to update
+
+        Returns:
+            dict: The updated species
+        """
+        url = f"{self.session.root_url}/assessment/api/species/{species_id}/"
+        return self.session.patch(url, data).json()
+
+    def delete_species(self, species_id: int) -> Response:
+        """
+        Delete a species.
+
+        Args:
+            species_id (int): species ID
+
+        Returns:
+            Response: The response object.
+        """
+        url = f"{self.session.root_url}/assessment/api/species/{species_id}/"
+        return self.session.delete(url)
+
     def list_strains(self, species_id: int | None = None) -> list[dict]:
         """
         List all strains, optionally filtered by species.
@@ -158,6 +185,33 @@ class AssessmentClient(BaseClient):
         """
         url = f"{self.session.root_url}/assessment/api/strain/"
         return self.session.post(url, data).json()
+
+    def update_strain(self, strain_id: int, data: dict) -> dict:
+        """
+        Update an existing strain.
+
+        Args:
+            strain_id (int): strain ID
+            data (dict): fields to update
+
+        Returns:
+            dict: The updated strain
+        """
+        url = f"{self.session.root_url}/assessment/api/strain/{strain_id}/"
+        return self.session.patch(url, data).json()
+
+    def delete_strain(self, strain_id: int) -> Response:
+        """
+        Delete a strain.
+
+        Args:
+            strain_id (int): strain ID
+
+        Returns:
+            Response: The response object.
+        """
+        url = f"{self.session.root_url}/assessment/api/strain/{strain_id}/"
+        return self.session.delete(url)
 
     def create_dose_units(self, name: str) -> dict:
         """
