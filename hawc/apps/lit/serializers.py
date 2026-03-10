@@ -274,6 +274,46 @@ class BulkReferenceTagSerializer(serializers.Serializer):
             models.Reference.delete_cache(assessment_id)
 
 
+class ReferenceCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating manual references via the API."""
+
+    class Meta:
+        model = models.Reference
+        fields = (
+            "id",
+            "assessment",
+            "title",
+            "authors_short",
+            "authors",
+            "year",
+            "journal",
+            "abstract",
+            "full_text_url",
+        )
+        read_only_fields = ("id",)
+
+    def validate(self, data):
+        user = self.context["request"].user
+        assessment = data["assessment"]
+        if not assessment.user_can_edit_object(user):
+            raise exceptions.PermissionDenied("Invalid permissions to edit assessment")
+        try:
+            self._manual_import = models.Search.objects.get(
+                assessment=assessment, slug=models.Search.MANUAL_IMPORT_SLUG
+            )
+        except models.Search.DoesNotExist as exc:
+            raise serializers.ValidationError(
+                "Manual import search not found for this assessment"
+            ) from exc
+        return data
+
+    @transaction.atomic
+    def create(self, validated_data):
+        reference = models.Reference.objects.create(**validated_data)
+        reference.searches.add(self._manual_import)
+        return reference
+
+
 class ReferenceSerializer(serializers.ModelSerializer):
     tags = serializers.ListField(write_only=True)
 

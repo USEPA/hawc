@@ -258,6 +258,10 @@ class Assessment(models.Model):
         default=True,
         help_text="Show the downloads link on the assessment sidebar.",
     )
+    enable_observations = models.BooleanField(
+        default=False,
+        help_text="Observations can be used to identify negative effects in animal bioassay studies. The project must use the Toxicity Reference Database Vocabulary to use Observations.",
+    )
     conflicts_of_interest = models.TextField(
         blank=True,
         help_text="Describe any conflicts of interest by the assessment-team.",
@@ -300,6 +304,12 @@ class Assessment(models.Model):
         default=constants.EpiVersion.V2,
         verbose_name="Epidemiology schema version",
         help_text="Data extraction schema version used for epidemiology studies",
+    )
+    animal_version = models.PositiveSmallIntegerField(
+        choices=constants.AnimalVersion,
+        default=constants.AnimalVersion.V1,  # TODO - change to V2
+        verbose_name="Animal schema version",
+        help_text="Data extraction schema version used for animal studies",
     )
     admin_notes = models.TextField(
         blank=True,
@@ -489,7 +499,12 @@ class Assessment(models.Model):
 
     @property
     def has_animal_data(self) -> bool:
-        return self._has_data("animal", "Experiment")
+        if self.animal_version == constants.AnimalVersion.V1:
+            return self._has_data("animal", "Experiment")
+        elif self.animal_version == constants.AnimalVersion.V2:
+            return self._has_data("animalv2", "Experiment")
+        else:
+            raise ValueError("Unknown animal version")
 
     @property
     def has_epi_data(self) -> bool:

@@ -687,6 +687,77 @@ class TestEndpointCreateApi:
 
 
 @pytest.mark.django_db
+class TestEndpointUpdateDeleteApi:
+    def test_permissions(self, db_keys):
+        url = reverse("animal:api:endpoint-detail", args=(1,))
+
+        # anonymous denied
+        client = APIClient()
+        response = client.patch(url, {"name": "new name"}, format="json")
+        assert response.status_code == 403
+        response = client.delete(url)
+        assert response.status_code == 403
+
+        # reviewer denied
+        client = APIClient()
+        assert client.login(username="reviewer@hawcproject.org", password="pw") is True
+        response = client.patch(url, {"name": "new name"}, format="json")
+        assert response.status_code == 403
+        response = client.delete(url)
+        assert response.status_code == 403
+
+    def test_patch_basic(self, db_keys):
+        client = get_client("team", api=True)
+        endpoint = models.Endpoint.objects.get(pk=1)
+        original_name = endpoint.name
+        url = reverse("animal:api:endpoint-detail", args=(endpoint.pk,))
+
+        response = client.patch(url, {"name": "Updated Endpoint Name"}, format="json")
+        assert response.status_code == 200
+        check_details_of_last_log_entry(endpoint.pk, "Updated animal.endpoint")
+
+        endpoint.refresh_from_db()
+        assert endpoint.name == "Updated Endpoint Name"
+
+        # restore original name
+        client.patch(url, {"name": original_name}, format="json")
+
+    def test_patch_without_name(self, db_keys):
+        """Partial update not touching name/name_term should not require them."""
+        client = get_client("team", api=True)
+        url = reverse("animal:api:endpoint-detail", args=(1,))
+
+        response = client.patch(url, {"data_extracted": False}, format="json")
+        assert response.status_code == 200
+
+    def test_put_not_allowed(self, db_keys):
+        client = get_client("team", api=True)
+        url = reverse("animal:api:endpoint-detail", args=(1,))
+        response = client.put(url, {"name": "test"}, format="json")
+        assert response.status_code == 405
+
+    def test_delete(self, db_keys):
+        client = get_client("team", api=True)
+        # create an endpoint to delete
+        create_url = reverse("animal:api:endpoint-list")
+        data = {
+            "name": "Endpoint to delete",
+            "animal_group_id": 1,
+            "data_type": "C",
+            "variance_type": 1,
+            "data_extracted": False,
+        }
+        response = client.post(create_url, data, format="json")
+        assert response.status_code == 201
+        endpoint_id = response.data["id"]
+
+        url = reverse("animal:api:endpoint-detail", args=(endpoint_id,))
+        response = client.delete(url)
+        assert response.status_code == 204
+        assert not models.Endpoint.objects.filter(pk=endpoint_id).exists()
+
+
+@pytest.mark.django_db
 class TestEndpointApi:
     def test_update_terms_permissions(self, db_keys):
         assessment_id = 1

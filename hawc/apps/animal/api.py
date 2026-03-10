@@ -7,6 +7,7 @@ from rest_framework.exceptions import NotAcceptable
 from rest_framework.response import Response
 
 from ..assessment.api import (
+    METHODS_NO_PUT,
     AssessmentViewSet,
     BaseAssessmentViewSet,
     CleanupFieldsBaseViewSet,
@@ -264,10 +265,16 @@ class AnimalGroup(mixins.CreateModelMixin, AssessmentViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class Endpoint(mixins.CreateModelMixin, AssessmentViewSet):
+class Endpoint(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    AssessmentViewSet,
+):
     assessment_filter_args = "assessment"
     model = models.Endpoint
     serializer_class = serializers.EndpointSerializer
+    http_method_names = METHODS_NO_PUT
     list_actions = ["list", "effects", "rob_filter", "update_terms"]
 
     def get_queryset(self):
@@ -282,6 +289,24 @@ class Endpoint(mixins.CreateModelMixin, AssessmentViewSet):
             serializer.instance.get_assessment().id,
             self.request.user.id,
         )
+
+    @transaction.atomic
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+        create_object_log(
+            "Updated",
+            serializer.instance,
+            serializer.instance.get_assessment().id,
+            self.request.user.id,
+        )
+        serializer.instance.get_assessment().bust_cache()
+
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        assessment = instance.get_assessment()
+        create_object_log("Deleted", instance, assessment.id, self.request.user.id)
+        super().perform_destroy(instance)
+        assessment.bust_cache()
 
     @action(detail=False, action_perms=AssessmentViewSetPermissions.CAN_VIEW_OBJECT)
     def effects(self, request):

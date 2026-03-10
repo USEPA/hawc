@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     "hawc.apps.epiv2",
     "hawc.apps.udf",
     "hawc.apps.docs",
+    "hawc.apps.animalv2",
 )
 # DB settings
 DATABASES = {

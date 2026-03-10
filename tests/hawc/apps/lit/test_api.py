@@ -540,6 +540,59 @@ class TestHEROApis:
 
 
 @pytest.mark.django_db
+class TestReferenceCreateApi:
+    def test_permissions(self, db_keys):
+        url = reverse("lit:api:reference-list")
+        data = {"assessment": db_keys.assessment_working, "title": "Test Reference"}
+
+        # anonymous denied
+        client = APIClient()
+        response = client.post(url, data, format="json")
+        assert response.status_code == 403
+
+        # reviewer denied
+        client = APIClient()
+        assert client.login(username="reviewer@hawcproject.org", password="pw") is True
+        response = client.post(url, data, format="json")
+        assert response.status_code == 403
+
+    def test_bad_request(self, db_keys):
+        client = get_client("team", api=True)
+        url = reverse("lit:api:reference-list")
+
+        # missing required fields
+        response = client.post(url, {}, format="json")
+        assert response.status_code == 400
+
+    def test_valid_create(self, db_keys):
+        client = get_client("team", api=True)
+        url = reverse("lit:api:reference-list")
+        data = {
+            "assessment": db_keys.assessment_working,
+            "title": "A Gray Literature Reference",
+            "authors_short": "Smith et al.",
+            "authors": "Smith JD, Jones AB",
+            "year": 2024,
+            "journal": "Unpublished Report",
+            "abstract": "A test abstract.",
+        }
+        response = client.post(url, data, format="json")
+        assert response.status_code == 201
+        ref_id = response.data["id"]
+        check_details_of_last_log_entry(ref_id, "Created lit.reference")
+
+        # verify linked to manual-import search
+        ref = models.Reference.objects.get(pk=ref_id)
+        manual_search = models.Search.objects.get(
+            assessment_id=db_keys.assessment_working, slug="manual-import"
+        )
+        assert manual_search in ref.searches.all()
+
+        # cleanup
+        ref.delete()
+
+
+@pytest.mark.django_db
 class TestReferenceDestroyApi:
     def test_permissions(self, db_keys):
         url = reverse("lit:api:reference-detail", args=(db_keys.reference_linked,))

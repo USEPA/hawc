@@ -10,6 +10,7 @@ router.register("detail", api.AssessmentDetailViewSet, basename="detail")
 router.register("value", api.AssessmentValueViewSet, basename="value")
 router.register("dataset", api.DatasetViewSet, basename="dataset")
 router.register("dsstox", api.DssToxViewSet, basename="dsstox")
+router.register("species", api.SpeciesViewSet, basename="species")
 router.register("strain", api.StrainViewSet, basename="strain")
 router.register("effect-tag", api.EffectTagViewSet, basename="effect-tag")
 

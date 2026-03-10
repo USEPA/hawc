@@ -305,14 +305,26 @@ class EndpointSerializer(serializers.ModelSerializer):
         data[text_field] = term.name
 
     def validate(self, data):
-        # name or name_term must be given
-        if data.get("name") is None and data.get("name_term") is None:
-            raise serializers.ValidationError({"name": ["'name' or 'name_term' is required."]})
+        is_update = self.instance is not None
+
+        # name or name_term must be given (skip on partial update not touching these fields)
+        if not is_update:
+            if data.get("name") is None and data.get("name_term") is None:
+                raise serializers.ValidationError({"name": ["'name' or 'name_term' is required."]})
+        elif "name" in data or "name_term" in data:
+            # on update, if either is being set, at least one must be non-null
+            name = data.get("name", self.instance.name)
+            name_term = data.get("name_term", self.instance.name_term)
+            if name is None and name_term is None:
+                raise serializers.ValidationError({"name": ["'name' or 'name_term' is required."]})
 
         # Validate parent object
-        self.animal_group = get_matching_instance(
-            models.AnimalGroup, self.initial_data, "animal_group_id"
-        )
+        if is_update:
+            self.animal_group = self.instance.animal_group
+        else:
+            self.animal_group = get_matching_instance(
+                models.AnimalGroup, self.initial_data, "animal_group_id"
+            )
         user_can_edit_object(self.animal_group, self.context["request"].user, raise_exception=True)
         self.assessment = self.animal_group.get_assessment()
         data["animal_group_id"] = self.animal_group.id
@@ -328,8 +340,26 @@ class EndpointSerializer(serializers.ModelSerializer):
         self._validate_term_and_text(data, "name_term", "name", "endpoint_name")
 
         # set animal_group on instance for cleaning rules
-        instance = models.Endpoint(animal_group=self.animal_group)
-        errors = forms.EndpointForm.clean_endpoint(instance, data)
+        if is_update:
+            clean_instance = self.instance
+            # For partial updates, use existing values for fields not being patched
+            clean_data = {}
+            for field_name in (
+                "observation_time",
+                "observation_time_units",
+                "litter_effects",
+                "litter_effect_notes",
+                "confidence_interval",
+                "variance_type",
+                "data_type",
+                "response_units",
+                "data_extracted",
+            ):
+                clean_data[field_name] = data.get(field_name, getattr(self.instance, field_name))
+            errors = forms.EndpointForm.clean_endpoint(clean_instance, clean_data)
+        else:
+            instance = models.Endpoint(animal_group=self.animal_group)
+            errors = forms.EndpointForm.clean_endpoint(instance, data)
         if errors:
             err = {k: [v] for k, v in errors.items()}
             raise serializers.ValidationError(err)
@@ -372,6 +402,27 @@ class EndpointSerializer(serializers.ModelSerializer):
         for group_serializer in self.group_serializers:
             group_serializer.save(endpoint_id=instance.id)
         instance.effects.set(effects)
+        return instance
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        validated_data.pop("groups", None)
+        effects = validated_data.pop("effects", None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # replace groups if provided
+        if self.group_serializers:
+            instance.groups.all().delete()
+            for group_serializer in self.group_serializers:
+                group_serializer.save(endpoint_id=instance.id)
+
+        # replace effects if provided
+        if effects is not None:
+            instance.effects.set(effects)
+
         return instance
 
     class Meta:
