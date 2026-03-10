@@ -349,7 +349,9 @@ class TestSpeciesViewSet:
         url = reverse("assessment:api:species-list")
         # anonymous denied
         assert get_client(api=True).get(url).status_code == 403
-        # non-admin denied
+        # authenticated can read
+        assert get_client("team", api=True).get(url).status_code == 200
+        # non-admin write denied
         assert (
             get_client("team", api=True).post(url, {"name": "X"}, format="json").status_code == 403
         )
@@ -391,7 +393,9 @@ class TestStrainViewSet:
         url = reverse("assessment:api:strain-list")
         # anonymous denied
         assert get_client(api=True).get(url).status_code == 403
-        # non-admin denied
+        # authenticated can read
+        assert get_client("team", api=True).get(url).status_code == 200
+        # non-admin write denied
         data = {"name": "Test Strain", "species": 1}
         assert get_client("team", api=True).post(url, data, format="json").status_code == 403
         # admin can list
@@ -428,7 +432,9 @@ class TestDoseUnitsViewSet:
         url = reverse("animal:api:dose_units-list")
         # anonymous denied
         assert get_client(api=True).get(url).status_code == 403
-        # non-admin denied
+        # authenticated can read
+        assert get_client("team", api=True).get(url).status_code == 200
+        # non-admin write denied
         assert (
             get_client("team", api=True).post(url, {"name": "x"}, format="json").status_code == 403
         )

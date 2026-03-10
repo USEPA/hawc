@@ -65,6 +65,7 @@ class TestBioassay(PlaywrightTestCase):
         expect(page).to_have_url(re.compile(r"/ani/experiment/\d+/animal-group/create/"))
         page.locator('input[name="name"]').fill("test123")
         page.locator('select[name="species"]').select_option("1")
+        page.locator('select[name="strain"]').select_option("1")
         page.locator('select[name="sex"]').select_option("M")
         page.locator('select[name="route_of_exposure"]').select_option("OR")
         page.locator("#dose-unit-0").select_option("1")
@@ -90,7 +91,9 @@ class TestBioassay(PlaywrightTestCase):
 
         expect(page).to_have_url(re.compile(r"/ani/dosing-regime/\d+/update/"))
         expect(page.locator("text=Add new representation")).to_be_visible()
+        expect(page.locator("#dose-unit-0")).to_be_visible()
         page.get_by_role("link", name="Add new representation").click()
+        expect(page.locator("#dose-unit-1")).to_be_visible()
 
         page.locator("#dose-unit-1").select_option("2")
         page.locator("#dose_0").nth(1).fill("0")

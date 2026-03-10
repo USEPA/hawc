@@ -252,8 +252,12 @@ class DoseUnitsViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, viewsets.
     model = models.DoseUnits
     serializer_class = serializers.DoseUnitsSerializer
     pagination_class = DisabledPagination
-    permission_classes = (permissions.IsAdminUser,)
     lookup_value_regex = re_digits
+
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
 
     def get_queryset(self):
         return self.model.objects.all()
@@ -598,8 +602,12 @@ class SpeciesViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.SpeciesSerializer
     pagination_class = DisabledPagination
     http_method_names = METHODS_NO_PUT
-    permission_classes = (permissions.IsAdminUser,)
     lookup_value_regex = re_digits
+
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
 
 
 class StrainViewSet(viewsets.ModelViewSet):
@@ -608,7 +616,11 @@ class StrainViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.StrainSerializer
     pagination_class = DisabledPagination
     http_method_names = METHODS_NO_PUT
-    permission_classes = (permissions.IsAdminUser,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("species",)
     lookup_value_regex = re_digits
+
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [permissions.IsAuthenticated()]
+        return [permissions.IsAdminUser()]
