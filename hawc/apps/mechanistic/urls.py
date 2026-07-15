@@ -88,11 +88,6 @@ urlpatterns = [
         name="testdesign-htmx",
     ),
     path(
-        "mechcontrol/<int:pk>/<slug:action>/",
-        views.MechControlViewSet.as_view(),
-        name="mechcontrol-htmx",
-    ),
-    path(
         "dataanalysis/<int:pk>/<slug:action>/",
         views.DataAnalysisViewSet.as_view(),
         name="dataanalysis-htmx",

@@ -110,6 +110,12 @@ class ExperimentViewSet(HtmxViewSet):
                 "guideline": obj.guideline,
                 "guideline_name_number": obj.guideline_name_number,
                 "guideline_compliance": obj.guideline_compliance,
+                # MechControl-start
+                "control_type": obj.control_type,
+                "control_type_other": obj.control_type_other,
+                "control_description": obj.control_description,
+                "control_remarks": obj.control_remarks,
+                # MechControl-end
                 # ExperimentalDesign-start
                 "test_system_concentration": obj.test_system_concentration,
                 "passage_number": obj.passage_number,
@@ -121,7 +127,7 @@ class ExperimentViewSet(HtmxViewSet):
                 "technical_replicates": obj.technical_replicates,
                 "biological_replicates": obj.biological_replicates,
                 "vessel_type": obj.vessel_type,
-                "remarks": obj.remarks,
+                "experimental_design_remarks": obj.experimental_design_remarks,
                 # ExperimentalDesign-end
             }
 
@@ -283,11 +289,6 @@ class TestDesignViewSet(ExperimentChildViewSet):
     model = models.TestDesign
     form_class = forms.TestDesignForm
     detail_fragment = "mechanistic/fragments/testdesign_row.html"
-
-
-class MechControlViewSet(ExperimentChildViewSet):
-    model = models.MechControl
-    form_class = forms.MechControlForm
 
 
 class DataAnalysisViewSet(ExperimentChildViewSet):

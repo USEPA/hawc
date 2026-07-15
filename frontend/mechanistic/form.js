@@ -5,8 +5,15 @@ import $ from "$";
 
 import startupEndpointForm from "../animal/EndpointForm";
 
-const experimentFormStartup = function (form) {
-    $(form).find("#id_name").focus();
+const experimentFormStartup = function(f) {
+	let form = $(f);
+    form.find("#id_name").focus();
+
+    h.setupOtherShowHideRelationship(
+        form.find("select#id_control_type"),
+        form.find("input#id_control_type_other"),
+        "OTH"
+    );
 };
 
 const chemicalFormStartup = function (f) {
@@ -56,16 +63,6 @@ const testDesignFormStartup = function (f) {
 		widget.initializeWidgetUi("concentrations_tested");
 		// widget.initializeAllWidgetUis();
 	});
-};
-
-const controlFormStartup = function (f) {
-    let form = $(f);
-
-    h.setupOtherShowHideRelationship(
-        form.find("select[name$='-control_type']"),
-        form.find("input[name$='-control_type_other']"),
-        "OTH"
-    );
 };
 
 const endpointFormStartup = function (f) {
@@ -141,13 +138,12 @@ const endpointFormStartup = function (f) {
 export default document => {
     document.body.addEventListener("htmx:load", e => {
         if (e.target.querySelector(".form-experiment")) {
+			// ENTRY SCENARIO 2/2: during experiment update...
             experimentFormStartup(e.target);
         } else if (e.target.querySelector(".form-testsystem")) {
             testSystemFormStartup(e.target);
         } else if (e.target.querySelector(".form-testdesign")) {
             testDesignFormStartup(e.target);
-        } else if (e.target.querySelector(".form-mechcontrol")) {
-            controlFormStartup(e.target);
         } else if (e.target.querySelector(".form-mechanisticendpoint")) {
             endpointFormStartup(e.target);
         } else {
@@ -159,6 +155,9 @@ export default document => {
     $(document).ready(function () {
         if ($("form#form-mech-chemical").length == 1) {
             chemicalFormStartup("form#form-mech-chemical");
-        }
+        } else if ($("form legend").html() == "Create new mechanistic experiment") {
+			// ENTRY SCENARIO 1/2: during experiment create...
+			experimentFormStartup($("form legend").parent("form"));
+		}
     });
 };

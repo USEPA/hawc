@@ -9,6 +9,15 @@
 
 {% block extrajs %}
   <script type="text/javascript">
-    $("#id_summary").focus();
+	  // note - this only fires during initial experiment creation.
+	  // when editing an existing experiment it's a different flow.
+	  //
+	  // put common stuff into frontend/mechanistic/form.js
+
+    $(document).ready(function() {
+      window.app.startup("mechanisticStartup", function(app){
+          app.formStartup(document);
+      });
+    });
   </script>
 {% endblock extrajs %}

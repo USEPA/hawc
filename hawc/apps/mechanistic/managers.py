@@ -59,17 +59,6 @@ class TestDesignManager(BaseManager):
         return TestDesignQuerySet(self.model, using=self._db)
 
 
-class MechControlQuerySet(QuerySet):
-    pass
-
-
-class MechControlManager(BaseManager):
-    assessment_relation = "experiment__study__assessment"
-
-    def get_queryset(self):
-        return MechControlQuerySet(self.model, using=self._db)
-
-
 class DataAnalysisQuerySet(QuerySet):
     pass
 

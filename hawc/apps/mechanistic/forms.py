@@ -53,8 +53,11 @@ class ExperimentForm(forms.ModelForm):
             helper = BaseFormHelper(self, **inputs)
 
         helper.add_row("guideline", 3, "col-md-4")
+        helper.add_row("control_type", 2, "col-md-6")
+        helper.add_row("control_description", 2, "col-md-6")
         helper.add_row("test_system_concentration", 4, "col-md-3")
         helper.add_row("exposure_duration", 4, "col-md-3")
+        helper.add_row("vessel_type", 2, "col-md-6")
         # helper.add_row("age_profile", 4, "col-md-3")
         # helper.add_row("participant_n", 3, "col-md-4")
         # helper.add_row("countries", 2, "col-md-4")
@@ -226,32 +229,6 @@ class TestDesignForm(forms.ModelForm):
         helper.form_tag = False
         helper.add_row("vehicle", 2, "col-md-6")
         helper.add_row("final_concentration_vehicle", 2, "col-md-6")
-
-        return helper
-
-
-class MechControlForm(forms.ModelForm):
-    class Meta:
-        model = models.MechControl
-        exclude = ("experiment",)
-        widgets = {}
-
-    def __init__(self, *args, **kwargs):
-        experiment = kwargs.pop("parent", None)
-        prefix = f"mechcontrol-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
-        super().__init__(*args, prefix=prefix, **kwargs)
-        if experiment:
-            self.instance.experiment = experiment
-        # self.fields["test_system"].queryset = self.instance.experiment.testsystems.all()
-        self.fields["test_system"].queryset = self.instance.experiment.testsystems.filter(
-            controls_used=constants.ControlsUsed.YS
-        )
-
-    @property
-    def helper(self):
-        helper = BaseFormHelper(self)
-        helper.form_tag = False
-        helper.add_row("test_system", 3, "col-md-4")
 
         return helper
 
