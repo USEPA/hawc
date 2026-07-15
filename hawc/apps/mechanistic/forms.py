@@ -53,6 +53,8 @@ class ExperimentForm(forms.ModelForm):
             helper = BaseFormHelper(self, **inputs)
 
         helper.add_row("guideline", 3, "col-md-4")
+        helper.add_row("test_system_concentration", 4, "col-md-3")
+        helper.add_row("exposure_duration", 4, "col-md-3")
         # helper.add_row("age_profile", 4, "col-md-3")
         # helper.add_row("participant_n", 3, "col-md-4")
         # helper.add_row("countries", 2, "col-md-4")
@@ -250,30 +252,6 @@ class MechControlForm(forms.ModelForm):
         helper = BaseFormHelper(self)
         helper.form_tag = False
         helper.add_row("test_system", 3, "col-md-4")
-
-        return helper
-
-
-class ExperimentalDesignForm(forms.ModelForm):
-    class Meta:
-        model = models.ExperimentalDesign
-        exclude = ("experiment",)
-
-    def __init__(self, *args, **kwargs):
-        experiment = kwargs.pop("parent", None)
-        prefix = (
-            f"experimentaldesign-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
-        )
-        super().__init__(*args, prefix=prefix, **kwargs)
-        if experiment:
-            self.instance.experiment = experiment
-
-    @property
-    def helper(self):
-        helper = BaseFormHelper(self)
-        helper.form_tag = False
-        # helper.add_row("vehicle", 2, "col-md-6")
-        # helper.add_row("final_concentration_vehicle", 2, "col-md-6")
 
         return helper
 

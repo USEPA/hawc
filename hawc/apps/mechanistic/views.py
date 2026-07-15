@@ -104,11 +104,25 @@ class ExperimentViewSet(HtmxViewSet):
             obj = request.item.object
             data = {
                 "name": obj.name,
+                "has_high_throughput": obj.has_high_throughput,
                 "description": obj.description,
                 "test_facility": obj.test_facility,
                 "guideline": obj.guideline,
                 "guideline_name_number": obj.guideline_name_number,
                 "guideline_compliance": obj.guideline_compliance,
+                # ExperimentalDesign-start
+                "test_system_concentration": obj.test_system_concentration,
+                "passage_number": obj.passage_number,
+                "exposure_medium_composition": obj.exposure_medium_composition,
+                "incubation_conditions": obj.incubation_conditions,
+                "incubation_conditions": obj.incubation_conditions,
+                "exposure_duration": obj.exposure_duration,
+                "administration_frequency": obj.administration_frequency,
+                "technical_replicates": obj.technical_replicates,
+                "biological_replicates": obj.biological_replicates,
+                "vessel_type": obj.vessel_type,
+                "remarks": obj.remarks,
+                # ExperimentalDesign-end
             }
 
         # useful reading:
@@ -274,12 +288,6 @@ class TestDesignViewSet(ExperimentChildViewSet):
 class MechControlViewSet(ExperimentChildViewSet):
     model = models.MechControl
     form_class = forms.MechControlForm
-
-
-class ExperimentalDesignViewSet(ExperimentChildViewSet):
-    model = models.ExperimentalDesign
-    form_class = forms.ExperimentalDesignForm
-    detail_fragment = "mechanistic/fragments/experimentaldesign_row.html"
 
 
 class DataAnalysisViewSet(ExperimentChildViewSet):

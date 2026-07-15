@@ -65,6 +65,77 @@ class Experiment(models.Model):
 
     # BE SURE TO UPDATE views.py's prepopulation if you add new fields!!!
 
+    # ExperimentalDesign - START
+    test_system_concentration = models.CharField(
+        verbose_name="Test system concentration (e.g. cell density)",
+        help_text="Indicate the number of cells or cell density in case of cell lines. Concentration of biological test systems is usually expressed as cell density (amount of cells/cm2 or cells/ml seeded) or confluence (%).",
+        max_length=255,
+    )
+
+    passage_number = models.CharField(
+        help_text="Indicate the passage number only in case that the test system is a cell line, report the passage number(s) used.",
+        max_length=255,
+        blank=True,
+    )
+
+    exposure_medium_composition = models.CharField(
+        verbose_name="Composition of exposure medium",
+        help_text="Indicate what is the composition of the exposure medium where the test system and test material are incubated together to obtain the result. In case serum is present (not recommended) then please indicate the type and %.",
+        max_length=255,
+        blank=True,
+    )
+
+    incubation_conditions = models.CharField(
+        help_text="Indicate cell culture incubation conditions (e.g., temperature, relative humidity, CO2 %, etc.)",
+        max_length=255,
+        blank=True,
+    )
+
+    incubation_conditions = models.CharField(
+        help_text="Indicate cell culture incubation conditions (e.g., temperature, relative humidity, CO2 %, etc.)",
+        max_length=255,
+        blank=True,
+    )
+
+    exposure_duration = models.CharField(
+        help_text="Indicate the time of incubation / exposure of the test system to the test material.",
+        max_length=255,
+        blank=True,
+    )
+
+    administration_frequency = models.CharField(
+        verbose_name="Frequency of Administration",
+        help_text="Indicate the frequency of test material administration.",
+        max_length=255,
+        blank=True,
+    )
+
+    technical_replicates = models.CharField(
+        verbose_name="Number of technical replicates",
+        help_text="Indicate the number of replicates included per concentration test item tested.",
+        max_length=255,
+        blank=True,
+    )
+
+    biological_replicates = models.CharField(
+        verbose_name="Number of biological replicates",
+        help_text="Indicate the number of biologically independent experiments that were performed. Experiments should be separated in space and time to be considered independent.",
+        max_length=255,
+        blank=True,
+    )
+
+    vessel_type = models.CharField(
+        help_text="Indicate the vessel type including size and material (e.g. glass test tube, glass bottom 96 well plate, 384 well polystyrene cell culture plate, etc.",
+        max_length=255,
+        blank=True,
+    )
+
+    remarks = models.CharField(
+        verbose_name="Remarks on experimental conditions",
+        blank=True,
+    )
+    # ExperimentalDesign - END
+
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
@@ -516,108 +587,6 @@ class MechControl(models.Model):
         return self
 
 
-class ExperimentalDesign(models.Model):
-    objects = managers.ExperimentalDesignManager()
-
-    experiment = models.ForeignKey(
-        Experiment, on_delete=models.CASCADE, related_name="experimentaldesigns"
-    )
-
-    test_system_concentration = models.CharField(
-        verbose_name="Test system concentration (e.g. cell density)",
-        help_text="Indicate the number of cells or cell density in case of cell lines. Concentration of biological test systems is usually expressed as cell density (amount of cells/cm2 or cells/ml seeded) or confluence (%).",
-        max_length=255,
-    )
-
-    passage_number = models.CharField(
-        help_text="Indicate the passage number only in case that the test system is a cell line, report the passage number(s) used.",
-        max_length=255,
-        blank=True,
-    )
-
-    exposure_medium_composition = models.CharField(
-        verbose_name="Composition of exposure medium",
-        help_text="Indicate what is the composition of the exposure medium where the test system and test material are incubated together to obtain the result. In case serum is present (not recommended) then please indicate the type and %.",
-        max_length=255,
-        blank=True,
-    )
-
-    incubation_conditions = models.CharField(
-        help_text="Indicate cell culture incubation conditions (e.g., temperature, relative humidity, CO2 %, etc.)",
-        max_length=255,
-        blank=True,
-    )
-
-    incubation_conditions = models.CharField(
-        help_text="Indicate cell culture incubation conditions (e.g., temperature, relative humidity, CO2 %, etc.)",
-        max_length=255,
-        blank=True,
-    )
-
-    exposure_duration = models.CharField(
-        help_text="Indicate the time of incubation / exposure of the test system to the test material.",
-        max_length=255,
-        blank=True,
-    )
-
-    administration_frequency = models.CharField(
-        verbose_name="Frequency of Administration",
-        help_text="Indicate the frequency of test material administration.",
-        max_length=255,
-        blank=True,
-    )
-
-    technical_replicates = models.CharField(
-        verbose_name="Number of technical replicates",
-        help_text="Indicate the number of replicates included per concentration test item tested.",
-        max_length=255,
-        blank=True,
-    )
-
-    biological_replicates = models.CharField(
-        verbose_name="Number of biological replicates",
-        help_text="Indicate the number of biologically independent experiments that were performed. Experiments should be separated in space and time to be considered independent.",
-        max_length=255,
-        blank=True,
-    )
-
-    vessel_type = models.CharField(
-        help_text="Indicate the vessel type including size and material (e.g. glass test tube, glass bottom 96 well plate, 384 well polystyrene cell culture plate, etc.",
-        max_length=255,
-        blank=True,
-    )
-
-    remarks = models.CharField(
-        verbose_name="Remarks on experimental conditions",
-        blank=True,
-    )
-
-    created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
-
-    # TEXT_CLEANUP_FIELDS = "name"
-
-    class Meta:
-        ordering = ("id",)
-
-    def get_assessment(self):
-        return self.experiment.get_assessment()
-
-    def get_study(self):
-        return self.experiment.get_study()
-
-    def __str__(self):
-        return self.test_system_concentration
-
-    def clone(self):
-        self.id = None
-        # self.name = clone_name(self, "name")
-        self.save()
-        return self
-
-
-# ExperimentalDesign -> DataAnalysis, etc.
-#
 # :Subvert/ExperimentalDesign{,s}/DataAnalys{is,es}/g
 
 
@@ -937,6 +906,5 @@ reversion.register(TestSystem)
 reversion.register(Method)
 reversion.register(TestDesign)
 reversion.register(MechControl)
-reversion.register(ExperimentalDesign)
 reversion.register(DataAnalysis)
 reversion.register(MechanisticEndpoint)
