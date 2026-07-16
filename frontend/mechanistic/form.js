@@ -9,6 +9,22 @@ const experimentFormStartup = function(f) {
 	let form = $(f);
     form.find("#id_name").focus();
 
+	// testsystem
+    h.setupOtherShowHideRelationship(
+        form.find("select#id_test_system_type"),
+        form.find("input#id_test_system_type_other"),
+        "OTH"
+    );
+
+    /*
+	// we don't seem to have an async way of getting back an updated species list.
+	// other HAWC forms require users to manually refresh after adding a new one;
+	// we'll stay consistent with that pattern.
+	$("a[title='Create species']").on(window.app.HAWCUtils.HAWC_NEW_WINDOW_POPUP_CLOSING, function(e) {
+		console.log("CLOSE IT!");
+	});
+	*/
+
 	// testdesign
     h.setupOtherShowHideRelationship(
         form.find("select#id_vehicle"),
@@ -42,25 +58,6 @@ const chemicalFormStartup = function (f) {
         form.find("input[name='composition_purity_other']"),
         "OT"
     );
-};
-
-const testSystemFormStartup = function (f) {
-    let form = $(f);
-
-    h.setupOtherShowHideRelationship(
-        form.find("select[name$='-test_system_type']"),
-        form.find("input[name$='-test_system_type_other']"),
-        "OTH"
-    );
-
-    /*
-	// we don't seem to have an async way of getting back an updated species list.
-	// other HAWC forms require users to manually refresh after adding a new one;
-	// we'll stay consistent with that pattern.
-	$("a[title='Create species']").on(window.app.HAWCUtils.HAWC_NEW_WINDOW_POPUP_CLOSING, function(e) {
-		console.log("CLOSE IT!");
-	});
-	*/
 };
 
 const endpointFormStartup = function (f) {
@@ -138,8 +135,6 @@ export default document => {
         if (e.target.querySelector(".form-experiment")) {
 			// ENTRY SCENARIO 2/2: during experiment update...
             experimentFormStartup(e.target);
-        } else if (e.target.querySelector(".form-testsystem")) {
-            testSystemFormStartup(e.target);
         } else if (e.target.querySelector(".form-mechanisticendpoint")) {
             endpointFormStartup(e.target);
         } else {

@@ -111,6 +111,26 @@ class ExperimentViewSet(HtmxViewSet):
                 "guideline": obj.guideline,
                 "guideline_name_number": obj.guideline_name_number,
                 "guideline_compliance": obj.guideline_compliance,
+                # TestSystem-start
+                "test_system_type": obj.test_system_type,
+                "test_system_type_other": obj.test_system_type_other,
+                "test_system_description": obj.test_system_description,
+                "species": obj.species,
+                "supplier": obj.supplier,
+                "supplier_remarks": obj.supplier_remarks,
+                "catalogue_number": obj.catalogue_number,
+                "batch_number": obj.batch_number,
+                "genetic_modification": obj.genetic_modification,
+                "genetic_modification_remarks": obj.genetic_modification_remarks,
+                "metabolic_competence": obj.metabolic_competence,
+                "metabolic_competence_remarks": obj.metabolic_competence_remarks,
+                "medium_buffer": obj.medium_buffer,
+                "serum_supplements": obj.serum_supplements,
+                "maintenance": obj.maintenance,
+                "qc_confirmation": obj.qc_confirmation,
+                "qc_confirmation_remarks": obj.qc_confirmation_remarks,
+                "controls_used": obj.controls_used,
+                # TestSystem-end
                 # TestDesign-start
                 "vehicle": obj.vehicle,
                 "vehicle_other": obj.vehicle_other,
@@ -282,12 +302,6 @@ class ChemicalViewSet(ExperimentChildViewSet):
     form_class = forms.ChemicalForm
     detail_fragment = "mechanistic/fragments/chemical_row.html"
 """
-
-
-class TestSystemViewSet(ExperimentChildViewSet):
-    model = models.TestSystem
-    form_class = forms.TestSystemForm
-    detail_fragment = "mechanistic/fragments/testsystem_row.html"
 
 
 class MethodViewSet(ExperimentChildViewSet):

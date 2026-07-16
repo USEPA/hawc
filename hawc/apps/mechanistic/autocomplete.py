@@ -12,9 +12,3 @@ class ExperimentAutocomplete(BaseAutocomplete):
 class ChemicalAutocomplete(BaseAutocomplete):
     model = models.Chemical
     search_fields = ["name", "cas"]
-
-
-@register
-class TestSystemAutocomplete(BaseAutocomplete):
-    model = models.TestSystem
-    search_fields = ["name"]

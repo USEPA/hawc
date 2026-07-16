@@ -73,11 +73,6 @@ urlpatterns = [
     # ),
     # test system
     path(
-        "testsystem/<int:pk>/<slug:action>/",
-        views.TestSystemViewSet.as_view(),
-        name="testsystem-htmx",
-    ),
-    path(
         "method/<int:pk>/<slug:action>/",
         views.MethodViewSet.as_view(),
         name="method-htmx",

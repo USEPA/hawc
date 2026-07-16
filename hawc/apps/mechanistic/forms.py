@@ -59,10 +59,24 @@ class ExperimentForm(forms.ModelForm):
             helper = BaseFormHelper(self, **inputs)
 
         helper.add_row("guideline", 3, "col-md-4")
+
+        # testsystem...
+        helper.add_row("test_system_type", 2, "col-md-6")
+        helper.add_row("supplier", 2, "col-md-6")
+        helper.add_row("genetic_modification", 2, "col-md-6")
+        helper.add_row("metabolic_competence", 2, "col-md-6")
+        helper.add_row("medium_buffer", 2, "col-md-6")
+        helper.add_row("qc_confirmation", 2, "col-md-6")
+
+        # testdesign...
         helper.add_row("vehicle", 2, "col-md-6")
         helper.add_row("final_concentration_vehicle", 2, "col-md-6")
+
+        # mechcontrol...
         helper.add_row("control_type", 2, "col-md-6")
         helper.add_row("control_description", 2, "col-md-6")
+
+        # experimentaldesign...
         helper.add_row("test_system_concentration", 4, "col-md-3")
         helper.add_row("exposure_duration", 4, "col-md-3")
         helper.add_row("vessel_type", 2, "col-md-6")
@@ -70,6 +84,12 @@ class ExperimentForm(forms.ModelForm):
         # helper.add_row("participant_n", 3, "col-md-4")
         # helper.add_row("countries", 2, "col-md-4")
         # helper.add_row("criteria", 3, "col-md-4")
+
+        assessment_id = self.instance.study.assessment.pk
+        helper.add_create_btn(
+            "species", reverse("assessment:species_create", args=(assessment_id,)), "Create species"
+        )
+
         return helper
 
 
@@ -147,42 +167,6 @@ class ChemicalSelectorForm(CopyForm):
         self.fields["selector"].queryset = self.fields["selector"].queryset.filter(
             study=self.parent
         )
-
-
-class TestSystemForm(forms.ModelForm):
-    class Meta:
-        model = models.TestSystem
-        exclude = ("experiment",)
-        widgets = {
-            "name": AutocompleteTextWidget(
-                autocomplete_class=autocomplete.TestSystemAutocomplete, field="name"
-            ),
-        }
-
-    def __init__(self, *args, **kwargs):
-        experiment = kwargs.pop("parent", None)
-        prefix = f"testsystem-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
-        super().__init__(*args, prefix=prefix, **kwargs)
-        if experiment:
-            self.instance.experiment = experiment
-
-    @property
-    def helper(self):
-        helper = BaseFormHelper(self)
-        helper.form_tag = False
-        helper.add_row("test_system_type", 2, "col-md-6")
-        helper.add_row("supplier", 2, "col-md-6")
-        helper.add_row("genetic_modification", 2, "col-md-6")
-        helper.add_row("metabolic_competence", 2, "col-md-6")
-        helper.add_row("medium_buffer", 2, "col-md-6")
-        helper.add_row("qc_confirmation", 2, "col-md-6")
-
-        assessment_id = self.instance.experiment.study.assessment.pk
-        helper.add_create_btn(
-            "species", reverse("assessment:species_create", args=(assessment_id,)), "Create species"
-        )
-
-        return helper
 
 
 class MethodForm(forms.ModelForm):
