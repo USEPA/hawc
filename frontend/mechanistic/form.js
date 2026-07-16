@@ -9,6 +9,26 @@ const experimentFormStartup = function(f) {
 	let form = $(f);
     form.find("#id_name").focus();
 
+	// testdesign
+    h.setupOtherShowHideRelationship(
+        form.find("select#id_vehicle"),
+        form.find("input#id_vehicle_other"),
+        "OTHR"
+    );
+
+    h.setupOtherShowHideRelationship(
+        form.find("select#id_final_concentration_vehicle"),
+        form.find("input#id_final_concentration_vehicle_other"),
+        "OTH"
+    );
+
+	import("shared/components/JsonListWidget.js").then(function(module) {
+		let widget = new module.default.widget_class();
+		widget.initializeWidgetUi("concentrations_tested");
+		// widget.initializeAllWidgetUis();
+	});
+
+	// controls
     h.setupOtherShowHideRelationship(
         form.find("select#id_control_type"),
         form.find("input#id_control_type_other"),
@@ -41,28 +61,6 @@ const testSystemFormStartup = function (f) {
 		console.log("CLOSE IT!");
 	});
 	*/
-};
-
-const testDesignFormStartup = function (f) {
-    let form = $(f);
-
-    h.setupOtherShowHideRelationship(
-        form.find("select[name$='-vehicle']"),
-        form.find("input[name$='-vehicle_other']"),
-        "OTHR"
-    );
-
-    h.setupOtherShowHideRelationship(
-        form.find("select[name$='-final_concentration_vehicle']"),
-        form.find("input[name$='-final_concentration_vehicle_other']"),
-        "OTH"
-    );
-
-	import("shared/components/JsonListWidget.js").then(function(module) {
-		let widget = new module.default.widget_class();
-		widget.initializeWidgetUi("concentrations_tested");
-		// widget.initializeAllWidgetUis();
-	});
 };
 
 const endpointFormStartup = function (f) {
@@ -142,8 +140,6 @@ export default document => {
             experimentFormStartup(e.target);
         } else if (e.target.querySelector(".form-testsystem")) {
             testSystemFormStartup(e.target);
-        } else if (e.target.querySelector(".form-testdesign")) {
-            testDesignFormStartup(e.target);
         } else if (e.target.querySelector(".form-mechanisticendpoint")) {
             endpointFormStartup(e.target);
         } else {

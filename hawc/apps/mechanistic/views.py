@@ -1,3 +1,4 @@
+import json
 from django.http import HttpRequest
 from django.shortcuts import render
 
@@ -110,6 +111,16 @@ class ExperimentViewSet(HtmxViewSet):
                 "guideline": obj.guideline,
                 "guideline_name_number": obj.guideline_name_number,
                 "guideline_compliance": obj.guideline_compliance,
+                # TestDesign-start
+                "vehicle": obj.vehicle,
+                "vehicle_other": obj.vehicle_other,
+                "final_concentration_vehicle": obj.final_concentration_vehicle,
+                "final_concentration_vehicle_other": obj.final_concentration_vehicle_other,
+                "final_concentration_vehicle_units": obj.final_concentration_vehicle_units,
+                "concentration_selection": obj.concentration_selection,
+                "concentration_selection_remarks": obj.concentration_selection_remarks,
+                "concentrations_tested": json.dumps(obj.concentrations_tested),
+                # TestDesign-end
                 # MechControl-start
                 "control_type": obj.control_type,
                 "control_type_other": obj.control_type_other,
@@ -283,12 +294,6 @@ class MethodViewSet(ExperimentChildViewSet):
     model = models.Method
     form_class = forms.MethodForm
     detail_fragment = "mechanistic/fragments/method_row.html"
-
-
-class TestDesignViewSet(ExperimentChildViewSet):
-    model = models.TestDesign
-    form_class = forms.TestDesignForm
-    detail_fragment = "mechanistic/fragments/testdesign_row.html"
 
 
 class DataAnalysisViewSet(ExperimentChildViewSet):

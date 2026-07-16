@@ -540,6 +540,7 @@ class JSONListWidget(forms.TextInput):
         return json.dumps(json_safe_schema)
 
     def render(self, name, value, attrs=None, renderer=None):
+        # print(f">>>> JSONListWidget::render [{name}]/[{value}]")
         context = self.get_context(name, value, attrs)
         parsed = json.loads(value)
 
@@ -609,22 +610,6 @@ class JSONListWidget(forms.TextInput):
 
         widget_html += "</div>"
 
-        # DONE - can i package/save this from the form? to_python?
-        # DONE - pass in keys to control order ('value' should come before 'units')
-        # DONE - add support for numeric / select
-        # DONE - fix prefixes
-        # DONE - ACTUALLY START SAVING! re-package as JSON essentially...
-        # DONE - add some classes/id's/etc. to the div/inputs
-
-        # DONE - load css/js? Media work?. Not great, but I can work it.
-        # DONE - javascript to handle add/delete/re-order?
-        # TODO - can i show/hide the other as part of the JS?
-        # TODO - add getters to the model to actually return this as nice objects (or at least parsed list/types) instead of raw JSON
-        # DONE - rename/relocate JSONListField and JSONListWidget somewhere more sensible
-        # TODO - verbose name support?
-        # TODO - maybe convert it into template(s)?
-        # TODO - support required'ness?
-
         return mark_safe(widget_html)
 
     def value_from_datadict(self, data, files, name):
@@ -656,17 +641,32 @@ class JSONListWidget(forms.TextInput):
         }
 
         """
-        # print(f"value_from_datadict firing start")
-        # print(f"{type(name)}: {name=}")
-        # print(f"{type(data)}: {data=}")
-        # print(f"value_from_datadict firing end")
+        # print(f")))))) value_from_datadict firing start")
+        # print(f")))))) {type(name)}: {name=}")
+        # print(f")))))) {type(data)}: {data=}")
+        # print(f")))))) value_from_datadict firing end")
 
+        # CASE 1 -- initial load -- data will contain a key like:
+        #       concentrations_tested
+        # containing the string (JSON) for the entire field
+        if name in data:
+            return data[name]
+
+        # CASE 2 -- on submission - we'll instead see qualified_names like
+        #       concentrations_tested-somekey-0
+        #       concentrations_tested-arbitraryval-0
+        #       concentrations_tested-anotherone-0
+        #       concentrations_tested-somekey-1
+        #       concentrations_tested-arbitraryval-1
+        #       concentrations_tested-anotherone-1
+        # etc.; for each row/col of submitted data
         submitted_data = []
         row_idx = 0
         keep_probing = True
         while keep_probing:
             row_data = {}
             for field_def in self.row_fields:
+                # print(f"\t))) {field_def=}")
                 key = field_def["name"]
                 field_type = field_def["type"]
 

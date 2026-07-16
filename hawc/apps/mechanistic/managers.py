@@ -48,17 +48,6 @@ class MethodManager(BaseManager):
         return MethodQuerySet(self.model, using=self._db)
 
 
-class TestDesignQuerySet(QuerySet):
-    pass
-
-
-class TestDesignManager(BaseManager):
-    assessment_relation = "experiment__study__assessment"
-
-    def get_queryset(self):
-        return TestDesignQuerySet(self.model, using=self._db)
-
-
 class DataAnalysisQuerySet(QuerySet):
     pass
 

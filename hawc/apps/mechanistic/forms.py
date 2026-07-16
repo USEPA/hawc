@@ -30,6 +30,12 @@ class ExperimentForm(forms.ModelForm):
             "comments": QuillField,
         }
         """
+        widgets = {
+            "concentrations_tested": JSONListWidget(
+                prefix="concentrations_tested",
+                row_fields=models.Experiment.concentrations_tested_subfields,
+            )
+        }
 
     def __init__(self, *args, **kwargs):
         study = kwargs.pop("parent", None)
@@ -53,6 +59,8 @@ class ExperimentForm(forms.ModelForm):
             helper = BaseFormHelper(self, **inputs)
 
         helper.add_row("guideline", 3, "col-md-4")
+        helper.add_row("vehicle", 2, "col-md-6")
+        helper.add_row("final_concentration_vehicle", 2, "col-md-6")
         helper.add_row("control_type", 2, "col-md-6")
         helper.add_row("control_description", 2, "col-md-6")
         helper.add_row("test_system_concentration", 4, "col-md-3")
@@ -200,35 +208,6 @@ class MethodForm(forms.ModelForm):
         helper = BaseFormHelper(self)
         helper.form_tag = False
         # helper.add_row("test_system_type", 2, "col-md-6")
-
-        return helper
-
-
-class TestDesignForm(forms.ModelForm):
-    class Meta:
-        model = models.TestDesign
-        exclude = ("experiment",)
-        widgets = {
-            "concentrations_tested": JSONListWidget(
-                prefix="concentrations_tested",
-                row_fields=models.TestDesign.concentrations_tested_subfields,
-            )
-        }
-
-    def __init__(self, *args, **kwargs):
-        experiment = kwargs.pop("parent", None)
-        prefix = f"testdesign-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
-        super().__init__(*args, prefix=prefix, **kwargs)
-        if experiment:
-            self.instance.experiment = experiment
-        self.fields["test_system"].queryset = self.instance.experiment.testsystems.all()
-
-    @property
-    def helper(self):
-        helper = BaseFormHelper(self)
-        helper.form_tag = False
-        helper.add_row("vehicle", 2, "col-md-6")
-        helper.add_row("final_concentration_vehicle", 2, "col-md-6")
 
         return helper
 

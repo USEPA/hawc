@@ -65,6 +65,75 @@ class Experiment(models.Model):
 
     # BE SURE TO UPDATE views.py's prepopulation if you add new fields!!!
 
+    # TestDesign - START
+    vehicle = models.CharField(
+        verbose_name="Vehicle/Solvent",
+        max_length=4,
+        choices=constants.VehicleSolventType,
+        help_text="If a vehicle or solvent was used, select the relevant item or use 'other:' and specify.",
+    )
+
+    vehicle_other = models.CharField(
+        verbose_name="Vehicle/Solvent: Additional Details",
+        max_length=255,
+        help_text="Enter additional details about vehicle/solvent.",
+        blank=True,
+    )
+
+    final_concentration_vehicle = models.CharField(
+        verbose_name="Final concentration of the vehicle/solvent",
+        max_length=4,
+        choices=constants.VehicleSolventConcentrationAmount,
+        help_text="Specify the % of vehicle / solvent in the final incubation mixture",
+        blank=True,
+    )
+
+    final_concentration_vehicle_other = models.CharField(
+        verbose_name="Final concentration: Additional Details",
+        max_length=255,
+        help_text="Enter additional details about final concentration.",
+        blank=True,
+    )
+
+    final_concentration_vehicle_units = models.CharField(
+        verbose_name="Final concentration of the vehicle/solvent unit",
+        max_length=4,
+        choices=constants.VehicleSolventConcentrationUnit,
+        help_text="Specify the vehicle / solvent unit",
+        blank=True,
+    )
+
+    concentration_selection = models.CharField(
+        verbose_name="Concentration selection of the test material",
+        max_length=4,
+        choices=constants.ConcentrationSelection,
+        help_text="For data interpretation it is important to know on what basis the highest concentration tested was selected.<p>Any free text explanation can be given in the adjacent text field to justify the dose level selected.",
+    )
+
+    # always show it...
+    concentration_selection_remarks = models.CharField(
+        verbose_name="Concentration selection of the test material: Additional Details",
+        help_text="Any free text explanation can be given in the adjacent text field to justify the dose level selected.",
+        blank=True,
+    )
+
+    concentrations_tested_subfields = [
+        {"name": "value", "type": float},
+        {"name": "units", "type": str, "choices": constants.ConcentrationUnits},
+        {
+            "name": "units_other",
+            "label": "Other",
+            "type": str,
+            "only_show_if": {"field": "units", "val": "OTH"},
+        },
+    ]
+    concentrations_tested = JSONListField(
+        blank=True,
+        help_text="Concentrations tested",
+        sub_fields=concentrations_tested_subfields,  # see above note...maybe lose this and just keep concentrations_tested_subfields, and pass that to the widget.
+    )
+    # TestDesign - END
+
     # MechControl - START
     control_type = models.CharField(
         verbose_name="Type of controls used",
@@ -462,102 +531,6 @@ class Method(models.Model):
         return self
 
 
-class TestDesign(models.Model):
-    objects = managers.TestDesignManager()
-
-    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name="testdesigns")
-    test_system = models.ForeignKey(
-        TestSystem, on_delete=models.CASCADE, related_name="testdesigns"
-    )
-
-    vehicle = models.CharField(
-        verbose_name="Vehicle/Solvent",
-        max_length=4,
-        choices=constants.VehicleSolventType,
-        help_text="If a vehicle or solvent was used, select the relevant item or use 'other:' and specify.",
-    )
-
-    vehicle_other = models.CharField(
-        verbose_name="Vehicle/Solvent: Additional Details",
-        max_length=255,
-        help_text="Enter additional details about vehicle/solvent.",
-        blank=True,
-    )
-
-    final_concentration_vehicle = models.CharField(
-        verbose_name="Final concentration of the vehicle/solvent",
-        max_length=4,
-        choices=constants.VehicleSolventConcentrationAmount,
-        help_text="Specify the % of vehicle / solvent in the final incubation mixture",
-        blank=True,
-    )
-
-    final_concentration_vehicle_other = models.CharField(
-        verbose_name="Final concentration: Additional Details",
-        max_length=255,
-        help_text="Enter additional details about final concentration.",
-        blank=True,
-    )
-
-    final_concentration_vehicle_units = models.CharField(
-        verbose_name="Final concentration of the vehicle/solvent unit",
-        max_length=4,
-        choices=constants.VehicleSolventConcentrationUnit,
-        help_text="Specify the vehicle / solvent unit",
-        blank=True,
-    )
-
-    concentration_selection = models.CharField(
-        verbose_name="Concentration selection of the test material",
-        max_length=4,
-        choices=constants.ConcentrationSelection,
-        help_text="For data interpretation it is important to know on what basis the highest concentration tested was selected.<p>Any free text explanation can be given in the adjacent text field to justify the dose level selected.",
-    )
-
-    # always show it...
-    concentration_selection_remarks = models.CharField(
-        verbose_name="Concentration selection of the test material: Additional Details",
-        help_text="Any free text explanation can be given in the adjacent text field to justify the dose level selected.",
-        blank=True,
-    )
-
-    concentrations_tested_subfields = [
-        {"name": "value", "type": float},
-        {"name": "units", "type": str, "choices": constants.ConcentrationUnits},
-        {"name": "units_other", "type": str},
-    ]
-    concentrations_tested = JSONListField(
-        blank=True,
-        help_text="Concentrations tested",
-        sub_fields=concentrations_tested_subfields,  # see above note...maybe lose this and just keep concentrations_tested_subfields, and pass that to the widget.
-    )
-
-    created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
-
-    # BREADCRUMB_PARENT = "study"
-
-    TEXT_CLEANUP_FIELDS = "name"
-
-    class Meta:
-        ordering = ("id",)
-
-    def get_assessment(self):
-        return self.experiment.get_assessment()
-
-    def get_study(self):
-        return self.experiment.get_study()
-
-    def __str__(self):
-        return self.get_vehicle_display()
-
-    def clone(self):
-        self.id = None
-        # self.name = clone_name(self, "name")
-        self.save()
-        return self
-
-
 # :Subvert/ExperimentalDesign{,s}/DataAnalys{is,es}/g
 
 
@@ -875,6 +848,5 @@ reversion.register(Experiment)
 reversion.register(Chemical)
 reversion.register(TestSystem)
 reversion.register(Method)
-reversion.register(TestDesign)
 reversion.register(DataAnalysis)
 reversion.register(MechanisticEndpoint)
