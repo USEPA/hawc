@@ -105,6 +105,7 @@ class ExperimentViewSet(HtmxViewSet):
             obj = request.item.object
             data = {
                 "name": obj.name,
+                "animal_experiment": obj.animal_experiment,
                 "has_high_throughput": obj.has_high_throughput,
                 "description": obj.description,
                 "test_facility": obj.test_facility,

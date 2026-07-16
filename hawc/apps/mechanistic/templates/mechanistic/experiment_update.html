@@ -18,7 +18,7 @@
       {% include "common/fragments/_create_card.html" with title="Methods" hx_get=method_create hx_target=".method-edit-row.create-row" model="method" btn_text="Add Row" %}
       <table class="table table-sm table-striped-invert">
         {% bs4_colgroup '21,64,15' %}
-        {% bs4_thead 'Test System,Endpoint Detection Method,Edit' %}
+        {% bs4_thead 'Name,Endpoint Detection Method,Edit' %}
         <tbody id="method-tbody">
           {% for object in object.methods.all %}
             {% include "mechanistic/fragments/method_row.html" %}

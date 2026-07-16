@@ -23,10 +23,18 @@ class Experiment(models.Model):
     )
 
     name = models.CharField(
-        verbose_name="Method Name",
-        help_text="Name / identifier of the method (if available)",
+        verbose_name="Experiment Name",
         max_length=255,
     )
+
+    animal_experiment = models.ForeignKey(
+        "animal.Experiment",
+        verbose_name="Related Animal Experiment",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+
     has_high_throughput = models.BooleanField(
         verbose_name="High throughput?",
         help_text="Indicate if the experiment is high throughput.",
@@ -454,6 +462,12 @@ class Method(models.Model):
 
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name="methods")
 
+    name = models.CharField(
+        verbose_name="Method Name",
+        help_text="Name / identifier of the method (if available)",
+        max_length=255,
+    )
+
     endpoint_detection_method = models.CharField(
         choices=constants.EndpointDetectionMethod,
         max_length=10,
@@ -490,7 +504,7 @@ class Method(models.Model):
         return self.experiment.get_study()
 
     def __str__(self):
-        return self.endpoint_detection_method
+        return self.name
 
     def clone(self):
         self.id = None
@@ -508,6 +522,8 @@ class DataAnalysis(models.Model):
     experiment = models.ForeignKey(
         Experiment, on_delete=models.CASCADE, related_name="dataanalyses"
     )
+
+    method = models.ForeignKey(Method, on_delete=models.CASCADE, related_name="dataanalyses")
 
     validity = models.CharField(
         verbose_name="Validity / acceptance criteria",
@@ -640,6 +656,8 @@ class MechanisticEndpoint(BaseEndpoint):
     }
 
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name="endpoints")
+
+    method = models.ForeignKey(Method, on_delete=models.CASCADE, related_name="endpoints")
 
     poa_process = models.CharField(
         verbose_name="Process",

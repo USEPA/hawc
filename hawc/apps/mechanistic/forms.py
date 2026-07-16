@@ -43,6 +43,13 @@ class ExperimentForm(forms.ModelForm):
         if study:
             self.instance.study = study
 
+        """
+        self.fields["animal_experiment"].queryset = self.instance.study.experiments.filter(
+            something=SomethingElse
+        )
+        """
+        self.fields["animal_experiment"].queryset = self.instance.study.experiments.all()
+
     @property
     def helper(self):
         if self.instance.id:
@@ -185,7 +192,6 @@ class MethodForm(forms.ModelForm):
         super().__init__(*args, prefix=prefix, **kwargs)
         if experiment:
             self.instance.experiment = experiment
-        self.fields["test_system"].queryset = self.instance.experiment.testsystems.all()
 
     @property
     def helper(self):
@@ -207,6 +213,8 @@ class DataAnalysisForm(forms.ModelForm):
         super().__init__(*args, prefix=prefix, **kwargs)
         if experiment:
             self.instance.experiment = experiment
+
+        self.fields["method"].queryset = self.instance.experiment.methods.all()
 
     @property
     def helper(self):
@@ -245,6 +253,8 @@ class MechanisticEndpointForm(forms.ModelForm):
         if experiment:
             self.instance.experiment = experiment
             self.instance.assessment = experiment.get_assessment()
+
+        self.fields["method"].queryset = self.instance.experiment.methods.all()
 
     @property
     def helper(self):

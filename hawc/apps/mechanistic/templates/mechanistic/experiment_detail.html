@@ -19,7 +19,7 @@
       <h3 class="card-title">Methods</h3>
       <table class="table table-sm table-striped">
         {% bs4_colgroup '25,75' %}
-        {% bs4_thead 'Test System,Endpoint Detection Method' %}
+        {% bs4_thead 'Name,Endpoint Detection Method' %}
         <tbody>
           {% for object in object.methods.all %}
             {% include "mechanistic/fragments/method_row.html" %}
