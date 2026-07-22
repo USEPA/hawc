@@ -1,14 +1,14 @@
-import json, reversion
+import json
 
+import reversion
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django import forms
 from django.db import models
 from django.forms import ModelForm
 from django.urls import reverse
 
 from ..assessment.models import Assessment, BaseEndpoint, DSSTox
-from ..common.models import JSONListField, NumericTextField, clone_name
+from ..common.models import JSONListField, clone_name
 from ..study.models import Study
 from ..vocab.constants import VocabularyNamespace
 from ..vocab.models import Term
@@ -279,12 +279,6 @@ class Experiment(models.Model):
     exposure_medium_composition = models.CharField(
         verbose_name="Composition of exposure medium",
         help_text="Indicate what is the composition of the exposure medium where the test system and test material are incubated together to obtain the result. In case serum is present (not recommended) then please indicate the type and %.",
-        max_length=255,
-        blank=True,
-    )
-
-    incubation_conditions = models.CharField(
-        help_text="Indicate cell culture incubation conditions (e.g., temperature, relative humidity, CO2 %, etc.)",
         max_length=255,
         blank=True,
     )
@@ -592,7 +586,7 @@ class DataAnalysis(models.Model):
 
     evaluation = models.CharField(
         verbose_name="Evaluation / data interpretation criteria",
-        help_text="Is there criteria available to determine if the test material resulted as active (or not) in the study? If yes, describe the evaluation criteria used in the study to judge if the test material is positive, negative or equivocal. For example:<p>When there is more than 10% binding to the androgen receptor (as expressed in relative light units) for more than two concentrations, the result is ‘positive’.",
+        help_text="Is there criteria available to determine if the test material resulted as active (or not) in the study? If yes, describe the evaluation criteria used in the study to judge if the test material is positive, negative or equivocal. For example:<p>When there is more than 10% binding to the androgen receptor (as expressed in relative light units) for more than two concentrations, the result is ‘positive’.",  # noqa: RUF001
         choices=constants.YesNoRemarks,
         max_length=2,
         blank=True,
@@ -663,7 +657,7 @@ class MechanisticEndpoint(BaseEndpoint):
         verbose_name="Process",
         choices=constants.EndpointProcess,
         max_length=4,
-        help_text="Process represents the dynamics of the underlying biological system (e.g., receptor binding) (Ives et al, 2017). The Process is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017).<p>Select the process that best describes the mechanistic information observed or select ‘other’ to specify the Process and provide a term. Please consult the Ontology Lookup Service (OLS) which is available at https://www.ebi.ac.uk/ols/index to choose a Process term. If possible please select as Process one term belonging to the following ontology Gene Ontology (GO).<p>For most terms there will be several options. It is therefore important to also copy the preferred ontology identifier into the remarks field.<p>Cytotoxicity data should only be reported as a process (e.g. cell death) when it is the scope of the study to determine cytotoxicity. In cases where cytotoxicity is measured for supporting information e.g. for dose selection/elimination, it should not be considered as a process. Such data are reported as ‘Other observations’.",
+        help_text="Process represents the dynamics of the underlying biological system (e.g., receptor binding) (Ives et al, 2017). The Process is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017).<p>Select the process that best describes the mechanistic information observed or select ‘other’ to specify the Process and provide a term. Please consult the Ontology Lookup Service (OLS) which is available at https://www.ebi.ac.uk/ols/index to choose a Process term. If possible please select as Process one term belonging to the following ontology Gene Ontology (GO).<p>For most terms there will be several options. It is therefore important to also copy the preferred ontology identifier into the remarks field.<p>Cytotoxicity data should only be reported as a process (e.g. cell death) when it is the scope of the study to determine cytotoxicity. In cases where cytotoxicity is measured for supporting information e.g. for dose selection/elimination, it should not be considered as a process. Such data are reported as ‘Other observations’.",  # noqa: RUF001
         blank=True,
     )
 
@@ -687,7 +681,7 @@ class MechanisticEndpoint(BaseEndpoint):
         verbose_name="Action",
         choices=constants.EndpointAction,
         max_length=4,
-        help_text="Action represents the type of change observed e.g. ‘‘decrease’’ in the case where a receptor is inhibited to indicate a decrease in the signalling by that receptor. Action is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017). Action is used together with the field Process and/or Object.<p>The Action field is always required to describe the type of change observed and it can form the following syntaxes “Process, Action” e.g. “gene expression, increase” or “Process, Object, Action” e.g. receptor activity, estrogen receptor, increase.<p>Select the Action that best describes the change observed or select ‘other’ to  specify the action and provide a term.",
+        help_text="Action represents the type of change observed e.g. ‘‘decrease’’ in the case where a receptor is inhibited to indicate a decrease in the signalling by that receptor. Action is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017). Action is used together with the field Process and/or Object.<p>The Action field is always required to describe the type of change observed and it can form the following syntaxes “Process, Action” e.g. “gene expression, increase” or “Process, Object, Action” e.g. receptor activity, estrogen receptor, increase.<p>Select the Action that best describes the change observed or select ‘other’ to  specify the action and provide a term.",  # noqa: RUF001
         blank=True,
     )
 
@@ -818,7 +812,7 @@ class MechanisticEndpoint(BaseEndpoint):
                 }
             )
         except Exception as e:
-            print(e)
+            print(e)  # noqa: T201
 
     def save(self, *args, **kwargs):
         # ensure our controlled vocabulary terms don't have leading/trailing whitespace

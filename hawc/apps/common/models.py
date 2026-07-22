@@ -675,7 +675,9 @@ class JSONListField(models.JSONField):
     widget = None  # we expect a widget to be supplied
 
     # def __init__(self, encoder=None, decoder=None, **kwargs):
-    def __init__(self, sub_fields=[], **kwargs):
+    def __init__(self, sub_fields=None, **kwargs):
         super().__init__(**kwargs)
+        if sub_fields is None:
+            sub_fields = []
         # print(f"JSONListField constructor firing: {sub_fields}")
         self.sub_fields = sub_fields  # does this actually do anything? My thinking was put this on here and supply Field def to the widget...but lifecycle makes that iffy...

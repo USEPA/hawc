@@ -1,4 +1,5 @@
 import json
+
 from django.http import HttpRequest
 from django.shortcuts import render
 
@@ -153,7 +154,6 @@ class ExperimentViewSet(HtmxViewSet):
                 "passage_number": obj.passage_number,
                 "exposure_medium_composition": obj.exposure_medium_composition,
                 "incubation_conditions": obj.incubation_conditions,
-                "incubation_conditions": obj.incubation_conditions,
                 "exposure_duration": obj.exposure_duration,
                 "administration_frequency": obj.administration_frequency,
                 "technical_replicates": obj.technical_replicates,
@@ -250,7 +250,7 @@ class ExperimentChildViewSet(HtmxViewSet):
             context["customTemplateScriptContext"] = self.model.get_custom_context(
                 self.request.item.assessment, context["form"]
             )
-        except Exception as e:
+        except Exception:
             context["customTemplateScriptContext"] = {}
 
         return context

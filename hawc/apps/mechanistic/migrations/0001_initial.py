@@ -3,8 +3,9 @@
 import django.contrib.postgres.fields
 import django.core.validators
 import django.db.models.deletion
-import hawc.apps.common.models
 from django.db import migrations, models
+
+import hawc.apps.common.models
 
 
 class Migration(migrations.Migration):
@@ -289,7 +290,7 @@ class Migration(migrations.Migration):
                             ("OTH", "other information on metabolic competence, describe:"),
                             ("NA", "not applicable"),
                         ],
-                        help_text="Select the option that fits best and describe the knowledge about the metabolic competence (i.e. Phase I and/or II biotransformation capacity) of the test system under remarks.<p>For example, when the test system used is  cryopreserved human pooled liver tissue homogenate 9000 g fraction (S9) procured from a commercial supplier, select “metabolic activity, specify” and specify: contains phase I and II metabolic enzymes present in the microsomal (e.g. cytochrome P450s, Flavin-containing monooxygenase, uridine 5’-diphospho-glucuronosyltransferases, carboxylesterases) and cytosolic (e.g. sulfotransferases, glutathione S-transferases, methyltransferases, N-acetyl transferases, xanthine oxidase, aldehyde oxidase) fractions.",
+                        help_text="Select the option that fits best and describe the knowledge about the metabolic competence (i.e. Phase I and/or II biotransformation capacity) of the test system under remarks.<p>For example, when the test system used is  cryopreserved human pooled liver tissue homogenate 9000 g fraction (S9) procured from a commercial supplier, select “metabolic activity, specify” and specify: contains phase I and II metabolic enzymes present in the microsomal (e.g. cytochrome P450s, Flavin-containing monooxygenase, uridine 5’-diphospho-glucuronosyltransferases, carboxylesterases) and cytosolic (e.g. sulfotransferases, glutathione S-transferases, methyltransferases, N-acetyl transferases, xanthine oxidase, aldehyde oxidase) fractions.",  # noqa: RUF001
                         max_length=3,
                         verbose_name="Metabolic competence of the test system",
                     ),
@@ -757,7 +758,7 @@ class Migration(migrations.Migration):
                             ("TRAA", "transporter activity - [GO:0005215]"),
                             ("OTHR", "other"),
                         ],
-                        help_text="Process represents the dynamics of the underlying biological system (e.g., receptor binding) (Ives et al, 2017). The Process is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017).<p>Select the process that best describes the mechanistic information observed or select ‘other’ to specify the Process and provide a term. Please consult the Ontology Lookup Service (OLS) which is available at https://www.ebi.ac.uk/ols/index to choose a Process term. If possible please select as Process one term belonging to the following ontology Gene Ontology (GO).<p>For most terms there will be several options. It is therefore important to also copy the preferred ontology identifier into the remarks field.<p>Cytotoxicity data should only be reported as a process (e.g. cell death) when it is the scope of the study to determine cytotoxicity. In cases where cytotoxicity is measured for supporting information e.g. for dose selection/elimination, it should not be considered as a process. Such data are reported as ‘Other observations’.",
+                        help_text="Process represents the dynamics of the underlying biological system (e.g., receptor binding) (Ives et al, 2017). The Process is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017).<p>Select the process that best describes the mechanistic information observed or select ‘other’ to specify the Process and provide a term. Please consult the Ontology Lookup Service (OLS) which is available at https://www.ebi.ac.uk/ols/index to choose a Process term. If possible please select as Process one term belonging to the following ontology Gene Ontology (GO).<p>For most terms there will be several options. It is therefore important to also copy the preferred ontology identifier into the remarks field.<p>Cytotoxicity data should only be reported as a process (e.g. cell death) when it is the scope of the study to determine cytotoxicity. In cases where cytotoxicity is measured for supporting information e.g. for dose selection/elimination, it should not be considered as a process. Such data are reported as ‘Other observations’.",  # noqa: RUF001
                         max_length=4,
                         verbose_name="Process",
                     ),
@@ -812,7 +813,7 @@ class Migration(migrations.Migration):
                             ("UREG", "up regulation"),
                             ("OTHR", "other"),
                         ],
-                        help_text="Action represents the type of change observed e.g. ‘‘decrease’’ in the case where a receptor is inhibited to indicate a decrease in the signalling by that receptor. Action is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017). Action is used together with the field Process and/or Object.<p>The Action field is always required to describe the type of change observed and it can form the following syntaxes “Process, Action” e.g. “gene expression, increase” or “Process, Object, Action” e.g. receptor activity, estrogen receptor, increase.<p>Select the Action that best describes the change observed or select ‘other’ to  specify the action and provide a term.",
+                        help_text="Action represents the type of change observed e.g. ‘‘decrease’’ in the case where a receptor is inhibited to indicate a decrease in the signalling by that receptor. Action is also used to annotate Key events in the Adverse Outcome Pathway Wiki (https://aopwiki.org/) as described in Ives et al, 2017, doi:10.1089/aivt.2017.0017). Action is used together with the field Process and/or Object.<p>The Action field is always required to describe the type of change observed and it can form the following syntaxes “Process, Action” e.g. “gene expression, increase” or “Process, Object, Action” e.g. receptor activity, estrogen receptor, increase.<p>Select the Action that best describes the change observed or select ‘other’ to  specify the action and provide a term.",  # noqa: RUF001
                         max_length=4,
                         verbose_name="Action",
                     ),
@@ -1065,7 +1066,7 @@ class Migration(migrations.Migration):
                             ("NR", "not relevant"),
                             ("UN", "unknown"),
                         ],
-                        help_text="Is there criteria available to determine if the test material resulted as active (or not) in the study? If yes, describe the evaluation criteria used in the study to judge if the test material is positive, negative or equivocal. For example:<p>When there is more than 10% binding to the androgen receptor (as expressed in relative light units) for more than two concentrations, the result is ‘positive’.",
+                        help_text="Is there criteria available to determine if the test material resulted as active (or not) in the study? If yes, describe the evaluation criteria used in the study to judge if the test material is positive, negative or equivocal. For example:<p>When there is more than 10% binding to the androgen receptor (as expressed in relative light units) for more than two concentrations, the result is ‘positive’.",  # noqa: RUF001
                         max_length=2,
                         verbose_name="Evaluation / data interpretation criteria",
                     ),

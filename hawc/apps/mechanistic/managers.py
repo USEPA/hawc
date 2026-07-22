@@ -1,6 +1,6 @@
 from django.db.models import QuerySet
 
-from ..common.models import BaseManager
+from ..common.models import BaseManager, get_distinct_charfield_opts
 
 
 class ExperimentQuerySet(QuerySet):

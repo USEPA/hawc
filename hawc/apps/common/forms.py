@@ -1,5 +1,6 @@
+import html
+import json
 from collections.abc import Sequence
-import html, json
 from typing import Any
 
 from crispy_forms import bootstrap as cfb
@@ -555,7 +556,7 @@ class JSONListWidget(forms.TextInput):
         for row in parsed:
             widget_html += f"<div class='{'data-row' if row is not None else 'template-row'}'>"
 
-            widget_html += f"<div class='sub-row'>" # easy way to add line breaks...
+            widget_html += "<div class='sub-row'>"  # easy way to add line breaks...
             for field_def in self.row_fields:
                 key = field_def["name"]
                 title = field_def.get("label", key.title())
@@ -569,7 +570,7 @@ class JSONListWidget(forms.TextInput):
                 if displayable_val is None:
                     displayable_val = ""
 
-                widget_html += f"<div class='field-cell' data-for-field-name='" + key + "'>"
+                widget_html += "<div class='field-cell' data-for-field-name='" + key + "'>"
                 widget_html += f"<label for='{id_val}'>{title}: </label>"
                 if field_type is str:
                     choices = field_def.get("choices")
@@ -587,16 +588,16 @@ class JSONListWidget(forms.TextInput):
                         widget_html += "</select>"
                 elif field_type in [float, int]:
                     widget_html += f"<input type='number' id='{id_val}' name='{qualified_name}' value='{displayable_val}'>"
-                widget_html += f"</div>"  # /.field-cell
-            
+                widget_html += "</div>"  # /.field-cell
+
                 if field_def.get("break_after", False) is True:
                     widget_html += "</div>"
-                    widget_html += "<div class='newline-padder'>&nbsp;</div>" # this one inserts the newline...
+                    widget_html += "<div class='newline-padder'>&nbsp;</div>"  # this one inserts the newline...
                     widget_html += "<div class='sub-row'>"
-            widget_html += f"</div>" #/.sub-row
+            widget_html += "</div>"  # /.sub-row
 
             # add control cell - start
-            widget_html += f"<div class='control-cell'></div>"
+            widget_html += "<div class='control-cell'></div>"
             # add control cell - end
 
             widget_html += "</div>"
