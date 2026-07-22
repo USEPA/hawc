@@ -37,6 +37,7 @@ class Study(Reference):
         "epi",
         "epi_meta",
         "in_vitro",
+        "mechanistic",
         "eco",
     }
 
@@ -56,6 +57,7 @@ class Study(Reference):
         help_text="Study contains epidemiology meta-analysis/pooled analysis data",
     )
     in_vitro = models.BooleanField(default=False, help_text="Study contains in-vitro data")
+    mechanistic = models.BooleanField(default=False, help_text="Study contains mechanistic data")
     eco = models.BooleanField(
         verbose_name="Ecology", default=False, help_text="Study contains ecology data"
     )
@@ -305,7 +307,7 @@ class Study(Reference):
         self.save()
 
     def data_types(self) -> list[bool]:
-        return [self.bioassay, self.epi, self.epi_meta, self.in_vitro, self.eco]
+        return [self.bioassay, self.epi, self.epi_meta, self.in_vitro, self.mechanistic, self.eco]
 
     @classmethod
     def delete_cache(cls, assessment_id: int, delete_reference_cache: bool = True):

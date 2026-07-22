@@ -1,0 +1,68 @@
+{% extends 'assessment-rooted.html' %}
+
+{% block content %}
+  <div class="d-flex">
+    <h2>{{object.name}}</h2>
+    {% if obj_perms.edit and crud == "Read" %}
+      {% actions %}
+        <span class="dropdown-header">Experiment editing</span>
+        <a class="dropdown-item" href="{{object.get_update_url}}">Update</a>
+        <a class="dropdown-item" href="{{object.get_delete_url}}">Delete</a>
+      {% endactions %}
+    {% endif %}
+  </div>
+
+  {% include "mechanistic/fragments/_experiment_table.html" %}
+
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Methods</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '25,75' %}
+        {% bs4_thead 'Name,Endpoint Detection Method' %}
+        <tbody>
+          {% for object in object.methods.all %}
+            {% include "mechanistic/fragments/method_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No methods available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Data Analyses</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '50,50' %}
+        {% bs4_thead 'Validity,Cytotoxicity' %}
+        <tbody>
+          {% for object in object.dataanalyses.all %}
+            {% include "mechanistic/fragments/dataanalysis_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No data analyses available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Endpoints</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '100' %}
+        {% bs4_thead 'Name' %}
+        <tbody>
+          {% for object in object.endpoints.all %}
+            {% include "mechanistic/fragments/endpoint_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No endpoints available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+{% endblock %}
