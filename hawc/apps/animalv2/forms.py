@@ -119,6 +119,7 @@ class ChemicalForm(forms.ModelForm):
                 autocomplete_class=autocomplete.ChemicalAutocomplete, field="name"
             ),
             "dtxsid": AutocompleteSelectWidget(autocomplete_class=DSSToxAutocomplete),
+            "expiration_date": forms.DateInput(attrs={"type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -132,8 +133,13 @@ class ChemicalForm(forms.ModelForm):
     def helper(self):
         helper = BaseFormHelper(self)
         helper.form_tag = False
-        helper.add_row("name", 3, "col-md-4")
-        helper.add_row("source", 3, "col-md-4")
+        # helper.add_row("name", 3, "col-md-4")
+        # helper.add_row("source", 3, "col-md-4")
+        helper.add_row("cas", 3, "col-md-4")
+        helper.add_row("composition_purity", 2, "col-md-6")
+        helper.add_row("percent_purity", 3, "col-md-4")
+        helper.add_row("stability", 2, "col-md-6")
+        helper.add_row("solubility", 2, "col-md-6")
         helper.add_create_btn("dtxsid", reverse("assessment:dtxsid_create"), "Add new DTXSID")
         set_textarea_height(self.fields)
         return helper

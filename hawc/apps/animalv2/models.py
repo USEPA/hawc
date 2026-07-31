@@ -124,7 +124,7 @@ class Chemical(models.Model):
         Experiment, on_delete=models.CASCADE, related_name="v2_chemicals"
     )
     name = models.CharField(
-        max_length=80,
+        max_length=255,
         verbose_name="Chemical name",
         help_text="""This field may get displayed in visualizations, so consider using a common acronym, e.g., BPA instead of Bisphenol A""",
     )
@@ -143,17 +143,57 @@ class Chemical(models.Model):
         related_name="v2_chemicals",
         help_text=DSSTox.help_text(),
     )
-    source = models.CharField(max_length=128, verbose_name="Source of chemical", blank=True)
-    purity = models.CharField(max_length=128, verbose_name="Chemical purity", blank=True)
-    vehicle = models.CharField(
-        max_length=64,
-        verbose_name="Chemical vehicle",
-        help_text="""Describe vehicle (use name as described in methods but also add the common name if the vehicle was described in a non-standard way). Enter "not reported" if the vehicle is not described. For inhalation studies, air can be inferred if not explicitly reported. Examples: "corn oil," "filtered air," \"not reported, but assumed clean air.\"""",
+    source = models.CharField(
+        max_length=255,
+        verbose_name="Source of chemical",
         blank=True,
+        help_text="Company and catalog number if available",
     )
-    comments = models.TextField(
+    composition_purity = models.CharField(
+        max_length=3,
+        verbose_name="Composition / Purity",
+        choices=constants.CompositionPurity.choices,
         blank=True,
-        help_text="Additional comments (eg., description, animal husbandry, etc.)",
+        help_text="If detailed information on the purity of the composition is not known, a qualitative statement can be provided in this field, e.g. 'analytical grade' or 'technical grade'.<p>A chemical can be created for a mixture/product. If the chemical refers to the composition of the mixture/product, in the field % purity, specify the chemical composition.",
+    )
+    composition_purity_other = models.CharField(
+        blank=True, default="", verbose_name="Other Composition / Purity Details"
+    )
+    percent_purity = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="% Purity",
+        help_text="Provide the % purity or chemical composition",
+    )
+    expiration_date = models.DateField(
+        blank=True, null=True, help_text="Provide the expiration date or re-test date"
+    )
+    lot_batch_num = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        verbose_name="Lot / Batch #",
+        help_text="Lot and batch number",
+    )
+    stability = models.CharField(
+        max_length=3,
+        choices=constants.ChemicalStability.choices,
+        blank=True,
+        help_text="Select the appropriate information about stability of the chemical under storage conditions and under assay conditions.<p>In case this was not assessed or reported, select ‘unknown’",
+    )
+    stability_details = models.CharField(blank=True, default="")
+    solubility = models.CharField(
+        max_length=3,
+        choices=constants.ChemicalSolubility.choices,
+        blank=True,
+        help_text="It should be confirmed that the highest concentration tested was soluble, in case not, a justification should be provided.<p>Please specify the highest soluble concentration observed. If the highest tested concentration was insoluble, provide a justification for why insoluble concentrations were tested.",
+    )
+    solubility_details = models.CharField(blank=True, default="")
+    reactivity = models.TextField(
+        max_length=2000,
+        blank=True,
+        help_text="Provide information on any known reactivity of the test material with the incubation material used (e.g. binding to plastic ware or adsorption)",
     )
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)

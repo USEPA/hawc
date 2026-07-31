@@ -27,6 +27,25 @@ class GuidelineYesNo(models.TextChoices):
     NR = "NR", "Not reported"
 
 
+class CompositionPurity(models.TextChoices):
+    ANA = "ANA", "analytical grade"
+    TCH = "TCH", "technical grade"
+    NS = "NS", "purity not specified"
+    NA = "NA", "not applicable (e.g. in silico study)"
+    OTH = "OTH", "other"
+
+
+class ChemicalStability(models.TextChoices):
+    STA = "STA", "The chemical is stable under storage and assay conditions, specify"
+    UNK = "UNK", "Unknown"
+
+
+class ChemicalSolubility(models.TextChoices):
+    YES = "YES", "The highest tested concentration was soluble"
+    NO = "NO", "The highest tested concentration was insoluble, specify"
+    UNK = "UNK", "Unknown"
+
+
 class Sex(models.TextChoices):
     MALE = "M", "Male"
     FEMALE = "F", "Female"
