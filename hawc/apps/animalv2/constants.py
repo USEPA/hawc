@@ -1,9 +1,30 @@
 from django.db import models
 
 
-class ExperimentDesign(models.TextChoices):
-    AA = "AA", "TODO A"
-    BB = "BB", "TODO B"
+class StudyType(models.TextChoices):
+    ACU = "ACU", "acute"
+    SHT = "SHT", "short-term"
+    SCT = "SCT", "sub-chronic toxicity"
+    CT = "CT", "chronic toxicity"
+    CAN = "CAN", "cancer"
+    DTR = "DTR", "developmental toxicity and repro"
+    MUT = "MUT", "mutagenicity"
+    NR = "NR", "not reported"
+    OTH = "OTH", "other"
+
+
+class AdministrationRoute(models.TextChoices):
+    ORA = "ORA", "oral"
+    DER = "DER", "dermal"
+    INH = "INH", "inhalation"
+    INJ = "INJ", "injection"
+    OTH = "OTH", "other, specify"
+
+
+class GuidelineYesNo(models.TextChoices):
+    YES = "YS", "Yes"
+    NO = "NO", "No"
+    NR = "NR", "Not reported"
 
 
 class Sex(models.TextChoices):

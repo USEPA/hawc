@@ -62,6 +62,7 @@ class ExperimentForm(ModelForm):
         if parent:
             self.instance.study = parent
 
+        """
         if self.instance.study.assessment.enable_observations:
             self.fields["guideline"].required = True
             self.fields["guideline"].empty_label = None
@@ -70,6 +71,7 @@ class ExperimentForm(ModelForm):
         self.fields["has_multiple_generations"].widget = forms.Select(
             choices=((True, "Yes"), (False, "No"))
         )
+        """
 
     @property
     def helper(self):
@@ -99,9 +101,10 @@ class ExperimentForm(ModelForm):
             }
             helper = BaseFormHelper(self, **inputs)
 
-        helper.form_id = "experiment-v2-form"
-        helper.add_row("name", 3, "col-md-4")
-        helper.add_row("guideline_compliance", 2, "col-md-6")
+        helper.form_id = "aniv2-experiment-form"
+        helper.add_row("study_type", 2, "col-md-6")
+        helper.add_row("route_of_administration", 2, "col-md-6")
+        helper.add_row("guideline_name", 3, "col-md-4")
         set_textarea_height(self.fields)
 
         return helper

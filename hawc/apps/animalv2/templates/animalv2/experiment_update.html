@@ -127,8 +127,14 @@
 {% block extrajs %}
   {% include "common/htmx_autocomplete.html" %}
   <script type="text/javascript">
-    window.app.startup("animalv2Startup", function(app){
-      app.formStartup(document);
+    // note - this only fires when editing a aniv2 experiment.
+    // when creating an experiment, see experiment_form.html
+    //
+    // put common stuff into frontend/animalv2/form.js
+    $(document).ready(function() {
+      window.app.startup("animalv2Startup", function(app){
+        app.formStartup(document);
+      });
     });
   </script>
 {% endblock %}

@@ -409,5 +409,49 @@ const helpers = {
         arr.splice(index, 1);
         return arr;
     },
+    setupOtherShowHideRelationship: (primaryField, otherFields, otherVal) => {
+        /*
+         * given a field (probably a dropdown) and another field(s) - show/hide the
+         * other(s) only if the primary field has a particular value selected.
+         *
+         * Used for a common scenario where you want a picklist with several values,
+         * and one of the values is "Other" or "More" or whatever, and then a
+         * secondary freetext field you can enter in the details if someone picked
+         * "Other" from the main picklist.
+         *
+         * otherFields can be a single jquery element or an array of them.
+         *
+         * Note this doesn't support complex logic ("show this field if these three
+         * other fields have these certain values", "show this field if this other 
+         * field has any one of the following values"). Just simple:
+         *
+         * one field/val -> show/hide other field(s)
+         */
+
+        if (!Array.isArray(otherFields)) {
+            otherFields = [otherFields];
+        }
+
+        let otherParents = otherFields.map((x) => x.parents(".form-group"));
+
+        let showOrHide = function () {
+            let selectedVal = primaryField.val();
+
+            for (let i = 0 ; i < otherFields.length ; i++) {
+                let otherField = otherFields[i];
+
+                if (selectedVal == otherVal) {
+                    otherParents[i].show();
+                } else {
+                    otherParents[i].hide();
+                    otherField.val(""); // wipe the value if you switch off of "Other"
+                }
+
+            }
+        };
+
+        primaryField.change(showOrHide); // fire every time selection changes
+        showOrHide(); // initial fire
+    },
 };
 export default helpers;

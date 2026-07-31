@@ -2,3 +2,18 @@
 {% block content %}
   {% crispy form %}
 {% endblock %}
+
+{% block extrajs %}
+  <script type="text/javascript">
+	// note - this only fires during initial aniv2 experiment creation.
+    // when editing an existing experiment, see experiment_update.html
+	//
+	// put common stuff into frontend/animalv2/form.js
+
+    $(document).ready(function() {
+      window.app.startup("animalv2Startup", function(app){
+        app.formStartup(document);
+      });
+    });
+  </script>
+{% endblock extrajs %}

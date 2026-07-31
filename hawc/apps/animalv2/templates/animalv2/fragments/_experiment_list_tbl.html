@@ -2,13 +2,13 @@
   <h3>Animal bioassay experiments</h3>
   <table class="table table-sm table-striped">
     {% bs4_colgroup '25,25,50' %}
-    {% bs4_thead 'Name,Design,Comments' %}
+    {% bs4_thead 'Name,Study Type,Guideline' %}
     <tbody>
       {% for object in object_list %}
         <tr>
           <td><a href="{% url 'animalv2:experiment_detail' object.pk %}">{{object}}</a></td>
-          <td>{{object.get_design_display}}</td>
-          <td>{{object.comments|safe}}</td>
+          <td>{{object.get_study_type_display}}</td>
+          <td>{{object.get_has_guideline_display|safe}}</td>
         </tr>
       {% empty %}
         {% bs4_fullrow 'No experiments available.' %}

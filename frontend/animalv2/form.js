@@ -1,4 +1,5 @@
 import _ from "lodash";
+import h from "shared/utils/helpers";
 
 import $ from "$";
 
@@ -30,8 +31,57 @@ const cloneSubformRow = function (lastRow, totalFormField) {
             loopEl.attr("id", incorrectId.replace(`-${total - 2}-`, `-${total - 1}-`));
         });
     },
-    experimentFormStartup = function (form) {
-        $(form).find("#id_name").focus();
+    experimentFormStartup = function (f) {
+        let form = $(f);
+        form.find("#id_name").focus();
+        console.log("EXP FORM STARTUP!!!!!\n");
+
+        let showHides = [
+            [ "select#id_study_type", "input#id_study_type_other", "OTH" ],
+            [ "select#id_route_of_administration", "input#id_route_of_administration_other", "OTH" ],
+            [
+                "select#id_has_guideline", [
+                    "input#id_guideline_name",
+                    "input#id_guideline_number",
+                    "input#id_guideline_version_year",
+                    "input#id_guideline_deviations",
+                ], "YS"
+            ],
+        ]
+
+        for (let i = 0 ; i < showHides.length ; i++) {
+            let showHide = showHides[i];
+            let alwaysSelector = showHide[0];
+            let contingentSelectors = showHide[1];
+            if (!Array.isArray(contingentSelectors)) {
+                contingentSelectors = [contingentSelectors];
+            }
+            let otherVal = showHide[2];
+
+            let alwaysEl = form.find(alwaysSelector);
+            let contingentEls = contingentSelectors.map((x) => form.find(x));
+
+            h.setupOtherShowHideRelationship(
+                alwaysEl,
+                contingentEls,
+                otherVal
+            );
+        }
+
+        /*
+        h.setupOtherShowHideRelationship(
+            form.find("select#id_study_type"),
+            form.find("input#id_study_type_other"),
+            "OTH"
+        );
+        */
+
+        // we hide this in CSS - and now once it's set up, we show it. This way, you don't see
+        // effect/subtype blink out of visibility; you just see everything appear, which is nicer.
+        // (why opacity? If using display:none instead of opacity: 0 in the css, then the page
+        // scrolls to the top. Rather than track that down, just use opacity 0->1 which doesn't
+        // have the same issue...)
+        $("form#aniv2-experiment-form").css("opacity", 1);
     },
     animalGroupFormStartup = function (form) {
         // TODO - fix - name is `animalgroup-1-species`
@@ -132,8 +182,11 @@ const cloneSubformRow = function (lastRow, totalFormField) {
     };
 
 export default document => {
+    console.log("in aniv2 form.js formStartup...if UI js not firing, troubleshoot here");
+
     document.body.addEventListener("htmx:load", e => {
         if (e.target.querySelector(".form-experiment")) {
+            // ENTRY SCENARIO 2/2: during experiment update...
             experimentFormStartup(e.target);
         } else if (e.target.querySelector(".form-animalgroup")) {
             animalGroupFormStartup(e.target);
@@ -142,6 +195,15 @@ export default document => {
         } else if (e.target.querySelector(".form-dataextraction")) {
             dataExtractionFormStartup(e.target);
             formsetSetup(e.target, ["groupleveldataform", "animalleveldataform"]);
+        }
+    });
+
+    $(document).ready(function () {
+        if (false && $("form#form-mech-chemical").length == 1) {
+            chemicalFormStartup("form#form-mech-chemical");
+        } else if ($("form legend").html() == "Create new experiment") {
+            // ENTRY SCENARIO 1/2: during experiment create...
+            experimentFormStartup($("form legend").parent("form"));
         }
     });
 };

@@ -23,28 +23,67 @@ class Experiment(models.Model):
         verbose_name="Experiment name",
         help_text="""Short-text used to describe the experiment (i.e. 2-Year Cancer Bioassay, 10-Day Oral, 28-Day Inhalation, etc.) using title style (all words capitalized). If study contains more than one chemical, then also include the chemical name (e.g. 28-Day Oral PFBS).""",
     )
-    design = models.CharField(
-        max_length=2,
-        choices=constants.ExperimentDesign.choices,
-        help_text="Design of study being performed",
-    )
-    has_multiple_generations = models.BooleanField(default=False)
-    guideline_compliance = models.CharField(
-        max_length=128,
+    study_type = models.CharField(
         blank=True,
-        help_text="""Description of any compliance methods used (i.e. use of EPA OECD, NTP, or other guidelines; conducted under GLP guideline conditions, non-GLP but consistent with guideline study, etc.). This field response should match any description used in study evaluation in the reporting quality domain, e.g., GLP study (OECD guidelines 414 and 412, 1981 versions). If not reported, then use state \"not reported.\"""",
+        default="",
+        max_length=3,
+        choices=constants.StudyType.choices,
+        help_text="""Select the appropriate type of study performed that provides the observed endpoint. The option 'other' can be used if another than a pre-defined item applies.""",
     )
+    study_type_other = models.CharField(
+        blank=True, default="", verbose_name="Other Study Type Details"
+    )
+    route_of_administration = models.CharField(
+        blank=True,
+        default="",
+        max_length=3,
+        choices=constants.AdministrationRoute.choices,
+        help_text="""Select the route of administration as appropriate. If not available from the picklist, select 'other' and specify.""",
+    )
+    route_of_administration_other = models.CharField(
+        blank=True, default="", verbose_name="Other Route of Administration Details"
+    )
+    has_guideline = models.CharField(
+        blank=True,
+        verbose_name="Guideline",
+        default="",
+        max_length=2,
+        choices=constants.GuidelineYesNo.choices,
+        help_text="""Select whether a guideline study was conducted. If yes, enter the Test Guideline number in the Guideline Comments fields.""",
+    )
+    guideline_name = models.CharField(
+        blank=True, default="", max_length=255, help_text="Describe the guideline name."
+    )
+    guideline_number = models.CharField(
+        blank=True, default="", max_length=255, help_text="Describe the guideline number."
+    )
+    guideline_version_year = models.CharField(
+        blank=True,
+        default="",
+        max_length=255,
+        verbose_name="Guideline Version/Year",
+        help_text="Describe the guideline version/year.",
+    )
+    guideline_deviations = models.CharField(
+        blank=True,
+        default="",
+        max_length=1500,
+        help_text="Describe any deviations from the test guideline including if the GLP was signed and dated, quality assurance and data confidentiality statements signed (yes/no)",
+    )
+
+    """
     guideline = models.ForeignKey(
         Guideline,
         blank=True,
         null=True,
         on_delete=models.PROTECT,
-        help_text="""Guideline protocol used to describe this experiment.""",
+        help_text="Guideline protocol used to describe this experiment.",
     )
     comments = models.TextField(
         blank=True,
         help_text="Additional comments (eg., description, animal husbandry, etc.)",
     )
+    """
     created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
