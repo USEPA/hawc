@@ -7,7 +7,7 @@ from . import constants, models
 
 
 class ExperimentSerializer(IdLookupMixin, serializers.ModelSerializer):
-    design = FlexibleChoiceField(choices=constants.ExperimentDesign.choices)
+    # design = FlexibleChoiceField(choices=constants.ExperimentDesign.choices)
 
     class Meta:
         model = models.Experiment
