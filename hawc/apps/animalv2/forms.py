@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from ..assessment.autocomplete import DSSToxAutocomplete
 from ..common.autocomplete import AutocompleteSelectWidget, AutocompleteTextWidget
-from ..common.forms import BaseFormHelper
+from ..common.forms import ArrayCheckboxSelectMultiple, BaseFormHelper
 from . import autocomplete, constants, models
 
 
@@ -15,6 +15,7 @@ def set_textarea_height(fields: dict, n_rows: int = 3):
             field.widget.attrs["rows"] = n_rows
 
 
+"""
 class StudyLevelValueForm(forms.ModelForm):
     class Meta:
         model = models.StudyLevelValue
@@ -49,12 +50,18 @@ class StudyLevelValueForm(forms.ModelForm):
             ),
         )
         return helper
+"""
 
 
 class ExperimentForm(ModelForm):
     class Meta:
         model = models.Experiment
         exclude = ("study",)
+        widgets = {
+            "dev_or_repro_toxicity_types": ArrayCheckboxSelectMultiple(
+                choices=constants.DevelopmentalOrReproductiveToxicityType.choices
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         parent = kwargs.pop("parent", None)
@@ -102,14 +109,15 @@ class ExperimentForm(ModelForm):
             helper = BaseFormHelper(self, **inputs)
 
         helper.form_id = "aniv2-experiment-form"
-        helper.add_row("study_type", 2, "col-md-6")
-        helper.add_row("route_of_administration", 2, "col-md-6")
-        helper.add_row("guideline_name", 3, "col-md-4")
-        set_textarea_height(self.fields)
+        helper.add_row("experiment_type", 2, "col-md-6")
+        # helper.add_row("route_of_administration", 2, "col-md-6")
+        # helper.add_row("guideline_name", 3, "col-md-4")
+        # set_textarea_height(self.fields)
 
         return helper
 
 
+"""
 class ChemicalForm(forms.ModelForm):
     class Meta:
         model = models.Chemical
@@ -393,3 +401,4 @@ class DoseResponseAnimalLevelDataForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if data_extraction:
             self.instance.data_extraction = data_extraction
+"""

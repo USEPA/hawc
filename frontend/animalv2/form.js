@@ -3,7 +3,7 @@ import h from "shared/utils/helpers";
 
 import $ from "$";
 
-const cloneSubformRow = function (lastRow, totalFormField) {
+const /*cloneSubformRow = function (lastRow, totalFormField) {
         // adapted from https://stackoverflow.com/questions/501719/
         const newElement = lastRow.clone(true);
         let total = totalFormField.val();
@@ -30,12 +30,19 @@ const cloneSubformRow = function (lastRow, totalFormField) {
                 incorrectId = loopEl.attr("id");
             loopEl.attr("id", incorrectId.replace(`-${total - 2}-`, `-${total - 1}-`));
         });
-    },
+    },*/
     experimentFormStartup = function (f) {
         let form = $(f);
         form.find("#id_name").focus();
         console.log("EXP FORM STARTUP!!!!!\n");
 
+		// testdesign
+		h.setupOtherShowHideRelationship(
+			form.find("select#id_experiment_type"),
+			form.find("input#id_experiment_type_other"),
+			"OTH"
+		);
+		/*
         let showHides = [
             [ "select#id_study_type", "input#id_study_type_other", "OTH" ],
             [ "select#id_route_of_administration", "input#id_route_of_administration_other", "OTH" ],
@@ -67,6 +74,7 @@ const cloneSubformRow = function (lastRow, totalFormField) {
                 otherVal
             );
         }
+		*/
 
         // we hide this in CSS - and now once it's set up, we show it. This way, you don't see
         // effect/subtype blink out of visibility; you just see everything appear, which is nicer.
@@ -74,7 +82,7 @@ const cloneSubformRow = function (lastRow, totalFormField) {
         // scrolls to the top. Rather than track that down, just use opacity 0->1 which doesn't
         // have the same issue...)
         $("form#aniv2-experiment-form").css("opacity", 1);
-    },
+    };/*
     chemicalFormStartup = function (f) {
         let form = $(f);
 
@@ -180,7 +188,7 @@ const cloneSubformRow = function (lastRow, totalFormField) {
                     cloneSubformRow(lastRow, totalFormField);
                 });
             });
-    };
+    };*/
 
 export default document => {
     console.log("in aniv2 form.js formStartup...if UI js not firing, troubleshoot here");
@@ -190,7 +198,7 @@ export default document => {
         if (e.target.querySelector(".form-experiment")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             experimentFormStartup(e.target);
-		} else if (e.target.querySelector(".form-chemical")) {
+		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);
         } else if (e.target.querySelector(".form-animalgroup")) {
@@ -200,7 +208,7 @@ export default document => {
         } else if (e.target.querySelector(".form-dataextraction")) {
             dataExtractionFormStartup(e.target);
             formsetSetup(e.target, ["groupleveldataform", "animalleveldataform"]);
-        }
+        }*/
     });
 
     $(document).ready(function () {

@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class StudyType(models.TextChoices):
+class ExperimentType(models.TextChoices):
     ACU = "ACU", "acute"
     SHT = "SHT", "short-term"
     SCT = "SCT", "sub-chronic toxicity"
@@ -13,6 +13,17 @@ class StudyType(models.TextChoices):
     OTH = "OTH", "other"
 
 
+class DevelopmentalOrReproductiveToxicityType(models.TextChoices):
+    RE = "RE", "Reproduction studies (one, two and multi-generational studies"
+    DN = "DN", "Developmental neurotoxicity"
+    DI = "DI", "Developmental immunotoxicity studies "
+    PD = "PD", "Pubertal development "
+    FR = "FR", "Female reproductive toxicity"
+    EF = "EF", "Embryo-fetal development studies"
+    PP = "PP", "Perinatal/postnatal development"
+
+
+"""
 class AdministrationRoute(models.TextChoices):
     ORA = "ORA", "oral"
     DER = "DER", "dermal"
@@ -147,3 +158,4 @@ class StudyLevelTypeChoices(models.IntegerChoices):
     NOAEL = 3, "NOAEL"
     BMDL = 4, "BMDL"
     BMD = 5, "BMD"
+"""

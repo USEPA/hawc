@@ -260,6 +260,7 @@ class ExperimentChildViewSet(HtmxViewSet):
         return context
 
 
+"""
 class ChemicalViewSet(ExperimentChildViewSet):
     model = models.Chemical
     form_class = forms.ChemicalForm
@@ -412,3 +413,4 @@ class ObservationList(BaseFilterList):
         )
         observations = self.model.generate_observations(self.parent)
         return self._filterset.filter(observations)
+"""

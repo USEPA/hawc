@@ -4,6 +4,7 @@ from ..common.filterset import ArrowOrderingFilter, BaseFilterSet, InlineFilterF
 from . import models
 
 
+"""
 class ObservationOrderingFilter(ArrowOrderingFilter):
     def filter(self, qs, value):
         ordering = [self.get_ordering_value(param) for param in value]
@@ -75,3 +76,4 @@ class ObservationFilterSet(BaseFilterSet):
         items = sorted(items, key=sort_key_functions[sort_by], reverse=descending)
 
         return items
+"""

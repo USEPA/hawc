@@ -5,25 +5,25 @@ from . import api, views
 
 router = SimpleRouter()
 router.register("experiment", api.ExperimentViewSet, basename="experiment")
-router.register("chemical", api.ChemicalViewSet, basename="chemical")
-router.register("animal-group", api.AnimalGroupViewSet, basename="animal-group")
-router.register("treatment", api.TreatmentViewSet, basename="treatment")
-router.register("dose-group", api.DoseGroupViewSet, basename="dose-group")
-router.register("endpoint", api.EndpointViewSet, basename="endpoint")
-router.register("observation-time", api.ObservationTimeViewSet, basename="observation-time")
-router.register("data-extraction", api.DataExtractionViewSet, basename="data-extraction")
-router.register(
-    "dose-response-group-level-data",
-    api.DoseResponseGroupLevelDataViewSet,
-    basename="dose-response-group-level-data",
-)
-router.register(
-    "dose-response-animal-level-data",
-    api.DoseResponseAnimalLevelDataViewSet,
-    basename="dose-response-animal-level-data",
-)
-router.register("observation", api.ObservationViewSet, basename="observation")
-router.register("study-level-value", api.StudyLevelValueViewSet, basename="study-level-value")
+# router.register("chemical", api.ChemicalViewSet, basename="chemical")
+# router.register("animal-group", api.AnimalGroupViewSet, basename="animal-group")
+# router.register("treatment", api.TreatmentViewSet, basename="treatment")
+# router.register("dose-group", api.DoseGroupViewSet, basename="dose-group")
+# router.register("endpoint", api.EndpointViewSet, basename="endpoint")
+# router.register("observation-time", api.ObservationTimeViewSet, basename="observation-time")
+# router.register("data-extraction", api.DataExtractionViewSet, basename="data-extraction")
+# router.register(
+# "dose-response-group-level-data",
+# api.DoseResponseGroupLevelDataViewSet,
+# basename="dose-response-group-level-data",
+# )
+# router.register(
+# "dose-response-animal-level-data",
+# api.DoseResponseAnimalLevelDataViewSet,
+# basename="dose-response-animal-level-data",
+# )
+# router.register("observation", api.ObservationViewSet, basename="observation")
+# router.register("study-level-value", api.StudyLevelValueViewSet, basename="study-level-value")
 
 app_name = "animalv2"
 urlpatterns = [
@@ -55,6 +55,9 @@ urlpatterns = [
         views.ExperimentViewSet.as_view(),
         name="experiment-htmx",
     ),
+]
+
+"""
     path(
         "chemical/<int:pk>/<slug:action>/",
         views.ChemicalViewSet.as_view(),
@@ -102,4 +105,4 @@ urlpatterns = [
         views.ObservationList.as_view(),
         name="observation-list",
     ),
-]
+"""

@@ -10,6 +10,7 @@ class ExperimentViewSet(EditPermissionsCheckMixin, AssessmentEditViewSet):
     filterset_fields = ("study",)
 
 
+"""
 class ChemicalViewSet(EditPermissionsCheckMixin, AssessmentEditViewSet):
     edit_check_keys = ["experiment"]
     assessment_filter_args = "experiment__study__assessment"
@@ -96,3 +97,4 @@ class StudyLevelValueViewSet(EditPermissionsCheckMixin, AssessmentEditViewSet):
     model = models.StudyLevelValue
     serializer_class = serializers.StudyLevelValueSerializer
     filterset_fields = ("study",)
+"""

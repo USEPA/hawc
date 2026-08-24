@@ -14,6 +14,7 @@ class ExperimentSerializer(IdLookupMixin, serializers.ModelSerializer):
         fields = "__all__"
 
 
+"""
 class ChemicalSerializer(serializers.ModelSerializer):
     dtxsid_id = serializers.PrimaryKeyRelatedField(
         write_only=True,
@@ -248,3 +249,4 @@ class StudyLevelValueSerializer(IdLookupMixin, serializers.ModelSerializer):
     class Meta:
         model = models.StudyLevelValue
         fields = "__all__"
+"""

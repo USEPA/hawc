@@ -2,7 +2,6 @@
   {% bs4_colgroup '20,80' %}
   <tbody>
     {% optional_table_row "Experiment name" object.name %}
-    {% optional_table_row "Study Type" object.get_study_type_display %}
-    {% optional_table_row "Guideline" object.get_has_guideline_display %}
+    {% optional_table_row "Experiment Type" object.get_other_aware_experiment_type %}
   </tbody>
 </table>
