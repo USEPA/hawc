@@ -27,6 +27,8 @@
               <a class="dropdown-item" href="{% url 'animal:experiment_new' object.pk %}">Create new experiment</a>
               <a class="dropdown-item" href="{% url 'animal:experiment_copy' object.pk %}">Copy from existing</a>
             {% elif assessment.animal_version == 2 %}
+              <a class="dropdown-item" href="{% url 'animalv2:chemical_create' object.pk %}">Create new chemical</a>
+              <a class="dropdown-item" href="{% url 'animalv2:chemical_copy' object.pk %}">Copy chemical from existing</a>
               <a class="dropdown-item" href="{% url 'animalv2:experiment_create' object.pk %}">Create new experiment</a>
             {% endif %}
           {% endif %}
@@ -111,7 +113,8 @@
       {% if assessment.animal_version == 1 %}
         {% include "animal/_experiment_list_tbl.html" with object_list=object.experiments.all %}
       {% elif assessment.animal_version == 2 %}
-        {% include "animalv2/fragments/_experiment_list_tbl.html" with object_list=object.v2_experiments.all %}
+	    {% include "animalv2/fragments/_chemical_list_tbl.html" with object_list=object.aniv2_chemicals.all %}
+        {% include "animalv2/fragments/_experiment_list_tbl.html" with object_list=object.aniv2_experiments.all %}
       {% endif %}
     {% endif %}
 

@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from ..assessment.autocomplete import DSSToxAutocomplete
 from ..common.autocomplete import AutocompleteSelectWidget, AutocompleteTextWidget
-from ..common.forms import ArrayCheckboxSelectMultiple, BaseFormHelper
+from ..common.forms import ArrayCheckboxSelectMultiple, BaseFormHelper, CopyForm
 from . import autocomplete, constants, models
 
 
@@ -117,42 +117,74 @@ class ExperimentForm(ModelForm):
         return helper
 
 
-"""
 class ChemicalForm(forms.ModelForm):
     class Meta:
         model = models.Chemical
-        exclude = ("experiment",)
+        exclude = ("study",)
         widgets = {
             "name": AutocompleteTextWidget(
                 autocomplete_class=autocomplete.ChemicalAutocomplete, field="name"
             ),
             "dtxsid": AutocompleteSelectWidget(autocomplete_class=DSSToxAutocomplete),
-            "expiration_date": forms.DateInput(attrs={"type": "date"}),
         }
 
     def __init__(self, *args, **kwargs):
+        """
         experiment = kwargs.pop("parent", None)
-        prefix = f"chemical-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        instance_ref = kwargs.get("instance")
+        prefix = f"chemical-{instance_ref.pk if instance_ref is not None else 'new'}"
+        if "instance" in kwargs:
+            del kwargs["instance"]
+        print(f"{kwargs=}")
+        print(f"loaded '{prefix}' FROM {instance_ref}")
+        # prefix = f"chemical-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
         super().__init__(*args, prefix=prefix, **kwargs)
         if experiment:
             self.instance.experiment = experiment
+        """
+        study = kwargs.pop("parent", None)
+        super().__init__(*args, **kwargs)
+        if study:
+            self.instance.study = study
 
     @property
     def helper(self):
-        helper = BaseFormHelper(self)
-        helper.form_tag = False
+        inputs = {
+            "legend_text": ("Add" if not self.instance.id else "Update") + " Chemical",
+            "cancel_url": self.instance.study.get_absolute_url(),
+            "submit_text": "Save",
+        }
+        helper = BaseFormHelper(self, **inputs)
+        # helper.form_tag = False
+        helper.form_id = "form-mech-chemical"
         # helper.add_row("name", 3, "col-md-4")
         # helper.add_row("source", 3, "col-md-4")
-        helper.add_row("cas", 3, "col-md-4")
-        helper.add_row("composition_purity", 2, "col-md-6")
-        helper.add_row("percent_purity", 3, "col-md-4")
-        helper.add_row("stability", 2, "col-md-6")
-        helper.add_row("solubility", 2, "col-md-6")
-        helper.add_create_btn("dtxsid", reverse("assessment:dtxsid_create"), "Add new DTXSID")
+        # helper.add_row("cas", 3, "col-md-4")
+        # helper.add_row("composition_purity", 2, "col-md-6")
+        # helper.add_row("percent_purity", 3, "col-md-4")
+        # helper.add_row("stability", 2, "col-md-6")
+        # helper.add_row("solubility", 2, "col-md-6")
+        # helper.add_create_btn("dtxsid", reverse("assessment:dtxsid_create"), "Add new DTXSID")
         set_textarea_height(self.fields)
         return helper
 
 
+class ChemicalSelectorForm(CopyForm):
+    legend_text = "Copy chemical"
+    help_text = "Select an existing chemical as a template to create a new one."
+    create_url_pattern = "animalv2:chemical_create"
+    selector = forms.ModelChoiceField(
+        queryset=models.Chemical.objects.all(), empty_label=None, label="Select template"
+    )
+
+    def __init__(self, *args, **kw):
+        super().__init__(*args, **kw)
+        self.fields["selector"].queryset = self.fields["selector"].queryset.filter(
+            study=self.parent
+        )
+
+
+"""
 class AnimalGroupForm(forms.ModelForm):
     class Meta:
         model = models.AnimalGroup

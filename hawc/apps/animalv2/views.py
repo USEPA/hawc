@@ -8,6 +8,7 @@ from ..assessment.constants import AssessmentViewPermissions
 from ..common.forms import FormsetGenericFormHelper
 from ..common.htmx import HtmxViewSet, Item, action, can_edit, can_view
 from ..common.views import (
+    BaseCopyForm,
     BaseCreate,
     BaseDelete,
     BaseDetail,
@@ -258,6 +259,45 @@ class ExperimentChildViewSet(HtmxViewSet):
         context["formsets"] = formsets
 
         return context
+
+
+class ChemicalCreate(EnsureExtractionStartedMixin, BaseCreate):
+    success_message = "Chemical created."
+    parent_model = Study
+    parent_template_name = "study"
+    model = models.Chemical
+    form_class = forms.ChemicalForm
+
+    def get_success_url(self):
+        super().get_success_url()
+        return self.object.get_update_url()
+
+
+class ChemicalUpdate(BaseUpdate):
+    success_message = "Chemical updated."
+    parent_model = Study
+    parent_template_name = "study"
+    model = models.Chemical
+    form_class = forms.ChemicalForm
+    # template_name = "animalv2/chemical_update.html"
+
+
+class ChemicalDetail(BaseDetail):
+    model = models.Chemical
+
+
+class ChemicalDelete(BaseDelete):
+    success_message = "Chemical deleted."
+    model = models.Chemical
+
+    def get_success_url(self):
+        return self.object.study.get_absolute_url()
+
+
+class ChemicalCopyForm(BaseCopyForm):
+    copy_model = models.Chemical
+    form_class = forms.ChemicalSelectorForm
+    model = Study
 
 
 """

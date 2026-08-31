@@ -1,0 +1,7 @@
+<table class="table table-sm table-striped" hx-target="this" id="chemical-table">
+  {% bs4_colgroup '20,80' %}
+  <tbody>
+    {% optional_table_row "Chemical name" object.name %}
+    {% optional_table_row "DTXSID" object.dtxsid %}
+  </tbody>
+</table>

@@ -55,6 +55,32 @@ urlpatterns = [
         views.ExperimentViewSet.as_view(),
         name="experiment-htmx",
     ),
+    # CHEMICAL - START
+    path(
+        "study/<int:pk>/chemical/create/",
+        views.ChemicalCreate.as_view(),
+        name="chemical_create",
+    ),
+    path(
+        "study/<int:pk>/chemical/copy/",
+        views.ChemicalCopyForm.as_view(),
+        name="chemical_copy",
+    ),
+    path(
+        "chemical/<int:pk>/update/",
+        views.ChemicalUpdate.as_view(),
+        name="chemical_update",
+    ),
+    path(
+        "chemical/<int:pk>/",
+        views.ChemicalDetail.as_view(),
+        name="chemical_detail",
+    ),
+    path(
+        "chemical/<int:pk>/delete/",
+        views.ChemicalDelete.as_view(),
+        name="chemical_delete",
+    ),
 ]
 
 """

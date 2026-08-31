@@ -9,6 +9,7 @@ class ChemicalManager(BaseManager):
     assessment_relation = "experiment__study__assessment"
 
 
+"""
 class AnimalGroupManager(BaseManager):
     assessment_relation = "experiment__study__assessment"
 
@@ -43,3 +44,4 @@ class DoseResponseAnimalLevelDataManager(BaseManager):
 
 class ObservationManager(BaseManager):
     assessment_relation = "experiment__study_assessment"
+"""
