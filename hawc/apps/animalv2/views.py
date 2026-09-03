@@ -307,6 +307,12 @@ class TestSubstanceViewSet(ExperimentChildViewSet):
     detail_fragment = "animalv2/fragments/testsubstance_row.html"
 
 
+class GuidelineViewSet(ExperimentChildViewSet):
+    model = models.Guideline
+    form_class = forms.GuidelineForm
+    detail_fragment = "animalv2/fragments/guideline_row.html"
+
+
 """
 class ChemicalViewSet(ExperimentChildViewSet):
     model = models.Chemical

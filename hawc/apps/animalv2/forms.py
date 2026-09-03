@@ -213,6 +213,27 @@ class TestSubstanceForm(forms.ModelForm):
         return helper
 
 
+class GuidelineForm(forms.ModelForm):
+    class Meta:
+        model = models.Guideline
+        exclude = ("experiment",)
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = f"guideline-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+        helper.add_row("number", 2, "col-md-6")
+
+        return helper
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

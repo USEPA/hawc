@@ -202,6 +202,78 @@ Other notable information about the test substance in general or special handlin
         return self
 
 
+class Guideline(models.Model):
+    objects = managers.GuidelineManager()
+
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name="guidelines")
+
+    guideline_status = models.CharField(
+        default="",
+        blank=True,
+        max_length=2,
+        choices=constants.YesNoNr.choices,
+        help_text="""Select whether a guideline study was conducted.""",
+    )
+
+    name = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Guideline name",
+        help_text="""Name of the Office of Chemical Safety and Pollution Prevention (OCSPP) Health Effects or OECD (Organization for Economic Cooperation and Development) guideline to which a study (most closely) adheres to.""",
+    )
+
+    number = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Guideline number",
+        help_text="""Number associated with the OCSPP or OECD guideline that a study (most closely) adheres to. Guideline numbers are differentiated by the distinct number proceeding 870/890, as dictated by the EPA Health Effects Test Guidelines. 
+The guideline number should be entered in the box with both the acronym and full number. For example, “OPPTS 870.3700.”""",
+    )
+
+    version_year = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Guideline Version/Year",
+        help_text="Describe the guideline version/year",
+    )
+
+    deviations = models.TextField(
+        max_length=1500,
+        blank=True,
+        verbose_name="Guideline Deviations",
+        help_text="""List each deviation from the protocol and classify the deviation as major or minor.  Also report any rationale provided by the investigator’s for the deviation.  Similarly list, classify, and discuss all other deficiencies with the conduct, results, and reporting of the study.  Discuss the possibility of resolving the deficiencies and what would be required.  Major deficiencies may be presented and discussed in paragraph form, whereas minor deficiencies can be presented in a bulleted list.""",
+    )
+
+    compliance = models.CharField(
+        default="",
+        blank=True,
+        max_length=2,
+        choices=constants.YesNoNr.choices,
+        help_text="Are GLP and Quality Assurance statements provided, signed, and dated?",
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
+
+    def __str__(self):
+        return self.name
+
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+
 reversion.register(Experiment)
 reversion.register(Chemical)
 reversion.register(TestSubstance)
+reversion.register(Guideline)

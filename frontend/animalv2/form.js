@@ -87,7 +87,54 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
         // scrolls to the top. Rather than track that down, just use opacity 0->1 which doesn't
         // have the same issue...)
         $("form#aniv2-experiment-form").css("opacity", 1);
-    };/*
+    },
+
+    guidelineFormStartup = function (f) {
+		console.log("FORM SETUP");
+        let form = $(f);
+        form.find("#id_name").focus();
+
+            // form.find("select[name$='-composition_purity']"),
+            // form.find("input[name$='-composition_purity_other']"),
+
+        let showHides = [
+            [
+                "select[name$='-guideline_status']", [
+                    "input[name$='-name']",
+                    "input[name$='-number']",
+                    "input[name$='-version_year']",
+                    "textarea[name$='-deviations']",
+                    "select[name$='-compliance']",
+                ], "YS"
+            ],
+        ]
+
+        for (let i = 0 ; i < showHides.length ; i++) {
+            let showHide = showHides[i];
+            let alwaysSelector = showHide[0];
+            let contingentSelectors = showHide[1];
+            if (!Array.isArray(contingentSelectors)) {
+                contingentSelectors = [contingentSelectors];
+            }
+            let otherVal = showHide[2];
+
+            let alwaysEl = form.find(alwaysSelector);
+            let contingentEls = contingentSelectors.map((x) => form.find(x));
+
+			console.log("SETUP ON", alwaysEl, contingentEls, otherVal);
+            h.setupOtherShowHideRelationship(
+                alwaysEl,
+                contingentEls,
+                otherVal
+            );
+        }
+    };
+
+
+
+
+
+	/*
     chemicalFormStartup = function (f) {
         let form = $(f);
 
@@ -203,6 +250,8 @@ export default document => {
         if (e.target.querySelector(".form-experiment")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             experimentFormStartup(e.target);
+        } else if (e.target.querySelector(".form-guideline")) {
+            guidelineFormStartup(e.target);
 		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);

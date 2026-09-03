@@ -29,6 +29,25 @@
   </div>
 
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      {% url 'animalv2:guideline-htmx' object.pk 'create' as guideline_create %}
+      {% include "common/fragments/_create_card.html" with title="Guidelines" hx_get=guideline_create hx_target=".guideline-edit-row.create-row" model="guideline" btn_text="Add Row" %}
+      <table class="table table-sm table-striped-invert">
+        {% bs4_colgroup '25,65,10' %}
+        {% bs4_thead 'Status,Name,Edit' %}
+        <tbody id="guideline-tbody">
+          {% for object in object.guidelines.all %}
+            {% include "animalv2/fragments/guideline_row.html" %}
+          {% endfor %}
+          {% include "common/fragments/_create_one.html" with text='No guidelines to display. Click "Add Row" to create one.' %}
+          {% include "common/fragments/_create_row.html" with model="guideline" first=True %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
 
 
   <div class="well text-center">

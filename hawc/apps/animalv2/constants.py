@@ -1,6 +1,12 @@
 from django.db import models
 
 
+class YesNoNr(models.TextChoices):
+    YS = "YS", "Yes"
+    NO = "NO", "No"
+    NR = "NR", "Not reported"
+
+
 class ExperimentType(models.TextChoices):
     ACU = "ACU", "acute"
     SHT = "SHT", "short-term"
@@ -22,6 +28,7 @@ class DevelopmentalOrReproductiveToxicityType(models.TextChoices):
     EF = "EF", "Embryo-fetal development studies"
     PP = "PP", "Perinatal/postnatal development"
 
+
 class TestSubstanceComposition(models.TextChoices):
     MET = "MET", "metabolite"
     MIX = "MIX", "mixture"
@@ -29,11 +36,13 @@ class TestSubstanceComposition(models.TextChoices):
     FOR = "FOR", "formulation"
     PAR = "PAR", "parent"
 
+
 class TestSubstancePurity(models.TextChoices):
     AN = "AN", "analytical grade"
     TE = "TE", "technical grade"
     NS = "NS", "purity not specified"
     NA = "NA", "not applicable (e.g. in silico study) "
+
 
 """
 class AdministrationRoute(models.TextChoices):
