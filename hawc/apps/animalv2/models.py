@@ -133,5 +133,75 @@ class Chemical(models.Model):
         return self
 
 
+class TestSubstance(models.Model):
+    objects = managers.TestSubstanceManager()
+
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="testsubstances"
+    )
+    chemical = models.ForeignKey(Chemical, on_delete=models.CASCADE, related_name="testsubstances")
+
+    source = models.CharField(
+        max_length=255,
+        help_text="""Any pertinent information regarding a substance’s origin (the corporation, organization, or facility that produced the substance) and catalog number if available. 
+Other notable information about the test substance in general or special handling of the chemical, such as milling, can be noted in this field.""",
+    )
+
+    composition = models.CharField(
+        blank=True,
+        default="",
+        max_length=3,
+        choices=constants.TestSubstanceComposition.choices,
+        help_text="""A chemical can be created for a mixture/product. If the chemical refers to the composition of the mixture/product. Select the chemical composition and specify the chemical composition in the “Composition Remarks” field.""",
+    )
+
+    composition_remarks = models.CharField(
+        max_length=255, help_text="Specify the chemical composition."
+    )
+
+    purity = models.CharField(
+        blank=True,
+        default="",
+        max_length=2,
+        choices=constants.TestSubstancePurity.choices,
+        help_text="""If detailed information on the purity of the composition is not known, a qualitative statement can be provided in this field, e.g. 'analytical grade' or 'technical grade'.""",
+    )
+
+    percent_purity = models.CharField(
+        max_length=255,
+        verbose_name="% Purity",
+        help_text="Provide the % purity or chemical composition",
+    )
+
+    expiration_date = models.DateField(help_text="Provide the expiration date or re-test date")
+
+    lot_batch_number = models.CharField(
+        max_length=255,
+        verbose_name="Lot / Batch #",
+        help_text="Lot or batch number assigned to chemical by chemical supplier. Leave blank if this information is not reported within the document.",
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
+
+    def __str__(self):
+        return f"{self.chemical.name} / {self.get_composition_display()}"
+
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+
 reversion.register(Experiment)
 reversion.register(Chemical)
+reversion.register(TestSubstance)

@@ -36,11 +36,16 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
         form.find("#id_name").focus();
         console.log("EXP FORM STARTUP!!!!!\n");
 
-		// testdesign
 		h.setupOtherShowHideRelationship(
 			form.find("select#id_experiment_type"),
 			form.find("input#id_experiment_type_other"),
 			"OTH"
+		);
+
+		h.setupOtherShowHideRelationship(
+			form.find("select#id_experiment_type"),
+			form.find("input#id_dev_or_repro_toxicity_types_0"), // any checkbox will do...
+			"DTR"
 		);
 		/*
         let showHides = [

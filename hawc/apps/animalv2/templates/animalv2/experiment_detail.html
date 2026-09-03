@@ -13,4 +13,21 @@
   </div>
   {% include "animalv2/fragments/_experiment_table.html" %}
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Test Substances</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '66,17,17' %}
+        {% bs4_thead 'Chemical,Purity,Percent Purity' %}
+        <tbody>
+          {% for object in object.testsubstances.all %}
+            {% include "animalv2/fragments/testsubstance_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No test substances available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 {% endblock %}

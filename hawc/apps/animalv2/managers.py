@@ -9,6 +9,10 @@ class ChemicalManager(BaseManager):
     assessment_relation = "experiment__study__assessment"
 
 
+class TestSubstanceManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+
 """
 class AnimalGroupManager(BaseManager):
     assessment_relation = "experiment__study__assessment"

@@ -184,6 +184,35 @@ class ChemicalSelectorForm(CopyForm):
         )
 
 
+class TestSubstanceForm(forms.ModelForm):
+    class Meta:
+        model = models.TestSubstance
+        exclude = ("experiment",)
+        widgets = {
+            "expiration_date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = f"testsubstance-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+
+        self.fields["chemical"].queryset = self.instance.experiment.study.aniv2_chemicals.all()
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+        helper.add_row("chemical", 2, "col-md-6")
+        helper.add_row("composition", 2, "col-md-6")
+        helper.add_row("purity", 2, "col-md-6")
+        helper.add_row("expiration_date", 2, "col-md-6")
+
+        return helper
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

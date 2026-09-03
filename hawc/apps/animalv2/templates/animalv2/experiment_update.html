@@ -10,6 +10,27 @@
 
   {% include "animalv2/fragments/_experiment_table.html" %}
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      {% url 'animalv2:testsubstance-htmx' object.pk 'create' as testsubstance_create %}
+      {% include "common/fragments/_create_card.html" with title="Test Substances" hx_get=testsubstance_create hx_target=".testsubstance-edit-row.create-row" model="testsubstance" btn_text="Add Row" %}
+      <table class="table table-sm table-striped-invert">
+        {% bs4_colgroup '60,15,15,10' %}
+        {% bs4_thead 'Chemical,Purity,Percent Purity,Edit' %}
+        <tbody id="testsubstance-tbody">
+          {% for object in object.testsubstances.all %}
+            {% include "animalv2/fragments/testsubstance_row.html" %}
+          {% endfor %}
+          {% include "common/fragments/_create_one.html" with text='No test substances to display. Click "Add Row" to create one.' %}
+          {% include "common/fragments/_create_row.html" with model="testsubstance" first=True %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+
   <div class="well text-center">
     <a class="btn btn-light my-3" href="{{object.get_absolute_url}}" id="animalv2-page-cancel"><i class="fa fa-fw fa-times"></i>Cancel</a>
   </div>

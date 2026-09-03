@@ -444,7 +444,12 @@ const helpers = {
                     otherParents[i].show();
                 } else {
                     otherParents[i].hide();
-                    otherField.val(""); // wipe the value if you switch off of "Other"
+
+					if (otherField.attr("type") == "checkbox") {
+						otherField.parents(".form-group").find("input[type='checkbox']").prop("checked", false);
+					} else {
+						otherField.val(""); // wipe the value if you switch off of "Other"
+					}
                 }
 
             }

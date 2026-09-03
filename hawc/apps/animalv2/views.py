@@ -300,6 +300,13 @@ class ChemicalCopyForm(BaseCopyForm):
     model = Study
 
 
+# ExperimentChild subclasses...
+class TestSubstanceViewSet(ExperimentChildViewSet):
+    model = models.TestSubstance
+    form_class = forms.TestSubstanceForm
+    detail_fragment = "animalv2/fragments/testsubstance_row.html"
+
+
 """
 class ChemicalViewSet(ExperimentChildViewSet):
     model = models.Chemical
