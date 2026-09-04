@@ -96,6 +96,11 @@ urlpatterns = [
         views.AnimalGroupViewSet.as_view(),
         name="animalgroup-htmx",
     ),
+    path(
+        "husbandry/<int:pk>/<slug:action>/",
+        views.HusbandryViewSet.as_view(),
+        name="husbandry-htmx",
+    ),
 ]
 
 """

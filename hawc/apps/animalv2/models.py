@@ -376,8 +376,139 @@ class AnimalGroup(models.Model):
         return self
 
 
+class Husbandry(models.Model):
+    objects = managers.AnimalGroupManager()
+
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name="husbandries")
+
+    animal_group = models.ForeignKey(
+        AnimalGroup, on_delete=models.CASCADE, related_name="husbandries"
+    )
+
+    number_per_cage = models.CharField(
+        max_length=255,
+        help_text="Provide the number of animals per cage.",
+        verbose_name="Number of Animals per Cage",
+    )
+
+    animal_randomization = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryRandomization.choices,
+        help_text="Select whether a randomization method was used to assign animals to cages. If yes, include a description of animal randomization method. If not available from picklist, select 'other' and specify",
+    )
+
+    animal_randomization_remarks = models.CharField(max_length=255, blank=True)
+
+    cage_material = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryCageMaterial.choices,
+        help_text="Select animal cage material. If not available from picklist, select 'other' and specify.",
+    )
+
+    cage_material_remarks = models.CharField(max_length=255, blank=True)
+
+    bedding_material = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryBeddingMaterial.choices,
+        help_text="Select the animal bedding material. If not available from picklist, select 'other' and specify.",
+    )
+
+    bedding_material_remarks = models.CharField(max_length=255, blank=True)
+
+    enrichment_material = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryEnrichmentMaterial.choices,
+        help_text="Select the type of enrichment provided for animals. If none apply, select “other” and describe the test material. If not available from picklist, select 'other' and specify.",
+    )
+
+    enrichment_material_remarks = models.CharField(max_length=255, blank=True)
+
+    water_bottle_material = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryWaterBottleMaterial.choices,
+        help_text="Select the water bottle material. If not available from picklist, select 'other' and specify.",
+    )
+
+    water_bottle_material_remarks = models.CharField(max_length=255, blank=True)
+
+    animal_identification = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryIdentification.choices,
+        help_text="Select the animal identification method. If not available from picklist, select 'other' and specify.",
+    )
+
+    animal_identification_remarks = models.CharField(max_length=255, blank=True)
+
+    ambient_temperature = models.CharField(
+        max_length=255,
+        help_text="Describe the animal husbandry temperature.",
+        verbose_name="Ambient Temperature (°C)",
+    )
+
+    humidity_percentage = models.CharField(
+        max_length=255,
+        help_text="Describe the animal husbandry humidity in %",
+        verbose_name="Humidity (%)",
+    )
+
+    photo_period = models.CharField(
+        max_length=255,
+        help_text="Describe the photoperiod as hours dark / hours light.",
+        verbose_name="Photoperiod (hrs dark / hrs light)",
+    )
+
+    feeding_frequency = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryFeedingFrequency.choices,
+        help_text="Select the feeding frequency and provide additional details in the “Animal Feeding and Diet Remarks” field.",
+    )
+
+    diet = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryDiet.choices,
+        help_text="Select the type of diet (e.g. conventional laboratory diet / caloric restriction), whether it was provided ad libitum, restricted, etc. ",
+    )
+
+    feeding_and_diet_remarks = models.TextField(
+        max_length=32768,
+        help_text="Describe the animal feeding protocol. For fasting, describe the fasting protocol (e.g. animals were fasted 4 hours prior to sacrifice).",
+    )
+
+    water = models.CharField(
+        max_length=3,
+        choices=constants.HusbandryWater.choices,
+        help_text="Describe type (e.g. drinking water, tap distilled), and whether it was provided ad libitum. If not available from picklist, select 'other' and specify.",
+    )
+
+    food_and_water_quality = models.TextField(
+        max_length=2500,
+        help_text="Provide analytical information (if available) on the nutrient and dietary contaminant levels. Similarly provide analytical information on the drinking water used in the study.",
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
+
+    def __str__(self):
+        return "XXX"
+
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+
 reversion.register(Experiment)
 reversion.register(Chemical)
 reversion.register(TestSubstance)
 reversion.register(Guideline)
 reversion.register(AnimalGroup)
+reversion.register(Husbandry)

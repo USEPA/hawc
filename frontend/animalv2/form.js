@@ -31,6 +31,29 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
             loopEl.attr("id", incorrectId.replace(`-${total - 2}-`, `-${total - 1}-`));
         });
     },*/
+	processMultipleShowHides = function(form, showHides) {
+        for (let i = 0 ; i < showHides.length ; i++) {
+            let showHide = showHides[i];
+            let alwaysSelector = showHide[0];
+            let contingentSelectors = showHide[1];
+            if (!Array.isArray(contingentSelectors)) {
+                contingentSelectors = [contingentSelectors];
+            }
+            let otherVal = showHide[2];
+
+            let alwaysEl = form.find(alwaysSelector);
+            let contingentEls = contingentSelectors.map((x) => form.find(x));
+
+			console.log("SETUP ON", alwaysEl, contingentEls, otherVal);
+            h.setupOtherShowHideRelationship(
+                alwaysEl,
+                contingentEls,
+                otherVal
+            );
+        }
+	},
+
+	
     experimentFormStartup = function (f) {
         let form = $(f);
         form.find("#id_name").focus();
@@ -47,40 +70,6 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 			form.find("input#id_dev_or_repro_toxicity_types_0"), // any checkbox will do...
 			"DTR"
 		);
-		/*
-        let showHides = [
-            [ "select#id_study_type", "input#id_study_type_other", "OTH" ],
-            [ "select#id_route_of_administration", "input#id_route_of_administration_other", "OTH" ],
-            [
-                "select#id_has_guideline", [
-                    "input#id_guideline_name",
-                    "input#id_guideline_number",
-                    "input#id_guideline_version_year",
-                    "input#id_guideline_deviations",
-                ], "YS"
-            ],
-        ]
-
-        for (let i = 0 ; i < showHides.length ; i++) {
-            let showHide = showHides[i];
-            let alwaysSelector = showHide[0];
-            let contingentSelectors = showHide[1];
-            if (!Array.isArray(contingentSelectors)) {
-                contingentSelectors = [contingentSelectors];
-            }
-            let otherVal = showHide[2];
-
-            let alwaysEl = form.find(alwaysSelector);
-            let contingentEls = contingentSelectors.map((x) => form.find(x));
-
-            h.setupOtherShowHideRelationship(
-                alwaysEl,
-                contingentEls,
-                otherVal
-            );
-        }
-		*/
-
         // we hide this in CSS - and now once it's set up, we show it. This way, you don't see
         // effect/subtype blink out of visibility; you just see everything appear, which is nicer.
         // (why opacity? If using display:none instead of opacity: 0 in the css, then the page
@@ -109,25 +98,7 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
             ],
         ]
 
-        for (let i = 0 ; i < showHides.length ; i++) {
-            let showHide = showHides[i];
-            let alwaysSelector = showHide[0];
-            let contingentSelectors = showHide[1];
-            if (!Array.isArray(contingentSelectors)) {
-                contingentSelectors = [contingentSelectors];
-            }
-            let otherVal = showHide[2];
-
-            let alwaysEl = form.find(alwaysSelector);
-            let contingentEls = contingentSelectors.map((x) => form.find(x));
-
-			console.log("SETUP ON", alwaysEl, contingentEls, otherVal);
-            h.setupOtherShowHideRelationship(
-                alwaysEl,
-                contingentEls,
-                otherVal
-            );
-        }
+		processMultipleShowHides(form, showHides);
     },
 
     animalGroupFormStartup = function (f) {
@@ -146,6 +117,23 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 			form.find("input[name$='-cohort_type_remarks']"),
 			"OTH"
 		);
+    },
+
+    husbandryFormStartup = function (f) {
+		console.log("FORM SETUP");
+        let form = $(f);
+        form.find("#id_name").focus();
+
+        let showHides = [
+            [ "select[name$='-animal_randomization']", "input[name$='-animal_randomization_remarks']", ["YES","OTH"] ],
+            [ "select[name$='-cage_material']", "input[name$='-cage_material_remarks']", "OTH" ],
+            [ "select[name$='-bedding_material']", "input[name$='-bedding_material_remarks']", "OTH" ],
+            [ "select[name$='-enrichment_material']", "input[name$='-enrichment_material_remarks']", "OTH" ],
+            [ "select[name$='-water_bottle_material']", "input[name$='-water_bottle_material_remarks']", "OTH" ],
+            [ "select[name$='-animal_identification']", "input[name$='-animal_identification_remarks']", "OTH" ],
+        ]
+
+		processMultipleShowHides(form, showHides);
     },
 
 
@@ -275,6 +263,8 @@ export default document => {
             guidelineFormStartup(e.target);
         } else if (e.target.querySelector(".form-animalgroup")) {
             animalGroupFormStartup(e.target);
+        } else if (e.target.querySelector(".form-husbandry")) {
+            husbandryFormStartup(e.target);
 		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);

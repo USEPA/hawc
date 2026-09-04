@@ -258,6 +258,35 @@ class AnimalGroupForm(forms.ModelForm):
         return helper
 
 
+class HusbandryForm(forms.ModelForm):
+    class Meta:
+        model = models.Husbandry
+        exclude = ("experiment",)
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = f"husbandry-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+
+        self.fields["animal_group"].queryset = self.instance.experiment.aniv2_animalgroups.all()
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+        helper.add_row("animal_group", 2, "col-md-6")
+        helper.add_row("animal_randomization", 2, "col-md-6")
+        helper.add_row("cage_material", 2, "col-md-6")
+        helper.add_row("bedding_material", 2, "col-md-6")
+        helper.add_row("enrichment_material", 2, "col-md-6")
+        helper.add_row("water_bottle_material", 2, "col-md-6")
+        helper.add_row("animal_identification", 2, "col-md-6")
+
+        return helper
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

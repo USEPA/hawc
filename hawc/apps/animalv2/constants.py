@@ -81,139 +81,101 @@ class AnimalGroupSex(models.TextChoices):
     NS = "NS", "not specified"
 
 
-"""
-class AdministrationRoute(models.TextChoices):
-    ORA = "ORA", "oral"
-    DER = "DER", "dermal"
-    INH = "INH", "inhalation"
-    INJ = "INJ", "injection"
-    OTH = "OTH", "other, specify"
-
-
-class GuidelineYesNo(models.TextChoices):
-    YES = "YS", "Yes"
-    NO = "NO", "No"
-    NR = "NR", "Not reported"
-
-
-class CompositionPurity(models.TextChoices):
-    ANA = "ANA", "analytical grade"
-    TCH = "TCH", "technical grade"
-    NS = "NS", "purity not specified"
-    NA = "NA", "not applicable (e.g. in silico study)"
+class HusbandryRandomization(models.TextChoices):
+    YES = "YES", "yes, with remarks"
+    NO = "NO", "no"
     OTH = "OTH", "other"
+    UNK = "UNK", "unknown"
 
 
-class ChemicalStability(models.TextChoices):
-    STA = "STA", "The chemical is stable under storage and assay conditions, specify"
-    UNK = "UNK", "Unknown"
+class HusbandryCageMaterial(models.TextChoices):
+    GLA = "GLA", "glass"
+    PCA = "PCA", "polycarbonate"
+    PPR = "PPR", "polypropylene"
+    PT = "PT", "Polyethylene terepthalate"
+    SS = "SS", "stainless steel"
+    ALU = "ALU", "aluminum"
+    MSH = "MSH", "wire mesh"
+    ACR = "ACR", "acrylic"
+    OTH = "OTH", "other"
+    NS = "NS", "not specified"
 
 
-class ChemicalSolubility(models.TextChoices):
-    YES = "YES", "The highest tested concentration was soluble"
-    NO = "NO", "The highest tested concentration was insoluble, specify"
-    UNK = "UNK", "Unknown"
+class HusbandryBeddingMaterial(models.TextChoices):
+    WOO = "WOO", "wood shavings"
+    PAP = "PAP", "paper"
+    COB = "COB", "corn cob"
+    HAY = "HAY", "hay or straw"
+    COC = "COC", "coconut fibre (coir)"
+    PEL = "PEL", "pelleted"
+    FLC = "FLC", "fleece"
+    OTH = "OTH", "other"
+    NS = "NS", "not specified"
 
 
-class Sex(models.TextChoices):
-    MALE = "M", "Male"
-    FEMALE = "F", "Female"
-    COMBINED = "C", "Combined"
-    NR = "R", "Not reported"
+class HusbandryEnrichmentMaterial(models.TextChoices):
+    SHE = "SHE", "structural (shelter/hiding place)"
+    PLA = "PLA", "structural (platform or perch)"
+    CLB = "CLB", "structural (branches or climbing structure)"
+    TOY = "TOY", "manipulative (toys and objects)"
+    FOR = "FOR", "manipulative (foraging devices)"
+    CHW = "CHW", "manipulative (chewable items)"
+    VIS = "VIS", "sensory (visual stimuli)"
+    AUD = "AUD", "sensory (auditory stimuli)"
+    OLF = "OLF", "sensory (olfactory stimuli)"
+    ENV = "ENV", "environmental (natural materials)"
+    PUZ = "PUZ", "cognitive (puzzle feeders)"
+    TRA = "TRA", "cognitive (training and tasks)"
+    OTH = "OTH", "other"
+    NS = "NS", "not specified"
 
 
-class Generation(models.TextChoices):
-    NA = "", "N/A (not generational-study)"
-    P0 = "P0", "Parent-generation (P0)"
-    F1 = "F1", "First-generation (F1)"
-    F2 = "F2", "Second-generation (F2)"
-    F3 = "F3", "Third-generation (F3)"
-    F4 = "F4", "Fourth-generation (F4)"
-    OT = "Ot", "Other"
+class HusbandryWaterBottleMaterial(models.TextChoices):
+    GLA = "GLA", "glass"
+    PCA = "PCA", "polycarbonate"
+    PPR = "PPR", "polypropylene"
+    PT = "PT", "Polyethylene terepthalate"
+    SS = "SS", "stainless steel"
+    OTH = "OTH", "other"
+    NS = "NS", "not specified"
 
 
-class RouteExposure(models.TextChoices):
-    OR = "OR", "Oral"
-    OC = "OC", "Oral capsule"
-    OD = "OD", "Oral diet"
-    OG = "OG", "Oral gavage"
-    OW = "OW", "Oral drinking water"
-    I = "I", "Inhalation"  # noqa: E741
-    IG = "IG", "Inhalation - gas"
-    IR = "IR", "Inhalation - particle"
-    IA = "IA", "Inhalation - vapor"
-    D = "D", "Dermal"
-    SI = "SI", "Subcutaneous injection"
-    IP = "IP", "Intraperitoneal injection"
-    IV = "IV", "Intravenous injection"
-    IO = "IO", "in ovo"
-    P = "P", "Parental"
-    W = "W", "Whole body"
-    M = "M", "Multiple"
-    U = "U", "Unknown"
-    O = "O", "Other"  # noqa: E741
+class HusbandryIdentification(models.TextChoices):
+    EAN = "EAN", "ear notch"
+    EAT = "EAT", "ear tag"
+    CHP = "CHP", "microchip"
+    TAT = "TAT", "tattoo"
+    TOE = "TOE", "toe clipping"
+    FRC = "FRC", "fur clipping"
+    FRD = "FRD", "fur dyeing"
+    COL = "COL", "collar or band"
+    PAI = "PAI", "paint or marker"
+    NAT = "NAT", "natural markings"
+    OTH = "OTH", "other"
+    NS = "NS", "not specified"
 
 
-class ObservationTimeUnits(models.IntegerChoices):
-    NR = 0, "not reported"
-    SEC = 1, "seconds"
-    MIN = 2, "minutes"
-    HR = 3, "hours"
-    DAY = 4, "days"
-    WK = 5, "weeks"
-    MON = 6, "months"
-    YR = 9, "years"
-    PND = 7, "post-natal day (PND)"
-    GD = 8, "gestational day (GD)"
+class HusbandryFeedingFrequency(models.TextChoices):
+    ADL = "ADL", "ad libitum"
+    OTH = "OTH", "other, specify"
+    NS = "NS", "not specified"
 
 
-class VarianceType(models.IntegerChoices):
-    NA = 0, "NA"
-    SD = 1, "SD"
-    SE = 2, "SE"
-    NR = 3, "NR"
+class HusbandryDiet(models.TextChoices):
+    CON = "CON", "conventional"
+    RES = "RES", "calorie restricted"
+    FAS = "FAS", "fasted"
+    NS = "NS", "not specified"
 
 
-class TreatmentRelatedEffect(models.IntegerChoices):
-    YES = 0, "Yes"
-    NO = 1, "No"
-    NA = 2, "NA"
-    NR = 3, "NR"
-
-
-class MethodToControlForLitterEffects(models.IntegerChoices):
-    YES = 0, "Yes"
-    NR = 1, "NR"
-    NA = 2, "NA"
-
-
-class DatasetType(models.TextChoices):  # TODO - nested dichotomous?
-    CONTINUOUS = "C", "Continuous"
-    DICHOTOMOUS = "D", "Dichotomous"
-    PERCENT_DIFFERENCE = "PD", "Percent Difference"
-    DICHOTOMOUS_CANCER = "DC", "Dichotomous Cancer"  # TODO - remove cancer?
-    NOT_REPORTED = "NR", "Not reported"
-
-
-class StatisticallySignificant(models.IntegerChoices):
-    YES = 0, "Yes"
-    NO = 1, "No"
-    NA = 2, "NA"
-
-
-class Lifestage(models.TextChoices):
-    DEV = "DEV", "Developmental"
-    JUV = "JUV", "Juvenile"
-    ADULT = "ADULT", "Adult"
-    AG = "AG", "Adult (gestation)"
-    ML = "ML", "Multi-lifestage"
-
-
-class StudyLevelTypeChoices(models.IntegerChoices):
-    LOEL = 0, "LOEL"
-    NOEL = 1, "NOEL"
-    LOAEL = 2, "LOAEL"
-    NOAEL = 3, "NOAEL"
-    BMDL = 4, "BMDL"
-    BMD = 5, "BMD"
-"""
+class HusbandryWater(models.TextChoices):
+    TAP = "TAP", "tap water"
+    FIL = "FIL", "filtered water"
+    DEI = "DEI", "deionized water"
+    DIS = "DIS", "distilled water"
+    RVO = "RVO", "reverse osmosis water"
+    STR = "STR", "sterile water"
+    ACI = "ACI", "acidified water"
+    SUP = "SUP", "supplemented water"
+    OTH = "OTH", "other"
+    NS = "NS", "not specified"

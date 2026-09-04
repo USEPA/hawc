@@ -64,4 +64,21 @@
     </div>
   </div>
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Husbandries</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '25,25,25,25' %}
+        {% bs4_thead 'Animal Group,Number per Cage,Randomization,Diet' %}
+        <tbody>
+          {% for object in object.husbandries.all %}
+            {% include "animalv2/fragments/husbandry_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No husbandries available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 {% endblock %}

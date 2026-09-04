@@ -409,7 +409,7 @@ const helpers = {
         arr.splice(index, 1);
         return arr;
     },
-    setupOtherShowHideRelationship: (primaryField, otherFields, otherVal) => {
+    setupOtherShowHideRelationship: (primaryField, otherFields, otherVals) => {
         /*
          * given a field (probably a dropdown) and another field(s) - show/hide the
          * other(s) only if the primary field has a particular value selected.
@@ -432,6 +432,10 @@ const helpers = {
             otherFields = [otherFields];
         }
 
+        if (!Array.isArray(otherVals)) {
+            otherVals = [otherVals];
+        }
+
         let otherParents = otherFields.map((x) => x.parents(".form-group"));
 
         let showOrHide = function () {
@@ -440,7 +444,8 @@ const helpers = {
             for (let i = 0 ; i < otherFields.length ; i++) {
                 let otherField = otherFields[i];
 
-                if (selectedVal == otherVal) {
+                // if (selectedVal == otherVals) {
+                if (otherVals.indexOf(selectedVal) != -1) {
                     otherParents[i].show();
                 } else {
                     otherParents[i].hide();
