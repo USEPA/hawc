@@ -234,6 +234,30 @@ class GuidelineForm(forms.ModelForm):
         return helper
 
 
+class AnimalGroupForm(forms.ModelForm):
+    class Meta:
+        model = models.AnimalGroup
+        exclude = ("experiment",)
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = f"animalgroup-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+        helper.add_row("generation", 2, "col-md-6")
+        helper.add_row("cohort_type", 2, "col-md-6")
+        helper.add_row("source", 2, "col-md-6")
+        helper.add_row("sex", 3, "col-md-4")
+
+        return helper
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

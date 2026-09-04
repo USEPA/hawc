@@ -44,6 +44,43 @@ class TestSubstancePurity(models.TextChoices):
     NA = "NA", "not applicable (e.g. in silico study) "
 
 
+class AnimalGroupGeneration(models.TextChoices):
+    P0 = "P0", "P0"
+    P1 = "P1", "P1"
+    P2 = "P2", "P2"
+    F0 = "F0", "F0"
+    F1 = "F1", "F1"
+    F2 = "F2", "F2"
+    UN = "UN", "unknown/not reported"
+    OT = "OT", "other"
+
+
+class AnimalGroupCohortType(models.TextChoices):
+    SAT = "SAT", "satellite"
+    REC = "REC", "recovery"
+    SEN = "SEN", "sentinel"
+    INT = "INT", "interim"
+    TER = "TER", "terminal"
+    PM1 = "PM1", "post first mating"
+    PM2 = "PM2", "post second mating"
+    PM3 = "PM3", "post third mating"
+    OTH = "OTH", "other"
+
+
+class AnimalGroupSource(models.TextChoices):
+    COM = "COM", "commercial supplier, specify"
+    NON = "NON", "non-commercial supplier, specify"
+    HOU = "HOU", "In-house developed, specify"
+    OTH = "OTH", "other"
+
+
+class AnimalGroupSex(models.TextChoices):
+    M = "M", "Male"
+    F = "F", "Female"
+    MF = "MF", "Combined"
+    NS = "NS", "not specified"
+
+
 """
 class AdministrationRoute(models.TextChoices):
     ORA = "ORA", "oral"

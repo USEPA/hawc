@@ -128,7 +128,28 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
                 otherVal
             );
         }
-    };
+    },
+
+    animalGroupFormStartup = function (f) {
+		console.log("FORM SETUP");
+        let form = $(f);
+        form.find("#id_name").focus();
+
+		h.setupOtherShowHideRelationship(
+			form.find("select[name$='-generation']"),
+			form.find("input[name$='-generation_remarks']"),
+			"OT"
+		);
+
+		h.setupOtherShowHideRelationship(
+			form.find("select[name$='-cohort_type']"),
+			form.find("input[name$='-cohort_type_remarks']"),
+			"OTH"
+		);
+    },
+
+
+	foo = null;
 
 
 
@@ -252,6 +273,8 @@ export default document => {
             experimentFormStartup(e.target);
         } else if (e.target.querySelector(".form-guideline")) {
             guidelineFormStartup(e.target);
+        } else if (e.target.querySelector(".form-animalgroup")) {
+            animalGroupFormStartup(e.target);
 		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);
