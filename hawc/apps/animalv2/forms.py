@@ -288,6 +288,33 @@ class HusbandryForm(forms.ModelForm):
         return helper
 
 
+class TreatmentForm(forms.ModelForm):
+    class Meta:
+        model = models.Treatment
+        exclude = ("experiment",)
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = f"treatment-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+
+        self.fields["test_substance"].queryset = self.instance.experiment.testsubstances.all()
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+        helper.add_row("route_of_exposure", 2, "col-md-6")
+        helper.add_row("exposure_method", 2, "col-md-6")
+        helper.add_row("age_start", 2, "col-md-6")
+        helper.add_row("age_end", 2, "col-md-6")
+        helper.add_row("verification", 3, "col-md-4")
+
+        return helper
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

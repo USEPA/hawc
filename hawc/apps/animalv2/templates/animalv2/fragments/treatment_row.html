@@ -1,0 +1,7 @@
+<tr hx-target="this" hx-swap="outerHTML" class="animalv2-obj-row {{action}} treatment-{{object.pk}}">
+  <td>{{object.get_route_of_exposure_display}}</td>
+  <td>{{object.get_exposure_method_display}}</td>
+  <td>{{object.get_lifestage_start_display}}</td>
+  {% include "common/fragments/_object_row.html" with app="animalv2" model="treatment" %}
+</tr>
+{% include "common/fragments/_create_row.html" with model="treatment" %}

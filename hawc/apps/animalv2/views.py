@@ -325,6 +325,12 @@ class HusbandryViewSet(ExperimentChildViewSet):
     detail_fragment = "animalv2/fragments/husbandry_row.html"
 
 
+class TreatmentViewSet(ExperimentChildViewSet):
+    model = models.Treatment
+    form_class = forms.TreatmentForm
+    detail_fragment = "animalv2/fragments/treatment_row.html"
+
+
 """
 class ChemicalViewSet(ExperimentChildViewSet):
     model = models.Chemical

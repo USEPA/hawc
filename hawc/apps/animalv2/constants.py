@@ -7,6 +7,12 @@ class YesNoNr(models.TextChoices):
     NR = "NR", "Not reported"
 
 
+class YesNoNs(models.TextChoices):
+    YS = "YS", "yes"
+    NO = "NO", "no"
+    NS = "NS", "not specified"
+
+
 class ExperimentType(models.TextChoices):
     ACU = "ACU", "acute"
     SHT = "SHT", "short-term"
@@ -179,3 +185,56 @@ class HusbandryWater(models.TextChoices):
     SUP = "SUP", "supplemented water"
     OTH = "OTH", "other"
     NS = "NS", "not specified"
+
+
+class TreatmentRouteOfExposure(models.TextChoices):
+    ORA = "ORA", "oral"
+    SCU = "SCU", "subcutaneous"
+    DER = "DER", "dermal"
+    INH = "INH", "inhalation"
+    INJ = "INJ", "injection"
+    OCU = "OCU", "ocular"
+    OTH = "OTH", "other, specify"
+
+
+class TreatmentExposureMethod(models.TextChoices):
+    ORCAP = "ORCAP", "oral capsule"
+    ORDIE = "ORDIE", "oral diet"
+    ORGAV = "ORGAV", "oral gavage"
+    ORWAT = "ORWAT", "oral drinking water"
+    INGAS = "INGAS", "inhalation - gas"
+    INPAR = "INPAR", "inhalation - particle"
+    INVAP = "INVAP", "inhalation - vapor"
+    DERM = "DERM", "dermal"
+    IJSUB = "IJSUB", "subcutaneous injection"
+    IJPER = "IJPER", "intraperitoneal injection"
+    IJIV = "IJIV", "intravenous injection"
+    INOVO = "INOVO", "in ovo"
+    PAREN = "PAREN", "parental"
+    BODY = "BODY", "whole body"
+    MULTI = "MULTI", "multiple"
+    UNKWN = "UNKWN", "unknown"
+    OTHER = "OTHER", "other"
+
+
+class TreatmentLifestage(models.TextChoices):
+    EMB = "EMB", "embryonic"
+    FET = "FET", "fetal"
+    NEO = "NEO", "neonate"
+    JUV = "JUV", "juvenile"
+    ADO = "ADO", "adolescent"
+    ADU = "ADU", "adult"
+    SEN = "SEN", "senior"
+    NA = "NA", "NA"
+
+
+class TreatmentAgeUnit(models.TextChoices):
+    D = "D", "Day"
+    DPM = "DPM", "day (premating)"
+    DGE = "DGE", "GD (gestational day)"
+    DPN = "DPN", "PND (post-natal day)"
+    W = "W", "week"
+    WPM = "WPM", "week (premating)"
+    MON = "MON", "month"
+    YEA = "YEA", "year"
+    GEN = "GEN", "generation"

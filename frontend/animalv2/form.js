@@ -120,7 +120,6 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
     },
 
     husbandryFormStartup = function (f) {
-		console.log("FORM SETUP");
         let form = $(f);
         form.find("#id_name").focus();
 
@@ -132,6 +131,18 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
             [ "select[name$='-water_bottle_material']", "input[name$='-water_bottle_material_remarks']", "OTH" ],
             [ "select[name$='-animal_identification']", "input[name$='-animal_identification_remarks']", "OTH" ],
             [ "select[name$='-water']", "input[name$='-water_remarks']", "OTH" ],
+        ]
+
+		processMultipleShowHides(form, showHides);
+    },
+
+    treatmentFormStartup = function (f) {
+        let form = $(f);
+        form.find("#id_name").focus();
+
+        let showHides = [
+            [ "select[name$='-route_of_exposure']", "input[name$='-route_of_exposure_remarks']", "OTH" ],
+            [ "select[name$='-exposure_method']", "input[name$='-exposure_method_remarks']", "OTHER" ],
         ]
 
 		processMultipleShowHides(form, showHides);
@@ -266,6 +277,8 @@ export default document => {
             animalGroupFormStartup(e.target);
         } else if (e.target.querySelector(".form-husbandry")) {
             husbandryFormStartup(e.target);
+        } else if (e.target.querySelector(".form-treatment")) {
+            treatmentFormStartup(e.target);
 		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);

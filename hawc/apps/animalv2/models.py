@@ -52,7 +52,7 @@ select the most-relevant option. The option 'other' can be used for atypical stu
     def __str__(self):
         return self.name
 
-    # TODO - make a generic version of this available via mixin that uses naming convention + introspection to work...
+    # TODO - could we make a generic version of this available via mixin that uses naming convention + introspection to work? I have played with this some but can't seemt o get it to work; not sure making manual ones like this is worthwhile...possibly a model could create/register such methods on the fly somehow?
     def get_other_aware_experiment_type(self):
         return (
             self.get_experiment_type_display()
@@ -499,8 +499,106 @@ class Husbandry(models.Model):
     def get_study(self):
         return self.experiment.get_study()
 
-    def __str__(self):
-        return "XXX"
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+
+class Treatment(models.Model):
+    objects = managers.TreatmentManager()
+
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name="treatments")
+
+    test_substance = models.ForeignKey(
+        TestSubstance, on_delete=models.CASCADE, related_name="treatments"
+    )
+
+    route_of_exposure = models.CharField(
+        max_length=3,
+        choices=constants.TreatmentRouteOfExposure.choices,
+        help_text="Select the route of administration as appropriate. If not available from the picklist, select 'other' and specify.",
+    )
+
+    route_of_exposure_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “other” was selected in the “Route of exposure” field, specify.",
+    )
+
+    exposure_method = models.CharField(
+        max_length=5,
+        choices=constants.TreatmentExposureMethod.choices,
+        help_text="Specific description of how substance was given to test subjects via the administration route.",
+    )
+
+    exposure_method_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “other” was selected in the “Route of exposure” field, specify.",
+    )
+
+    lifestage_start = models.CharField(
+        max_length=3,
+        verbose_name="Animal Lifestage at the Start of Exposure",
+        choices=constants.TreatmentLifestage.choices,
+        help_text="Embryonic Stage:<br>Description: The initial stage of development within the egg or womb, where the organism begins to form and differentiate.<br>Characteristics: Rapid cell division and formation of basic body structures.<p>Fetal:<br>Later stage of development within the eff or womb characterized by continued growth, differentiation, and maturation of organs and tissues. <br> Characteristics: The organism has an established body-plan and recognizable anatomical features but remains dependent on the maternal environment for development. <p> Neonatal Stage:<br>Description: The period immediately after birth or hatching.<br> Characteristics: Animals are usually highly dependent on parental care and nourishment.<p> Juvenile Stage:<br>Description: The phase following the neonatal stage, where the animal grows and develops but is not yet sexually mature.<br>Characteristics: Increased independence, rapid growth, and learning survival skills.<p>Adolescent Stage:<br>Description: The transition phase between juvenile and adult stages, marked by the onset of puberty.<br>Characteristics: Development of secondary sexual characteristics and increased social interactions.<p>Adult Stage:<br>Description: The stage where the animal is fully grown and sexually mature.<br>Characteristics: Reproductive capability and establishment of social hierarchies or territories.<p>Senior Stage:<br>Description: The later stage of life where the animal experiences aging and a decline in physical capabilities.<br>Characteristics: Reduced reproductive capability and increased susceptibility to disease.",
+    )
+
+    age_start = models.CharField(
+        max_length=255,
+        help_text="Record the age of animals at the start of test item administration.",
+        verbose_name="Animal Age at Start of Exposure",
+    )
+
+    age_start_unit = models.CharField(
+        max_length=3,
+        choices=constants.TreatmentAgeUnit.choices,
+        verbose_name="Animal Age at Start Unit",
+        help_text="Record the animal age unit of measure.",
+    )
+
+    age_end = models.CharField(
+        max_length=255,
+        help_text="Record the age of animals at the start of test item administration.",
+        verbose_name="Animal Age at End of Exposure",
+    )
+
+    age_end_unit = models.CharField(
+        max_length=3,
+        choices=constants.TreatmentAgeUnit.choices,
+        verbose_name="Animal Age at End Unit",
+        help_text="Record the animal age unit of measure.",
+    )
+
+    verification = models.CharField(
+        max_length=3,
+        choices=constants.YesNoNs.choices,
+        verbose_name="Analytical Verification of Doses or Concentrations",
+        help_text="Were concentrations/doses analytically verified in the experiment?",
+    )
+
+    exposure_duration = models.CharField(
+        max_length=255,
+        help_text="Indicate duration in days, weeks or months, e.g. '104 weeks' or '90 days'.",
+    )
+
+    frequency_of_treatment = models.CharField(
+        max_length=255,
+        help_text="Indicate the frequency of the administration of doses to the test animals (e.g., 'daily, 7 days each week'). Use of non-standard dosing regimen (e.g. a five-day per week regime) should be justified.",
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
 
     def clone(self):
         self.id = None
@@ -514,3 +612,4 @@ reversion.register(TestSubstance)
 reversion.register(Guideline)
 reversion.register(AnimalGroup)
 reversion.register(Husbandry)
+reversion.register(Treatment)
