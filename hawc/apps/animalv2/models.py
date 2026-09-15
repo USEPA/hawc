@@ -480,6 +480,8 @@ class Husbandry(models.Model):
         help_text="Describe type (e.g. drinking water, tap distilled), and whether it was provided ad libitum. If not available from picklist, select 'other' and specify.",
     )
 
+    water_remarks = models.CharField(max_length=255, blank=True)
+
     food_and_water_quality = models.TextField(
         max_length=2500,
         help_text="Provide analytical information (if available) on the nutrient and dietary contaminant levels. Similarly provide analytical information on the drinking water used in the study.",

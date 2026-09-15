@@ -283,6 +283,7 @@ class HusbandryForm(forms.ModelForm):
         helper.add_row("enrichment_material", 2, "col-md-6")
         helper.add_row("water_bottle_material", 2, "col-md-6")
         helper.add_row("animal_identification", 2, "col-md-6")
+        helper.add_row("water", 2, "col-md-6")
 
         return helper
 

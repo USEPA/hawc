@@ -131,6 +131,7 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
             [ "select[name$='-enrichment_material']", "input[name$='-enrichment_material_remarks']", "OTH" ],
             [ "select[name$='-water_bottle_material']", "input[name$='-water_bottle_material_remarks']", "OTH" ],
             [ "select[name$='-animal_identification']", "input[name$='-animal_identification_remarks']", "OTH" ],
+            [ "select[name$='-water']", "input[name$='-water_remarks']", "OTH" ],
         ]
 
 		processMultipleShowHides(form, showHides);
