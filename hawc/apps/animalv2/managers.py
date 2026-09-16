@@ -21,7 +21,15 @@ class AnimalGroupManager(BaseManager):
     assessment_relation = "experiment__study__assessment"
 
 
+class HusbandryManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+
 class TreatmentManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+
+class DoseGroupManager(BaseManager):
     assessment_relation = "experiment__study__assessment"
 
 

@@ -315,6 +315,32 @@ class TreatmentForm(forms.ModelForm):
         return helper
 
 
+class DoseGroupForm(forms.ModelForm):
+    class Meta:
+        model = models.DoseGroup
+        exclude = ("experiment",)
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = f"dosegroup-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+
+        self.fields["treatment"].queryset = self.instance.experiment.treatments.all()
+        self.fields["animal_group"].queryset = self.instance.experiment.aniv2_animalgroups.all()
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+        helper.add_row("treatment", 2, "col-md-6")
+        helper.add_row("dose_group_type", 2, "col-md-6")
+        helper.add_row("dose_value", 3, "col-md-4")
+
+        return helper
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

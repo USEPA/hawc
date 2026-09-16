@@ -148,6 +148,18 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 		processMultipleShowHides(form, showHides);
     },
 
+    doseGroupFormStartup = function (f) {
+        let form = $(f);
+        form.find("#id_name").focus();
+
+        let showHides = [
+            [ "select[name$='-dose_group_type']", "input[name$='-dose_group_type_remarks']", "OTH" ],
+            [ "select[name$='-dose_units']", "input[name$='-dose_units_remarks']", "OTHER" ],
+        ]
+
+		processMultipleShowHides(form, showHides);
+    },
+
 
 	foo = null;
 
@@ -279,6 +291,8 @@ export default document => {
             husbandryFormStartup(e.target);
         } else if (e.target.querySelector(".form-treatment")) {
             treatmentFormStartup(e.target);
+        } else if (e.target.querySelector(".form-dosegroup")) {
+            doseGroupFormStartup(e.target);
 		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);

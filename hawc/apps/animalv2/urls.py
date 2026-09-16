@@ -106,6 +106,11 @@ urlpatterns = [
         views.TreatmentViewSet.as_view(),
         name="treatment-htmx",
     ),
+    path(
+        "dosegroup/<int:pk>/<slug:action>/",
+        views.DoseGroupViewSet.as_view(),
+        name="dosegroup-htmx",
+    ),
 ]
 
 """

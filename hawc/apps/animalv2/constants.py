@@ -238,3 +238,24 @@ class TreatmentAgeUnit(models.TextChoices):
     MON = "MON", "month"
     YEA = "YEA", "year"
     GEN = "GEN", "generation"
+
+
+class DoseGroupType(models.TextChoices):
+    VEC = "VEC", "Vehicle Control"
+    UNC = "UNC", "Untreated Control"
+    PFC = "PFC", "Pair-fed Control"
+    REF = "REF", "Reference / Comparator"
+    TRT = "TRT", "Treatment"
+    OTH = "OTH", "Other"
+
+
+class DoseGroupUnit(models.TextChoices):
+    PPM = "PPM", "ppm (in air, water, or food)"
+    MGDAY = "MGDAY", "mg/kg-bw/day"
+    MGKG = "MGKG", "mg/kg"
+    MGM3 = "MGM3", "mg/m3"
+    MGMLW = "MGMLW", "mg chemical/mL water"
+    MGLAI = "MGLAI", "mg chemical/L air"
+    MGEYE = "MGEYE", "mg/eye"
+    OTHER = "OTHER", "other"
+    NS = "NS", "not specified"

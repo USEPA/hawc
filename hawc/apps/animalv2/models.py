@@ -13,6 +13,8 @@ from ..vocab.constants import ObservationStatus
 from ..vocab.models import Guideline, GuidelineProfile, Term
 from . import constants, managers
 
+# TODO - related_name is currently a mishmash of plain names (e.g. 'testsubstances') and model-name-convention where there were conflicts with aniv2 (e.g. 'aniv2_dosegroups'). Let's take a pass and do EVRYTHING as aniv2_xxx; means redoing migrations (which we should likely do anyway), but also updating the templates in particular, and probabyl some python code. Do it at the end but let's start using aniv2 going forward...
+
 
 class Experiment(models.Model):
     objects = managers.ExperimentManager()
@@ -377,7 +379,7 @@ class AnimalGroup(models.Model):
 
 
 class Husbandry(models.Model):
-    objects = managers.AnimalGroupManager()
+    objects = managers.HusbandryManager()
 
     experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE, related_name="husbandries")
 
@@ -599,6 +601,73 @@ class Treatment(models.Model):
 
     def get_study(self):
         return self.experiment.get_study()
+
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+
+class DoseGroup(models.Model):
+    objects = managers.DoseGroupManager()
+
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="aniv2_dosegroups"
+    )
+
+    treatment = models.ForeignKey(
+        Treatment, on_delete=models.CASCADE, related_name="aniv2_dosegroups"
+    )
+
+    animal_group = models.ForeignKey(
+        AnimalGroup, on_delete=models.CASCADE, related_name="aniv2_dosegroups"
+    )
+
+    dose_group_type = models.CharField(
+        max_length=3,
+        choices=constants.DoseGroupType.choices,
+        help_text="Select the role of the dose group within the experiment.",
+    )
+
+    dose_group_type_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “other” was selected in the “Dose Group Type” field, specify.",
+    )
+
+    # # of dose groups -- this is derived and let's put it on the treatment field maybe?
+
+    dose_value = models.FloatField(
+        validators=[MinValueValidator(0)],
+        help_text="Numerical concentration value of a test chemical. If a study changes dosing over time (e.g., gradually increased over a few weeks, decreased due to palatability or toxicity), enter final concentrations. You do not need to calculate the average. In unusual cases, not all doses will be converted from ppm to mg/kg/day. Enter the mixed dosing units (do not attempt conversion), unless only one dose is converted. If only one dose is converted (often the critical effect dose) then put the conversion(s) in the comments and keep all doses as ppm.",
+    )
+
+    dose_units = models.CharField(
+        max_length=5,
+        choices=constants.DoseGroupUnit.choices,
+        help_text="Unit associated with a concentration of a test chemical. Preferred unit is milligrams per kilogram per day (mg/kg/day) if reported. If the mg/kg/day is not reported based on ppm or other units, do not attempt to estimate the mg/kg/day dose.",
+    )
+
+    dose_units_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “other” was selected in the “Dose Units” field, specify.",
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
+
+    def get_value_including_units(self):
+        return f"{self.dose_value} {self.get_dose_units_display()}"
 
     def clone(self):
         self.id = None

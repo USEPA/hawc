@@ -98,4 +98,21 @@
     </div>
   </div>
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Dose Groups</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '25,25,25,25' %}
+        {% bs4_thead 'Treatment,Animal Group,Type,Value' %}
+        <tbody>
+          {% for object in object.aniv2_dosegroups.all %}
+            {% include "animalv2/fragments/dosegroup_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No dose groups available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 {% endblock %}
