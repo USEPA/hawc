@@ -160,6 +160,23 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 		processMultipleShowHides(form, showHides);
     },
 
+    dosePreparationFormStartup = function (f) {
+        let form = $(f);
+        form.find("#id_name").focus();
+
+        let showHides = [
+            [ "select[name$='-vehicle']", "input[name$='-vehicle_remarks']", "OTHER" ],
+            [ "select[name$='-unit']", "input[name$='-unit_remarks']", "OTHER" ],
+            [ "select[name$='-formulation_type']", "input[name$='-formulation_type_remarks']", "OTH" ],
+            [ "select[name$='-solubility']", "input[name$='-solubility_remarks']", "SOL" ],
+            [ "select[name$='-analytical_verification']", "input[name$='-analytical_verification_remarks']", "VER" ],
+            [ "select[name$='-preparation_frequency']", "input[name$='-preparation_frequency_remarks']", "OTH" ],
+            [ "select[name$='-preparation_method']", "input[name$='-preparation_method_remarks']", "OTH" ],
+        ]
+
+		processMultipleShowHides(form, showHides);
+    },
+
 
 	foo = null;
 
@@ -293,6 +310,8 @@ export default document => {
             treatmentFormStartup(e.target);
         } else if (e.target.querySelector(".form-dosegroup")) {
             doseGroupFormStartup(e.target);
+        } else if (e.target.querySelector(".form-dosepreparation")) {
+            dosePreparationFormStartup(e.target);
 		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);

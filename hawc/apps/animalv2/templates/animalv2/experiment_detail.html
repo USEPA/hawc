@@ -115,4 +115,21 @@
     </div>
   </div>
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Dose Preparations</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '34,33,33' %}
+        {% bs4_thead 'Animal Group,Vehicle,Formulation' %}
+        <tbody>
+          {% for object in object.aniv2_dosepreparations.all %}
+            {% include "animalv2/fragments/dosepreparation_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No dose preparations available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 {% endblock %}

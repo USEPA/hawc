@@ -259,3 +259,114 @@ class DoseGroupUnit(models.TextChoices):
     MGEYE = "MGEYE", "mg/eye"
     OTHER = "OTHER", "other"
     NS = "NS", "not specified"
+
+
+class DosePreparationVehicle(models.TextChoices):
+    UNCHA = "UNCHA", "unchanged (no vehicle)"
+    ACET = "ACET", "acetone"
+    AROIL = "AROIL", "arachis oil"
+    BEEWX = "BEEWX", "beeswax"
+    CBOWX = "CBOWX", "carbowaxes"
+    CAOIL = "CAOIL", "castor oil"
+    CTSAL = "CTSAL", "cetosteryl alcohol"
+    CETAL = "CETAL", "cetyl alcohol"
+    CMC = "CMC", "CMC (carboxymethyl cellulose)"
+    CCOIL = "CCOIL", "coconut oil"
+    CROIL = "CROIL", "corn oil"
+    CSOIL = "CSOIL", "cotton seed oil"
+    DMSO = "DMSO", "DMSO"
+    ETHAN = "ETHAN", "ethanol"
+    GLYES = "GLYES", "glycerol ester"
+    GLYCO = "GLYCO", "glycolester"
+    HVOIL = "HVOIL", "hydrogenated vegetable oil"
+    LECIT = "LECIT", "lecithin"
+    MACES = "MACES", "macrogel ester"
+    MZOIL = "MZOIL", "maize oil"
+    MECEL = "MECEL", "methylcellulose"
+    OLOIL = "OLOIL", "olive oil"
+    PAOIL = "PAOIL", "paraffin oil"
+    PEOIL = "PEOIL", "peanut oil"
+    PETLA = "PETLA", "petrolatum"
+    PHSAL = "PHSAL", "physiological saline"
+    POLOX = "POLOX", "poloxamer"
+    POGLY = "POGLY", "polyethylene glycol"
+    PRGLY = "PRGLY", "propylene glycol"
+    SIOIL = "SIOIL", "silicone oil"
+    SRDER = "SRDER", "sorbitan derivative"
+    SYOIL = "SYOIL", "soya oil"
+    THOIL = "THOIL", "theobroma oil"
+    VGOIL = "VGOIL", "vegetable oil"
+    WATER = "WATER", "water"
+    OTHER = "OTHER", "other"
+    NS = "NS", "not specified"
+
+
+class DosePreparationUnit(models.TextChoices):
+    PPM = "PPM", "ppm (in air, water, or food)"
+    MGDAY = "MGDAY", "mg/kg-bw/day"
+    MGKG = "MGKG", "mg/kg"
+    MGM3 = "MGM3", "mg/m3"
+    MGMLW = "MGMLW", "mg chemical/mL water"
+    MGLAI = "MGLAI", "mg chemical/L air"
+    MGEYE = "MGEYE", "mg/eye"
+    OTHER = "OTHER", "other"
+    NS = "NS", "not specified"
+
+
+class DosePreparationFormulation(models.TextChoices):
+    SOL = "SOL", "solution"
+    SUS = "SUS", "suspension"
+    EMU = "EMU", "emulsion"
+    DIS = "DIS", "dispersion"
+    NEA = "NEA", "neat / undiluted"
+    DIE = "DIE", "diet admixture"
+    DWA = "DWA", "drinking water preparation"
+    OTH = "OTH", "other"
+    NS = "NS", "not specified"
+
+
+class DosePreparationStability(models.TextChoices):
+    STA = "STA", "The chemical is stable under storage and assay conditions, specify"
+    UNK = "UNK", "Unknown"
+
+
+class DosePreparationSolubility(models.TextChoices):
+    SOL = "SOL", "The highest tested concentration was soluble"
+    INS = "INS", "The highest tested concentration was insoluble, specify "
+    UNK = "UNK", "Unknown"
+
+
+class DosePreparationHomogeneity(models.TextChoices):
+    DEM = "DEM", "Demonstrated"
+    NDM = "NDM", "Not demonstrated"
+    NEV = "NEV", "Not evaluated"
+    NR = "NR", "Not Reported"
+
+
+class DosePreparationAnalyticalVerification(models.TextChoices):
+    VER = "VER", "Verified"
+    NVR = "NVR", "Not Verified"
+    NEV = "NEV", "Not evaluated"
+    NR = "NR", "Not Reported"
+
+
+class DosePreparationFrequency(models.TextChoices):
+    DAY = "DAY", "Daily"
+    EAC = "EAC", "Each Dosing"
+    WKL = "WKL", "Weekly"
+    PER = "PER", "Periodic"
+    SIN = "SIN", "Single preparation"
+    OTH = "OTH", "Other"
+    NR = "NR", "Not Reported"
+
+
+class DosePreparationMethod(models.TextChoices):
+    DIS = "DIS", "Dissolved"
+    SUS = "SUS", "Suspended"
+    MIX = "MIX", "Mixed"
+    DIL = "DIL", "Diluted"
+    DIE = "DIE", "Incorporated Into Diet"
+    DWA = "DWA", "Incorporated Into Drinking Water"
+    NEA = "NEA", "Used Neat"
+    OTH = "OTH", "Other"
+    NR = "NR", "Not Reported"

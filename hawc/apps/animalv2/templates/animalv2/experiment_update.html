@@ -119,6 +119,24 @@
     </div>
   </div>
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      {% url 'animalv2:dosepreparation-htmx' object.pk 'create' as dosepreparation_create %}
+      {% include "common/fragments/_create_card.html" with title="Dose Preparations" hx_get=dosepreparation_create hx_target=".dosepreparation-edit-row.create-row" model="dosepreparation" btn_text="Add Row" %}
+      <table class="table table-sm table-striped-invert">
+        {% bs4_colgroup '30,30,30,10' %}
+        {% bs4_thead 'Animal Group,Vehicle,Formulation,Edit' %}
+        <tbody id="dosepreparation-tbody">
+          {% for object in object.aniv2_dosepreparations.all %}
+            {% include "animalv2/fragments/dosepreparation_row.html" %}
+          {% endfor %}
+          {% include "common/fragments/_create_one.html" with text='No dose preparations to display. Click "Add Row" to create one.' %}
+          {% include "common/fragments/_create_row.html" with model="dosepreparation" first=True %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 
   <div class="well text-center">
     <a class="btn btn-light my-3" href="{{object.get_absolute_url}}" id="animalv2-page-cancel"><i class="fa fa-fw fa-times"></i>Cancel</a>

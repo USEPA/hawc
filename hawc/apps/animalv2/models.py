@@ -675,6 +675,139 @@ class DoseGroup(models.Model):
         return self
 
 
+class DosePreparation(models.Model):
+    objects = managers.DosePreparationManager()
+
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="aniv2_dosepreparations"
+    )
+
+    dose_group = models.ForeignKey(
+        DoseGroup, on_delete=models.CASCADE, related_name="aniv2_dosepreparations"
+    )
+
+    vehicle = models.CharField(
+        max_length=5,
+        choices=constants.DosePreparationVehicle.choices,
+        help_text="The media used in administration of the chemical. Select the vehicle used. If not available from picklist, select 'other' and specify. Further information can be given in the supplementary remarks field.<p>Note that some of the vehicles provided in this list are used for specific routes of administration only.",
+    )
+
+    vehicle_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “other” was selected in the “Vehicle” field, specify.",
+    )
+
+    concentration = models.FloatField(
+        validators=[MinValueValidator(0)],
+        help_text="Enter numerical value of all doses tested (numerical value only, e.g. 1, 3, 30, etc.)",
+    )
+
+    unit = models.CharField(
+        max_length=5,
+        choices=constants.DosePreparationUnit.choices,
+        help_text="Enter the numerical value and concentration units from the picklist. If “other” is selected, indicate the units in the “Unit Remarks” field.",
+    )
+
+    unit_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “other” was selected in the “Unit” field, specify.",
+    )
+
+    formulation_type = models.CharField(
+        max_length=3,
+        choices=constants.DosePreparationFormulation.choices,
+        help_text="Select the appropriate information about formulation type of the test substance under storage conditions and under assay conditions.",
+    )
+
+    formulation_type_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “other” was selected in the “Formulation Type” field, specify.",
+    )
+
+    stability = models.CharField(
+        max_length=3,
+        choices=constants.DosePreparationStability.choices,
+        verbose_name="Stability in Vehicle",
+        help_text="Select the appropriate information about stability of the chemical under storage conditions and under assay conditions.<p>In case this was not assessed or reported, select ‘unknown’",
+    )
+
+    solubility = models.CharField(
+        max_length=3,
+        choices=constants.DosePreparationSolubility.choices,
+        verbose_name="Solubility in Vehicle",
+        help_text="It should be confirmed that the highest concentration tested was soluble, in case not, a justification should be provided.<p>Specify the highest soluble concentration observed. If the highest tested concentration was insoluble, provide a justification for why insoluble concentrations were tested in the “Solubility Remarks” field. the appropriate information about stability of the chemical under storage conditions and under assay conditions.<p>In case this was not assessed or reported, select ‘unknown’",
+    )
+
+    solubility_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        verbose_name="Solubility in Vehicle Remarks",
+        help_text="If “The highest tested concentration was insoluble, specify” was selected in the “Solubility in Vehicle” field, specify.",
+    )
+
+    homogeneity = models.CharField(
+        max_length=3,
+        choices=constants.DosePreparationHomogeneity.choices,
+        help_text="Select the appropriate information about homogeneity under dose preparation conditions. Provide details in the remarks field.",
+    )
+
+    analytical_verification = models.CharField(
+        max_length=3,
+        choices=constants.DosePreparationAnalyticalVerification.choices,
+        help_text="Select the appropriate information about analytical verification under dose preparation conditions. Provide details in the remarks field for the analytical method used.",
+    )
+
+    analytical_verification_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="Provide details for the analytical method used.",
+    )
+
+    preparation_frequency = models.CharField(
+        max_length=3,
+        choices=constants.DosePreparationFrequency.choices,
+        help_text="Select the appropriate information about preparation frequency under dose preparation conditions. Provide details in the remarks field.",
+    )
+
+    preparation_frequency_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “Other” was selected in the “Preparation Frequency” field, specify the preparation frequency.",
+    )
+
+    preparation_method = models.CharField(
+        max_length=3,
+        choices=constants.DosePreparationMethod.choices,
+        help_text="Select the appropriate information about preparation method under dose preparation conditions. Provide details in the remarks field.",
+    )
+
+    preparation_method_remarks = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="If “Other” was selected in the “Preparation Method” field, specify the preparation frequency.",
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
+
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+
 reversion.register(Experiment)
 reversion.register(Chemical)
 reversion.register(TestSubstance)
@@ -682,3 +815,5 @@ reversion.register(Guideline)
 reversion.register(AnimalGroup)
 reversion.register(Husbandry)
 reversion.register(Treatment)
+reversion.register(DoseGroup)
+reversion.register(DosePreparation)

@@ -33,6 +33,10 @@ class DoseGroupManager(BaseManager):
     assessment_relation = "experiment__study__assessment"
 
 
+class DosePreparationManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+
 """
 class AnimalGroupManager(BaseManager):
     assessment_relation = "experiment__study__assessment"

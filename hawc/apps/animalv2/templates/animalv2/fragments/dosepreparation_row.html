@@ -1,0 +1,7 @@
+<tr hx-target="this" hx-swap="outerHTML" class="animalv2-obj-row {{action}} dosepreparation-{{object.pk}}">
+  <td>{{object.dose_group.animal_group.name}}</td>
+  <td>{{object.get_vehicle_display}}</td>
+  <td>{{object.get_formulation_type_display}}</td>
+  {% include "common/fragments/_object_row.html" with app="animalv2" model="dosepreparation" %}
+</tr>
+{% include "common/fragments/_create_row.html" with model="dosepreparation" %}

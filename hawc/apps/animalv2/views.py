@@ -337,6 +337,12 @@ class DoseGroupViewSet(ExperimentChildViewSet):
     detail_fragment = "animalv2/fragments/dosegroup_row.html"
 
 
+class DosePreparationViewSet(ExperimentChildViewSet):
+    model = models.DosePreparation
+    form_class = forms.DosePreparationForm
+    detail_fragment = "animalv2/fragments/dosepreparation_row.html"
+
+
 """
 class ChemicalViewSet(ExperimentChildViewSet):
     model = models.Chemical
