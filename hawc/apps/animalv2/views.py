@@ -223,6 +223,13 @@ class ExperimentChildViewSet(HtmxViewSet):
         context["model"] = self.model.__name__.lower()
         context["app"] = "animalv2"
 
+        try:
+            context["customTemplateScriptContext"] = self.model.get_custom_context(
+                self.request.item.assessment, context["form"]
+            )
+        except Exception as e:
+            context["customTemplateScriptContext"] = {}
+
         formsets = kwargs.get("formsets", [])
         formsets = []
         for formset_idx, formset_config in enumerate(self.formset_configurations):
@@ -341,6 +348,12 @@ class DosePreparationViewSet(ExperimentChildViewSet):
     model = models.DosePreparation
     form_class = forms.DosePreparationForm
     detail_fragment = "animalv2/fragments/dosepreparation_row.html"
+
+
+class EndpointViewSet(ExperimentChildViewSet):
+    model = models.AnimalV2Endpoint
+    form_class = forms.EndpointForm
+    detail_fragment = "animalv2/fragments/endpoint_row.html"
 
 
 """

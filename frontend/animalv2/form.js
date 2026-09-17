@@ -3,6 +3,8 @@ import h from "shared/utils/helpers";
 
 import $ from "$";
 
+import startupEndpointForm from "../animal/EndpointForm";
+
 const /*cloneSubformRow = function (lastRow, totalFormField) {
         // adapted from https://stackoverflow.com/questions/501719/
         const newElement = lastRow.clone(true);
@@ -177,6 +179,89 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 		processMultipleShowHides(form, showHides);
     },
 
+	endpointFormStartup = function (f) {
+		let form = $(f);
+
+		console.log("ENDPOINT FORM STARTUP!!!");
+		console.log("ENDPOINT FORM STARTUP!!!");
+		console.log("ENDPOINT FORM STARTUP!!!");
+		console.log("ENDPOINT FORM STARTUP!!!");
+		console.log("ENDPOINT FORM STARTUP!!!");
+
+		// EHV kickoff - start
+		let config = JSON.parse(form.find("#hxCustomContext_animalv2endpoint").html());
+		let vocabSettings = JSON.parse(config.vocabulary);
+
+		console.log("READ IN", config, vocabSettings);
+		
+		startupEndpointForm(document.getElementById("vocabWidgets"), vocabSettings);
+
+		// remove the effect/effect-subtype widgets; we don't use those on mechanistic right now
+		setTimeout(function() {
+			let ehvFields = ["name", "system", "organ", "effect", "effect_subtype"];
+			for (let i = 0 ; i < ehvFields.length ; i++) {
+				let ehvField = ehvFields[i];
+				$("div[id^='div_id_endpoint-'][id$='-" + ehvField + "']").each(function() {
+					// need to do two things actually:
+					// 1. hide the default crispy UI; startupEndpointForm added other widgets/controls
+					// 2. rename those UI things that startupEndpointForm  created; e.g.
+					//    when editing endpoint #19, we'd want to rename the element "organ" that 
+					//    startupEndpointForm created to "endpoint-19-organ".
+					let ehvDiv = $(this);
+					let actualPrefix = ehvDiv.attr("id").replace("div_id_", "").replace(ehvField, "");
+					console.log("ACTUAL PREFIX == '" + actualPrefix + "'; EHV FIELD == '" + ehvField + "'");
+
+					// thing 1
+					$("input[type='hidden'][name='" + ehvField + "']").attr("name", actualPrefix + ehvField);
+					$("input[type='hidden'][name='" + ehvField + "_term']").attr("name", actualPrefix + ehvField + "_term");
+
+					// thing 2
+					ehvDiv.remove();
+					$("input[type='hidden'][id='id_" + actualPrefix + ehvField + "_term']").remove(); // the hidden widget(s) right before "remarks"...
+				});
+			}
+			/*
+
+			// hide effect/subtype -- the EHV system sort of assumes they are there, but we don't want
+			// them in mechanistic...easiest route is just hide the widget, so they are alwauys blank in
+			// the db. That way we don't have to muck with the existing term code
+			$("div#vocabWidgets div.row div.col-md-3:eq(3)").remove();
+			$("div#vocabWidgets div.row div.col-md-3:eq(2)").remove();
+
+			// we hide this in CSS - and now once it's set up, we show it. This way, you don't see
+			// effect/subtype blink out of visibility; you just see everything appear, which is nicer.
+			// (why opacity? If using display:none instead of opacity: 0 in the css, then the page
+			// scrolls to the top. Rather than track that down, just use opacity 0->1 which doesn't
+			// have the same issue...)
+			$("tr.mechanisticendpoint-edit-row").css("opacity", 1);
+			*/
+		}, 100);
+
+		// EHV kickoff - end
+
+		/*
+		h.setupOtherShowHideRelationship(
+			form.find("select[name$='-poa_process']"),
+			form.find("input[name$='-poa_process_other']"),
+			"OTHR"
+		);
+
+		h.setupOtherShowHideRelationship(
+			form.find("select[name$='-poa_action']"),
+			form.find("input[name$='-poa_action_other']"),
+			"OTHR"
+		);
+		*/
+
+		/*
+		import("shared/components/JsonListWidget.js").then(function(module) {
+			let widget = new module.default.widget_class();
+			widget.initializeWidgetUi("poa");
+			// widget.initializeAllWidgetUis();
+		});
+		*/
+	},
+
 
 	foo = null;
 
@@ -312,6 +397,8 @@ export default document => {
             doseGroupFormStartup(e.target);
         } else if (e.target.querySelector(".form-dosepreparation")) {
             dosePreparationFormStartup(e.target);
+        } else if (e.target.querySelector(".form-animalv2endpoint")) {
+            endpointFormStartup(e.target);
 		} /*else if (e.target.querySelector(".form-chemical")) {
             // ENTRY SCENARIO 2/2: during experiment update...
             chemicalFormStartup(e.target);

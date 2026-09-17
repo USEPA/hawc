@@ -368,6 +368,60 @@ class DosePreparationForm(forms.ModelForm):
         return helper
 
 
+class EndpointForm(forms.ModelForm):
+    class Meta:
+        model = models.AnimalV2Endpoint
+        exclude = (
+            "assessment",
+            "experiment",
+            "effects",
+        )
+
+        widgets = {
+            "system_term": forms.HiddenInput,
+            "name_term": forms.HiddenInput,
+            "organ_term": forms.HiddenInput,
+            "effect_term": forms.HiddenInput,
+            "effect_subtype_term": forms.HiddenInput,
+        }
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = f"endpoint-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+            self.instance.assessment = experiment.get_assessment()
+
+        self.fields["animal_group"].queryset = self.instance.experiment.aniv2_animalgroups.all()
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+        # helper.add_row("dose_group", 3, "col-md-4")
+
+        helper.layout.insert(
+            helper.find_layout_idx_for_field_name("name"),
+            cfl.Div(id="vocabWidgets"),
+        )
+
+        return helper
+
+    NAME_REQ = "Endpoint is required"
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # the name input is hidden and overridden, so any "name" field error
+        # must be displayed instead as a non_field_error
+        name_error = self.errors.get("name", None)
+        if name_error is not None:
+            self.add_error(None, self.NAME_REQ)
+
+        return cleaned_data
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

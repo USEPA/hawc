@@ -370,3 +370,32 @@ class DosePreparationMethod(models.TextChoices):
     NEA = "NEA", "Used Neat"
     OTH = "OTH", "Other"
     NR = "NR", "Not Reported"
+
+
+class EndpointObservationTimeUnit(models.TextChoices):
+    DAY = "DAY", "day(s)"
+    WEK = "WEK", "week(s)"
+    MON = "MON", "month(s)"
+    GDY = "GDY", "gestation day(s)"
+
+
+class EndpointBlinding(models.TextChoices):
+    YES = "YES", "yes"
+    NO = "NO", "no"
+    NS = "NS", "not specified"
+    INF = "INF", "inferred"
+
+
+class EndpointDatasetType(models.TextChoices):
+    CON = "CON", "continuous"
+    DI = "DI", "dichotomous"
+    PDF = "PDF", "percent difference"
+    DCA = "DCA", "dichotomous cancer"
+    NR = "NR", "not reported"
+
+
+class EndpointVarianceType(models.TextChoices):
+    SE = "SE", "standard error (SE)"
+    SD = "SD", "standard deviation (SD)"
+    NA = "NA", "not applicable (NA)"
+    NR = "NR", "not reported (NR)"

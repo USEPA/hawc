@@ -1,15 +1,17 @@
+import json
 from typing import Self
 
 import reversion
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.forms import ModelForm
 from django.urls import reverse
 
-from ..assessment.models import DSSTox, EffectTag
+from ..assessment.models import Assessment, BaseEndpoint, DSSTox
 from ..common.models import clone_name
 from ..study.models import Study
-from ..vocab.constants import ObservationStatus
+from ..vocab.constants import ObservationStatus, VocabularyNamespace
 from ..vocab.models import Guideline, GuidelineProfile, Term
 from . import constants, managers
 
@@ -808,6 +810,134 @@ class DosePreparation(models.Model):
         return self
 
 
+class AnimalV2Endpoint(BaseEndpoint):
+    objects = managers.EndpointManager()
+
+    # CARGO CULT? what is this bit doing...
+    TERM_FIELD_MAPPING = {
+        "name": "name_term_id",
+        "system": "system_term_id",
+        "organ": "organ_term_id",
+        "effect": "effect_term_id",
+        "effect_subtype": "effect_subtype_term_id",
+    }
+
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="aniv2_endpoints"
+    )
+
+    animal_group = models.ForeignKey(
+        AnimalGroup, on_delete=models.CASCADE, related_name="aniv2_endpoints"
+    )
+
+    name_term = models.ForeignKey(
+        Term,
+        related_name="aniv2_endpoint_name_terms",
+        on_delete=models.SET_NULL,
+        verbose_name="Endpoint",
+        help_text="The measured outcome used to evaluate the effect",
+        blank=True,
+        null=True,
+    )
+    system = models.CharField(max_length=128, blank=True, help_text="Relevant biological system")
+    system_term = models.ForeignKey(
+        Term,
+        related_name="aniv2_endpoint_system_terms",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    organ = models.CharField(
+        max_length=128,
+        blank=True,
+        verbose_name="Organ (and tissue)",
+        help_text="Relevant organ or tissue",
+    )
+    organ_term = models.ForeignKey(
+        Term,
+        related_name="aniv2_endpoint_organ_terms",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    effect = models.CharField(
+        max_length=128, blank=True, help_text="Effect, using common-vocabulary"
+    )
+    effect_term = models.ForeignKey(
+        Term,
+        related_name="aniv2_endpoint_effect_terms",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    effect_subtype = models.CharField(
+        max_length=128, blank=True, help_text="Effect subtype, using common-vocabulary"
+    )
+    effect_subtype_term = models.ForeignKey(
+        Term,
+        related_name="aniv2_endpoint_effect_subtype_terms",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
+
+    # will get exposed in the _object_edit_row.html template for use by javascript/template
+    @classmethod
+    def get_custom_context(cls, assessment, form_context):
+        return {
+            "vocabulary": cls.get_vocabulary_settings(assessment, form_context),
+        }
+
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+    @classmethod
+    def get_vocabulary_settings(cls, assessment: Assessment, form: ModelForm) -> str:
+        print(f"RUNNING CUSTOM GET_VOCAB_SETTINGS FOR ANIv2")
+        try:
+            vocab = VocabularyNamespace(assessment.vocabulary) if assessment.vocabulary else None
+            return json.dumps(
+                {
+                    "vocabulary": vocab.value if vocab else None,
+                    "vocabulary_display": vocab.display_name if vocab else None,
+                    "object": {
+                        "system": form["system"].value() or "",
+                        "system_term_id": form["system_term"].value(),
+                        "name": form["name"].value() or "",
+                        "name_term_id": form["name_term"].value(),
+                        "organ": form["organ"].value() or "",
+                        "organ_term_id": form["organ_term"].value(),
+                        "effect": form["effect"].value() or "",
+                        "effect_term_id": form["effect_term"].value(),
+                        "effect_subtype": form["effect_subtype"].value() or "",
+                        "effect_subtype_term_id": form["effect_subtype_term"].value(),
+                    },
+                }
+            )
+        except Exception as e:
+            print(f"exception during AnimalV2Endpoint.get_vocabulary_settings: '{e}'")
+
+    def save(self, *args, **kwargs):
+        # ensure our controlled vocabulary terms don't have leading/trailing whitespace
+        self.system = self.system.strip()
+        self.organ = self.organ.strip()
+        self.effect = self.effect.strip()
+        self.effect_subtype = self.effect_subtype.strip()
+        self.name = self.name.strip()
+        super().save(*args, **kwargs)
+
+
 reversion.register(Experiment)
 reversion.register(Chemical)
 reversion.register(TestSubstance)
@@ -817,3 +947,4 @@ reversion.register(Husbandry)
 reversion.register(Treatment)
 reversion.register(DoseGroup)
 reversion.register(DosePreparation)
+reversion.register(AnimalV2Endpoint)

@@ -116,6 +116,11 @@ urlpatterns = [
         views.DosePreparationViewSet.as_view(),
         name="dosepreparation-htmx",
     ),
+    path(
+        "animalv2endpoint/<int:pk>/<slug:action>/",
+        views.EndpointViewSet.as_view(),
+        name="animalv2endpoint-htmx",
+    ),
 ]
 
 """
