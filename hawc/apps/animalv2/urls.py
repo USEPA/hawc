@@ -121,6 +121,11 @@ urlpatterns = [
         views.EndpointViewSet.as_view(),
         name="animalv2endpoint-htmx",
     ),
+    path(
+        "statisticalanalysis/<int:pk>/<slug:action>/",
+        views.StatisticalAnalysisViewSet.as_view(),
+        name="statisticalanalysis-htmx",
+    ),
 ]
 
 """

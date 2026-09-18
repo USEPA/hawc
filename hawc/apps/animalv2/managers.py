@@ -41,6 +41,10 @@ class EndpointManager(BaseManager):
     assessment_relation = "experiment__study__assessment"
 
 
+class StatisticalAnalysisManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+
 """
 class AnimalGroupManager(BaseManager):
     assessment_relation = "experiment__study__assessment"

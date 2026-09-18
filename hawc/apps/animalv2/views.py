@@ -356,6 +356,12 @@ class EndpointViewSet(ExperimentChildViewSet):
     detail_fragment = "animalv2/fragments/endpoint_row.html"
 
 
+class StatisticalAnalysisViewSet(ExperimentChildViewSet):
+    model = models.StatisticalAnalysis
+    form_class = forms.StatisticalAnalysisForm
+    detail_fragment = "animalv2/fragments/statisticalanalysis_row.html"
+
+
 """
 class ChemicalViewSet(ExperimentChildViewSet):
     model = models.Chemical

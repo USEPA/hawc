@@ -399,3 +399,10 @@ class EndpointVarianceType(models.TextChoices):
     SD = "SD", "standard deviation (SD)"
     NA = "NA", "not applicable (NA)"
     NR = "NR", "not reported (NR)"
+
+
+class StatisticTrend(models.TextChoices):
+    NR = "NR", "not reported"
+    NS = "NS", "not significant"
+    SI = "SI", "significant"
+    NA = "NA", "not applicable"

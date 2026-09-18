@@ -149,4 +149,21 @@
     </div>
   </div>
 
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      <h3 class="card-title">Statistical Analyses</h3>
+      <table class="table table-sm table-striped">
+        {% bs4_colgroup '34,33,33' %}
+        {% bs4_thead 'Endpoint,Trend,Test' %}
+        <tbody>
+          {% for object in object.aniv2_statisticalanalyses.all %}
+            {% include "animalv2/fragments/statisticalanalysis_row.html" %}
+          {% empty %}
+            {% bs4_fullrow 'No statistical analyses available.' %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 {% endblock %}

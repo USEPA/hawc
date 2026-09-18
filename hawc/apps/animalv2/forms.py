@@ -425,6 +425,30 @@ class EndpointForm(forms.ModelForm):
         return cleaned_data
 
 
+class StatisticalAnalysisForm(forms.ModelForm):
+    class Meta:
+        model = models.StatisticalAnalysis
+        exclude = ("experiment",)
+
+    def __init__(self, *args, **kwargs):
+        experiment = kwargs.pop("parent", None)
+        prefix = (
+            f"statisticalanalysis-{kwargs.get('instance').pk if 'instance' in kwargs else 'new'}"
+        )
+        super().__init__(*args, prefix=prefix, **kwargs)
+        if experiment:
+            self.instance.experiment = experiment
+
+        self.fields["endpoint"].queryset = self.instance.experiment.aniv2_endpoints.all()
+
+    @property
+    def helper(self):
+        helper = BaseFormHelper(self)
+        helper.form_tag = False
+
+        return helper
+
+
 """
 class AnimalGroupForm(forms.ModelForm):
     class Meta:

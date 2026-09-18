@@ -1037,6 +1037,55 @@ class AnimalV2Endpoint(BaseEndpoint):
         super().save(*args, **kwargs)
 
 
+class StatisticalAnalysis(models.Model):
+    objects = managers.StatisticalAnalysisManager()
+
+    experiment = models.ForeignKey(
+        Experiment, on_delete=models.CASCADE, related_name="aniv2_statisticalanalyses"
+    )
+
+    endpoint = models.ForeignKey(
+        AnimalV2Endpoint, on_delete=models.CASCADE, related_name="aniv2_statisticalanalyses"
+    )
+
+    trend = models.CharField(
+        default="",
+        max_length=2,
+        choices=constants.StatisticTrend.choices,
+        verbose_name="Statistics Trend",
+        help_text="Describe the significance trend across all doses for the endpoint.",
+    )
+
+    test = models.CharField(
+        max_length=255,
+        verbose_name="Statistical Test",
+        help_text="Short description of statistical analysis techniques used, e.g., Fisher Exact Test, ANOVA, Chi Square, Peto's test, none conducted",
+    )
+
+    power_comments = models.CharField(
+        max_length=255,
+        verbose_name="Statistical Power Comments",
+        help_text="Power of study-design to detect change from control",
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("id",)
+
+    def get_assessment(self):
+        return self.experiment.get_assessment()
+
+    def get_study(self):
+        return self.experiment.get_study()
+
+    def clone(self):
+        self.id = None
+        self.save()
+        return self
+
+
 reversion.register(Experiment)
 reversion.register(Chemical)
 reversion.register(TestSubstance)
