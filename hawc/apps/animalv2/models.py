@@ -881,6 +881,105 @@ class AnimalV2Endpoint(BaseEndpoint):
         null=True,
     )
 
+    additional_tags = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Descriptive text regarding endpoint measurement/observation (e.g. directionality, laterality, blotted/wet)",
+    )
+
+    reported_diagnostic = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Diagnostic As Reported",
+        help_text="Brief verbatim text from document. Include verbatim text in this field even if the text matches endpoint terminology.",
+    )
+
+    observation_time = models.CharField(
+        max_length=255,
+        help_text="Time value associated with the duration at which effect was measured or observed. The time should always reflect the extracted data, i.e., the time at which the effect was measured. For uncertain time points, record the time of sacrifice. The time value is the same for all doses of a given effect. If the time was a range, record the end of the range and add the entire range in the Observation Time Text field. For example, an effect observed at GD 6-9 would be entered as Time = 9 and “GD 6-9” would be entered in the comments.",
+    )
+
+    observation_time_units = models.CharField(
+        blank=True,
+        default="",
+        max_length=3,
+        choices=constants.EndpointObservationTimeUnit.choices,
+        help_text="Unit of time the duration the effect was measured. Options include days, weeks, months, or gestation days (for adult pregnancy effects).",
+    )
+
+    observation_time_text = models.CharField(
+        max_length=255,
+        help_text="Brief verbatim text from document describing observation time.",
+    )
+
+    blinding = models.CharField(
+        blank=True,
+        default="",
+        max_length=3,
+        choices=constants.EndpointBlinding.choices,
+        help_text="Does the study report blinding or other procedures for reducing observational bias? Select “yes”, “no”, “not specified”, or “inferred”. If “yes” or “inferred” are selected, describe the measures used by study authors to reduce observational bias during outcome assessment in the “Blinding Remarks” field.",
+    )
+
+    blinding_remarks = models.TextField(
+        blank=True,
+        max_length=2000,
+        help_text="If “yes” or “inferred” are selected from “Blinding”, describe the measures used by study authors to reduce observational bias during outcome assessment.",
+    )
+
+    attrition = models.TextField(
+        blank=True,
+        max_length=2000,
+        help_text="Indicate time, cause of death, and animal group for unexpected attrition.",
+    )
+
+    data_reported = models.BooleanField(
+        help_text="Dose-response data for endpoint are available in the literature source.",
+    )
+
+    data_extracted = models.BooleanField(
+        help_text="Dose-response data for an endpoint are extracted from literature into HAWC.",
+    )
+
+    values_estimated = models.BooleanField(
+        help_text="Select if response values were estimated using a digital ruler or other methods.",
+    )
+
+    dataset_type = models.CharField(
+        blank=True,
+        default="",
+        max_length=3,
+        choices=constants.EndpointDatasetType.choices,
+        help_text="Select the format of the dose-response data reported for this endpoint.",
+    )
+
+    variance_type = models.CharField(
+        blank=True,
+        default="",
+        max_length=3,
+        choices=constants.EndpointVarianceType.choices,
+        help_text="Select the measure of the variability for the continuous data set, generally reported as the standard deviation (SD) or standard error (SE).",
+    )
+
+    # response units - this is derived from dose group (which comes from the animal group
+
+    data_location = models.CharField(
+        blank=True,
+        max_length=255,
+        help_text='Details on where the data are found in the literature (ex: "Figure 1", "Table 2", "Text, p. 24", "Figure 1 and Text, p.24").',
+    )
+
+    results_notes = models.TextField(
+        max_length=2000,
+        blank=True,
+        help_text='Qualitative description of the results. This field can be left blank if there is no need to further describe numerically extracted findings, e.g., organ or body weights. Use this field to describe findings such as the type and severity of histopathology or malformations not otherwise captured in the numerical data extraction. Also use this field to cut and paste findings described only in text in the study. If coding is used to create exposure-response arrays, then add this comment in bold font at the start of the text box entry "For exposure-response array data display purposes, the following results were coded (control and no effect findings were coded as "0", treatment-related increases were coded as "1", and treatment-related decreases were coded as "-1".',
+    )
+
+    methods = models.TextField(
+        max_length=2000,
+        blank=True,
+        help_text="Cut and paste from methods, use quotation marks around all text directly copy/pasted from paper. Include all methods pertinent to measuring ALL outcomes, including statistical methods. This will make it easier to copy from existing HAWC endpoints to create new endpoints for a study.",
+    )
+
     class Meta:
         ordering = ("id",)
 

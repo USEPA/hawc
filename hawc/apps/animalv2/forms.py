@@ -399,7 +399,10 @@ class EndpointForm(forms.ModelForm):
     def helper(self):
         helper = BaseFormHelper(self)
         helper.form_tag = False
-        # helper.add_row("dose_group", 3, "col-md-4")
+        helper.add_row("observation_time", 3, "col-md-4")
+        helper.add_row("blinding", 2, "col-md-6")
+        helper.add_row("data_reported", 3, "col-md-4")
+        helper.add_row("dataset_type", 2, "col-md-6")
 
         helper.layout.insert(
             helper.find_layout_idx_for_field_name("name"),

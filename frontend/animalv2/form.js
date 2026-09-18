@@ -182,18 +182,10 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 	endpointFormStartup = function (f) {
 		let form = $(f);
 
-		console.log("ENDPOINT FORM STARTUP!!!");
-		console.log("ENDPOINT FORM STARTUP!!!");
-		console.log("ENDPOINT FORM STARTUP!!!");
-		console.log("ENDPOINT FORM STARTUP!!!");
-		console.log("ENDPOINT FORM STARTUP!!!");
-
 		// EHV kickoff - start
 		let config = JSON.parse(form.find("#hxCustomContext_animalv2endpoint").html());
 		let vocabSettings = JSON.parse(config.vocabulary);
 
-		console.log("READ IN", config, vocabSettings);
-		
 		startupEndpointForm(document.getElementById("vocabWidgets"), vocabSettings);
 
 		// remove the effect/effect-subtype widgets; we don't use those on mechanistic right now
@@ -209,7 +201,7 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 					//    startupEndpointForm created to "endpoint-19-organ".
 					let ehvDiv = $(this);
 					let actualPrefix = ehvDiv.attr("id").replace("div_id_", "").replace(ehvField, "");
-					console.log("ACTUAL PREFIX == '" + actualPrefix + "'; EHV FIELD == '" + ehvField + "'");
+					// console.log("ACTUAL PREFIX == '" + actualPrefix + "'; EHV FIELD == '" + ehvField + "'");
 
 					// thing 1
 					$("input[type='hidden'][name='" + ehvField + "']").attr("name", actualPrefix + ehvField);
@@ -217,49 +209,20 @@ const /*cloneSubformRow = function (lastRow, totalFormField) {
 
 					// thing 2
 					ehvDiv.remove();
-					$("input[type='hidden'][id='id_" + actualPrefix + ehvField + "_term']").remove(); // the hidden widget(s) right before "remarks"...
+					$("input[type='hidden'][id='id_" + actualPrefix + ehvField + "_term']").remove(); // the hidden widget(s)...
 				});
 			}
-			/*
 
-			// hide effect/subtype -- the EHV system sort of assumes they are there, but we don't want
-			// them in mechanistic...easiest route is just hide the widget, so they are alwauys blank in
-			// the db. That way we don't have to muck with the existing term code
-			$("div#vocabWidgets div.row div.col-md-3:eq(3)").remove();
-			$("div#vocabWidgets div.row div.col-md-3:eq(2)").remove();
-
-			// we hide this in CSS - and now once it's set up, we show it. This way, you don't see
-			// effect/subtype blink out of visibility; you just see everything appear, which is nicer.
-			// (why opacity? If using display:none instead of opacity: 0 in the css, then the page
-			// scrolls to the top. Rather than track that down, just use opacity 0->1 which doesn't
-			// have the same issue...)
-			$("tr.mechanisticendpoint-edit-row").css("opacity", 1);
-			*/
 		}, 100);
 
 		// EHV kickoff - end
 
-		/*
-		h.setupOtherShowHideRelationship(
-			form.find("select[name$='-poa_process']"),
-			form.find("input[name$='-poa_process_other']"),
-			"OTHR"
-		);
+        let showHides = [
+            [ "select[name$='-blinding']", "textarea[name$='-blinding_remarks']", ["YES", "INF"] ],
+            [ "select[name$='-dataset_type']", "select[name$='-variance_type']", "CON" ],
+        ]
 
-		h.setupOtherShowHideRelationship(
-			form.find("select[name$='-poa_action']"),
-			form.find("input[name$='-poa_action_other']"),
-			"OTHR"
-		);
-		*/
-
-		/*
-		import("shared/components/JsonListWidget.js").then(function(module) {
-			let widget = new module.default.widget_class();
-			widget.initializeWidgetUi("poa");
-			// widget.initializeAllWidgetUis();
-		});
-		*/
+		processMultipleShowHides(form, showHides);
 	},
 
 
