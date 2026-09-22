@@ -53,12 +53,20 @@ class DssSubstance(NamedTuple):
             raise ValueError(f"Invalid DTXSID: {dtxsid}")
         if settings.EPA_COMPTOX_API_KEY is None and settings.IS_TESTING is False:
             raise ValueError("Missing API key")
+        url = f"https://comptox.epa.gov/ctx-api/chemical/detail/search/by-dtxsid/{dtxsid}"
         session = get_session(headers={"x-api-key": settings.EPA_COMPTOX_API_KEY})
-        response = session.get(
-            f"https://comptox.epa.gov/ctx-api/chemical/detail/search/by-dtxsid/{dtxsid}",
-            timeout=15,
-        )
+        try:
+            response = session.get(url, timeout=15)
+        except Exception as err:
+            logger.error(f"DSSTox lookup request failed for {dtxsid}", exc_info=True)
+            raise ValueError(f"{dtxsid} not found in DSSTox lookup") from err
+        if response.status_code != 200:
+            logger.error(
+                f"DSSTox lookup failed for {dtxsid}: HTTP {response.status_code} - {response.text}"
+            )
+            raise ValueError(f"{dtxsid} not found in DSSTox lookup")
         response_dict = response.json()
         if response_dict.get("dtxsid") != dtxsid:
+            logger.error(f"DSSTox lookup response mismatch for {dtxsid}: {response.text[:500]}")
             raise ValueError(f"{dtxsid} not found in DSSTox lookup")
         return cls(dtxsid=response_dict["dtxsid"], content=response_dict)

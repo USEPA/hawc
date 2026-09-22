@@ -53,6 +53,7 @@ urlpatterns = [
     path("mgmt/", include("hawc.apps.mgmt.urls")),
     path("vocab/", include("hawc.apps.vocab.urls")),
     path("docs/", include("hawc.apps.docs.urls")),
+    path("mechanistic/", include("hawc.apps.mechanistic.urls")),
     # common functionality
     path("update-session/", views.UpdateSession.as_view(), name="update_session"),
     path("rasterize/", views.RasterizeCss.as_view(), name="css-rasterize"),

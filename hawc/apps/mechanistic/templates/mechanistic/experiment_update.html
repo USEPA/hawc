@@ -1,0 +1,89 @@
+{% extends 'assessment-rooted.html' %}
+
+{% block content %}
+  <h2 class="d-inline-block">Update '{{object.name}}'</h2>
+  <div class="float-right">
+    <a id="experiment-update" class="btn btn-sm btn-primary" href="#"
+       hx-get="{% url 'mechanistic:experiment-htmx' object.pk 'update' %}" hx-target="#experiment-table" hx-swap="outerHTML">
+      <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;Update experiment</a>
+  </div>
+
+  {% include "mechanistic/fragments/_experiment_table.html" %}
+
+  <div style="color:red">see e.g. epiv2/templates/epiv2/design_update.html for sub-object example code...</div>
+
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      {% url 'mechanistic:method-htmx' object.pk 'create' as method_create %}
+      {% include "common/fragments/_create_card.html" with title="Methods" hx_get=method_create hx_target=".method-edit-row.create-row" model="method" btn_text="Add Row" %}
+      <table class="table table-sm table-striped-invert">
+        {% bs4_colgroup '21,64,15' %}
+        {% bs4_thead 'Name,Endpoint Detection Method,Edit' %}
+        <tbody id="method-tbody">
+          {% for object in object.methods.all %}
+            {% include "mechanistic/fragments/method_row.html" %}
+          {% endfor %}
+          {% include "common/fragments/_create_one.html" with text='No methods to display. Click "Add Row" to create one.' %}
+          {% include "common/fragments/_create_row.html" with model="method" first=True %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      {% url 'mechanistic:dataanalysis-htmx' object.pk 'create' as dataanalysis_create %}
+      {% include "common/fragments/_create_card.html" with title="Data Analyses" hx_get=dataanalysis_create hx_target=".dataanalysis-edit-row.create-row" model="dataanalysis" btn_text="Add Row" %}
+      <table class="table table-sm table-striped-invert">
+        {% bs4_colgroup '43,42,15' %}
+        {% bs4_thead 'Validity,Cytotoxicity,Edit' %}
+        <tbody id="dataanalysis-tbody">
+          {% for object in object.dataanalyses.all %}
+            {% include "mechanistic/fragments/dataanalysis_row.html" %}
+          {% endfor %}
+          {% include "common/fragments/_create_one.html" with text='No data analyses to display. Click "Add Row" to create one.' %}
+          {% include "common/fragments/_create_row.html" with model="dataanalysis" first=True %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card my-4 mx-2">
+    <div class="card-body">
+      {% url 'mechanistic:mechanisticendpoint-htmx' object.pk 'create' as endpoint_create %}
+      {% include "common/fragments/_create_card.html" with title="Endpoints" hx_get=endpoint_create hx_target=".mechanisticendpoint-edit-row.create-row" model="mechanisticendpoint" btn_text="Add Row" %}
+      <table class="table table-sm table-striped-invert">
+        {% bs4_colgroup '85,15' %}
+        {% bs4_thead 'Name,Edit' %}
+        <tbody id="endpoint-tbody">
+          {% for object in object.endpoints.all %}
+            {% include "mechanistic/fragments/endpoint_row.html" %}
+          {% endfor %}
+          {% include "common/fragments/_create_one.html" with text='No endpoints to display. Click "Add Row" to create one.' %}
+          {% include "common/fragments/_create_row.html" with model="mechanisticendpoint" first=True %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <div class="well text-center">
+    <a class="btn btn-light my-3" href="{{object.get_absolute_url}}" id="mechanistic-page-cancel"><i class="fa fa-fw fa-times"></i>Cancel</a>
+  </div>
+
+{% endblock %}
+
+
+{% block extrajs %}
+  {% include "common/htmx_autocomplete.html" %}
+  <script type="text/javascript">
+    $(document).ready(function() {
+      window.app.startup("mechanisticStartup", function(app){
+        app.formStartup(document);
+      });
+      $(window).ready(function() {
+        window.app.HAWCUtils.addScrollHtmx("mechanistic-edit-row", "mechanistic-obj-row");
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,62 @@
+from django.db.models import QuerySet
+
+from ..common.models import BaseManager, get_distinct_charfield_opts
+
+
+class ExperimentQuerySet(QuerySet):
+    pass
+
+
+class ExperimentManager(BaseManager):
+    assessment_relation = "study__assessment"
+
+    def get_queryset(self):
+        return ExperimentQuerySet(self.model, using=self._db)
+
+
+class ChemicalQuerySet(QuerySet):
+    pass
+
+
+class ChemicalManager(BaseManager):
+    # assessment_relation = "experiment__study__assessment"
+    assessment_relation = "study__assessment"
+
+    def get_queryset(self):
+        return ChemicalQuerySet(self.model, using=self._db)
+
+
+class MethodQuerySet(QuerySet):
+    pass
+
+
+class MethodManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+    def get_queryset(self):
+        return MethodQuerySet(self.model, using=self._db)
+
+
+class DataAnalysisQuerySet(QuerySet):
+    pass
+
+
+class DataAnalysisManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+    def get_queryset(self):
+        return DataAnalysisQuerySet(self.model, using=self._db)
+
+
+class MechanisticEndpointQuerySet(QuerySet):
+    pass
+
+
+class MechanisticEndpointManager(BaseManager):
+    assessment_relation = "experiment__study__assessment"
+
+    def get_queryset(self):
+        return MechanisticEndpointQuerySet(self.model, using=self._db)
+
+    def get_system_choices(self, assessment_id):
+        return get_distinct_charfield_opts(self, assessment_id, "system")
