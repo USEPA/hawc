@@ -21,7 +21,6 @@ from ..apps.study.urls import router as study_router
 from ..apps.summary.urls import router as summary_router
 from ..apps.udf.urls import router as udf_router
 from ..apps.vocab.urls import router as vocab_router
-from ..apps.mechanistic.urls import router as mechanistic_router
 
 urlpatterns = [
     # Portal
