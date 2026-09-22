@@ -43,6 +43,7 @@ private/
 public/
 scripts/private
 venv/
+/working_docs/
 
 # keep folders; not contents
 hawc/static/bundles/*
