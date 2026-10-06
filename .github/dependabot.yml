@@ -1,0 +1,47 @@
+version: 2
+
+updates:
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      python-dependencies:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: "Django"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "monthly"
+    groups:
+      javascript-dependencies:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: "mobx-react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      github-actions-dependencies:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 7

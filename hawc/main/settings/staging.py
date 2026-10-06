@@ -18,7 +18,6 @@ if HTTPS_ONLY:
     SECURE_HSTS_SECONDS = 0  # handle upstream in reverse proxy
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "").split("|")
-WAGTAILADMIN_BASE_URL = os.getenv("WAGTAILADMIN_BASE_URL", "")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
@@ -53,6 +52,12 @@ else:
 LOGGING["loggers"]["django"]["handlers"] = ["console", "file"]
 LOGGING["loggers"]["hawc"]["handlers"] = ["console", "file"]
 LOGGING["loggers"]["hawc.request"]["handlers"] = ["console", "hawc-request"]
+
+if os.environ.get("EMAIL_EXCEPTIONS", "True") != "True":
+    handlers = LOGGING["loggers"]["django.request"]["handlers"]
+    if "mail_admins" in handlers:
+        handlers.remove("mail_admins")
+
 
 ANYONE_CAN_CREATE_ASSESSMENTS = os.getenv("HAWC_ANYONE_CAN_CREATE_ASSESSMENTS", "True") == "True"
 PM_CAN_MAKE_PUBLIC = os.getenv("HAWC_PM_CAN_MAKE_PUBLIC", "True") == "True"

@@ -8,9 +8,6 @@ from .dev import *
 
 DEBUG = True
 
-# enable feature flags for tests
-HAWC_FEATURES.ENABLE_DOCS_LINK = True
-
 # remove toolbar for integration tests
 INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "debug_toolbar"]
 MIDDLEWARE = [middleware for middleware in MIDDLEWARE if "debug_toolbar" not in middleware]
@@ -28,6 +25,14 @@ DATABASES["default"]["TEST"] = {"NAME": "hawc-test"}
 IS_TESTING = True
 
 PRIVATE_DATA_ROOT = PROJECT_ROOT / "tests/data/private-data"
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "private": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {"location": PRIVATE_DATA_ROOT},
+    },
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
 
 PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
 
