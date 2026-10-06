@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 from datetime import datetime
@@ -6,6 +7,7 @@ from subprocess import CalledProcessError
 
 from django.urls import reverse_lazy
 
+from ... import __version__
 from ...constants import AuthProvider, FeatureFlags
 from ...services.utils.git import Commit
 
@@ -22,7 +24,7 @@ WSGI_APPLICATION = "hawc.main.wsgi.application"
 SECRET_KEY = "io^^q^q1))7*r0u@6i+6kx&ek!yxyf6^5vix_6io6k4kdn@@5t"  # noqa: S105
 LANGUAGE_CODE = "en-us"
 SITE_ID = 1
-TIME_ZONE = os.getenv("TIME_ZONE", "US/Eastern")
+TIME_ZONE = os.getenv("TIME_ZONE", "America/New_York")  # use canonical timezone
 USE_I18N = False
 USE_TZ = True
 
@@ -45,6 +47,20 @@ HAWC_FLAVOR = os.getenv("HAWC_FLAVOR", "PRIME")
 
 # Feature flags
 HAWC_FEATURES = FeatureFlags.from_env("HAWC_FEATURE_FLAGS")
+
+# Storage
+storage_backend_json = os.environ.get(
+    "STORAGE_BACKEND_JSON", '{"BACKEND": "django.core.files.storage.FileSystemStorage"}'
+)
+storage_private_backend_json = os.environ.get(
+    "STORAGE_PRIVATE_BACKEND_JSON",
+    f'{{"BACKEND": "django.core.files.storage.FileSystemStorage", "OPTIONS": {{"location": "{PRIVATE_DATA_ROOT}"}}}}',
+)
+STORAGES = {
+    "default": json.loads(storage_backend_json),
+    "private": json.loads(storage_private_backend_json),
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
 
 # Template processors
 TEMPLATES = [
@@ -84,7 +100,6 @@ MIDDLEWARE = (
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "hawc.apps.common.middleware.MicrosoftOfficeLinkMiddleware",
     "hawc.apps.common.middleware.ActivateTimezoneMiddleware",
     "hawc.apps.common.middleware.RequestLogMiddleware",
@@ -109,25 +124,13 @@ INSTALLED_APPS = (
     # External apps
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_spectacular",
     "reversion",
     "taggit",
     "treebeard",
     "crispy_forms",
     "crispy_bootstrap4",
     "django_vite",
-    "wagtail.contrib.forms",
-    "wagtail.contrib.redirects",
-    "wagtail.embeds",
-    "wagtail.sites",
-    "wagtail.users",
-    "wagtail.snippets",
-    "wagtail.documents",
-    "wagtail.images",
-    "wagtail.search",
-    "wagtail.admin",
-    "wagtail_draftail_anchors",
-    "wagtail",
-    "modelcluster",
     # Custom apps
     "hawc.apps.common",
     "hawc.apps.myuser",
@@ -148,7 +151,6 @@ INSTALLED_APPS = (
     "hawc.apps.materialized",
     "hawc.apps.epiv2",
     "hawc.apps.udf",
-    "hawc.apps.docs",
 )
 # DB settings
 DATABASES = {
@@ -237,17 +239,6 @@ STATICFILES_FINDERS = (
 MEDIA_URL = "/media/"
 MEDIA_ROOT = str(PUBLIC_DATA_ROOT / "media")
 FILE_UPLOAD_PERMISSIONS = 0o755
-
-# Wagtail setup
-WAGTAIL_SITE_NAME = "HAWC"
-WAGTAILADMIN_BASE_URL = ""
-WAGTAIL_FRONTEND_LOGIN_URL = LOGIN_URL
-DRAFTAIL_ANCHORS_RENDERER = "wagtail_draftail_anchors.rich_text.render_span"
-WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = False
-WAGTAILUSERS_PASSWORD_ENABLED = False
-WAGTAIL_EMAIL_MANAGEMENT_ENABLED = False
-WAGTAIL_ENABLE_UPDATE_CHECK = False
-WAGTAIL_ALLOW_UNICODE_SLUGS = False
 
 # Logging configuration
 DEFAULT_EXCEPTION_REPORTER = "hawc.apps.common.exceptions.ExceptionReporter"
@@ -349,10 +340,19 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "PAGE_SIZE": 50,
     "COERCE_DECIMAL_TO_STRING": False,
 }
 REST_FRAMEWORK_EXTENSIONS = {"DEFAULT_BULK_OPERATION_HEADER_NAME": "X-CUSTOM-BULK-OPERATION"}
+
+# drf-spectacular settings
+SPECTACULAR_SETTINGS = {
+    "TITLE": "HAWC API",
+    "VERSION": __version__,
+    "SERVE_INCLUDE_SCHEMA": True,
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+}
 
 # Django crispy-forms settings
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
