@@ -11,11 +11,11 @@ class AssessmentAutocomplete(BaseAutocomplete):
 @register
 class DSSToxAutocomplete(BaseAutocomplete):
     model = models.DSSTox
-    search_fields = ["search"]
+    search_fields = ["dtxsid", "casrn", "preferred_name"]
 
     def get_result(self, obj):
         result = super().get_result(obj)
-        result.update(casrn=obj.content["casrn"], chemical_name=obj.content["preferredName"])
+        result.update(casrn=obj.casrn, chemical_name=obj.preferred_name)
         return result
 
     def get_result_label(self, result):

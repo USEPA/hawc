@@ -2,7 +2,6 @@ import django_filters as df
 from django.db.models import Q, Subquery
 
 from ..common.filterset import BaseFilterSet, InlineFilterForm, PaginationFilter
-from ..common.models import search_query
 from ..myuser.models import HAWCUser
 from . import constants, models
 
@@ -85,20 +84,27 @@ class StudyByChemicalFilterSet(df.FilterSet):
         return queryset.filter(published=value)
 
     def filter_query(self, queryset, name, value):
-        chem_query = search_query(value)
         return queryset.filter(
             # bioassay
             Q(experiments__chemical__icontains=value)
             | Q(experiments__cas=value)
-            | Q(experiments__dtxsid__search=chem_query)
+            | Q(experiments__dtxsid__dtxsid__icontains=value)
+            | Q(experiments__dtxsid__preferred_name__icontains=value)
+            | Q(experiments__dtxsid__casrn__contains=value)
             # epi
             | Q(study_populations__exposures__name__icontains=value)
-            | Q(study_populations__exposures__dtxsid__search=chem_query)
+            | Q(study_populations__exposures__dtxsid__dtxsid__icontains=value)
+            | Q(study_populations__exposures__dtxsid__preferred_name__icontains=value)
+            | Q(study_populations__exposures__dtxsid__casrn__contains=value)
             # epiv2
             | Q(designs__chemicals__name__icontains=value)
-            | Q(designs__chemicals__dsstox__search=chem_query)
+            | Q(designs__chemicals__dsstox__dtxsid__icontains=value)
+            | Q(designs__chemicals__dsstox__preferred_name__icontains=value)
+            | Q(designs__chemicals__dsstox__casrn__contains=value)
             # in vitro
             | Q(ivchemicals__name__icontains=value)
             | Q(ivchemicals__cas=value)
-            | Q(ivchemicals__dtxsid__search=chem_query)
+            | Q(ivchemicals__dtxsid__dtxsid__icontains=value)
+            | Q(ivchemicals__dtxsid__preferred_name__icontains=value)
+            | Q(ivchemicals__dtxsid__casrn__contains=value)
         )

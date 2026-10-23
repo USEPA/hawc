@@ -287,6 +287,26 @@ class TestStudyViewSet:
         assert response.status_code == 400
         assert "query" in response.json()
 
-        response = client.get(url + "?query=1746-01-6")
-        assert response.status_code == 200
-        assert len(response.json()) == 1
+        query_tests = [
+            ("1746-01-6", 1, "study id 4, has bioassay experiment 2 with CAS 1746-01-6"),
+            (
+                "nitrofen",
+                1,
+                "preferred name of dsstox DTXSID7020970 associated with animal experiment #1",
+            ),
+            (
+                "20970",
+                1,
+                "partial dtxsid of dsstox DTXSID7020970 associated with animal experiment #1",
+            ),
+            (
+                "1836-",
+                1,
+                "partial casrn of dsstox DTXSID7020970 associated with animal experiment #1",
+            ),
+            ("nonono", 0, "search that should fail"),
+        ]
+        for qt_text, qt_num_expected, _qt_descriptor in query_tests:
+            response = client.get(url + f"?query={qt_text}")
+            assert response.status_code == 200
+            assert len(response.json()) == qt_num_expected

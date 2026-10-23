@@ -305,9 +305,29 @@ class TestAssessmentViewSet:
         assert response.status_code == 400
         assert "query" in response.json()
 
-        response = client.get(url + "?query=58-08-2")
-        assert response.status_code == 200
-        assert len(response.json()) == 1
+        query_tests = [
+            ("58-08-2", 1, "cas as set on assessment.assessment (Chemical Y)"),
+            (
+                "Water",
+                1,
+                "preferred name of dsstox DTXSID6026296 associated with Chemical X assessment",
+            ),
+            (
+                "6026296",
+                1,
+                "partial dtxsid of dsstox DTXSID6026296 associated with Chemical X assessment",
+            ),
+            (
+                "7732-18",
+                1,
+                "partial casrn of dsstox DTXSID6026296 associated with Chemical X assessment",
+            ),
+            ("nonono", 0, "search that should fail"),
+        ]
+        for qt_text, qt_num_expected, _qt_descriptor in query_tests:
+            response = client.get(url + f"?query={qt_text}")
+            assert response.status_code == 200
+            assert len(response.json()) == qt_num_expected
 
     def test_endpoints(self, db_keys):
         url = reverse("assessment:api:assessment-endpoints", args=(db_keys.assessment_final,))

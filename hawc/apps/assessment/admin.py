@@ -278,7 +278,7 @@ class DSSXToxAdmin(admin.ModelAdmin):
         "get_ivchemicals",
     )
     list_filter = ("last_updated",)
-    search_fields = ("dtxsid", "content__casrn", "content__preferredName")
+    search_fields = ("dtxsid", "casrn", "preferred_name")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -293,11 +293,11 @@ class DSSXToxAdmin(admin.ModelAdmin):
 
     @admin.display(description="CASRN")
     def get_casrns(self, obj):
-        return obj.content["casrn"]
+        return obj.casrn
 
     @admin.display(description="Name")
     def get_names(self, obj):
-        return obj.content["preferredName"]
+        return obj.preferred_name
 
     @admin.display(description="Assessments")
     def get_assessments(self, obj):

@@ -11,8 +11,6 @@ from django.conf import settings
 from django.contrib.contenttypes import fields
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.indexes import GinIndex
-from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.cache import cache
 from django.db import models
 from django.http import HttpRequest
@@ -60,12 +58,18 @@ class DSSTox(models.Model):
         verbose_name="DSSTox substance identifier (DTXSID)",
     )
     content = models.JSONField(default=dict)
-    search = models.GeneratedField(
-        db_persist=True,
-        expression=SearchVector(
-            "dtxsid", "content__preferredName", "content__casrn", config="english"
-        ),
-        output_field=SearchVectorField(),
+    preferred_name = models.CharField(
+        max_length=128,
+        blank=True,
+        db_index=True,
+    )
+    casrn = models.CharField(
+        # 12 characters should be enough; according to https://www.cas.org/cas-data/cas-registry as of Oct 2026
+        # "A CAS Registry Number is a numeric identifier that can contain up to 10 digits, divided by hyphens into three parts."
+        max_length=12,
+        blank=True,
+        verbose_name="CASRN / Chemical Abstracts Service Registry Number",
+        db_index=True,
     )
 
     created = models.DateTimeField(auto_now_add=True)
@@ -75,7 +79,6 @@ class DSSTox(models.Model):
         ordering = ("dtxsid",)
         verbose_name = "DSSTox substance"
         verbose_name_plural = "DSSTox substances"
-        indexes = [GinIndex("search", name="dsstox_search_idx")]
 
     def __str__(self):
         return self.dtxsid
@@ -92,15 +95,24 @@ class DSSTox(models.Model):
             substance = DssSubstance.create_from_dtxsid(self.dtxsid)
             self.content = substance.content
 
+        # if casrn/preferred_name weren't set in some other way, and the
+        # values are in content, then pull them from there
+        if not self.casrn and not self.preferred_name:
+            if "casrn" in self.content:
+                self.casrn = self.content["casrn"]
+
+            if "preferredName" in self.content:
+                self.preferred_name = self.content["preferredName"]
+
         super().save(*args, **kwargs)
 
     @property
     def verbose_str(self) -> str:
-        return f"{self.dtxsid}: {self.content['preferredName']} (CASRN {self.content['casrn']})"
+        return f"{self.dtxsid}: {self.preferred_name} (CASRN {self.casrn})"
 
     @property
     def verbose_link(self) -> str:
-        return f"{new_window_a(self.dashboard_url(), self.dtxsid)}: {self.content['preferredName']} (CASRN {self.content['casrn']})"
+        return f"{new_window_a(self.dashboard_url(), self.dtxsid)}: {self.preferred_name} (CASRN {self.casrn})"
 
     @classmethod
     def help_text(cls) -> str:
