@@ -291,23 +291,48 @@ class TestAssessmentViewSet:
         assert resp.status_code == 200
         assert len(resp.json()) == 5
 
-    def test_chemical(self):
+    @pytest.mark.parametrize(
+        "query,expected_ids",
+        [
+            ("58-08-2", [3]),
+            ("wate", [2]),
+            ("DTXSID6026296", [2]),
+            ("7732-18", [2]),
+            ("nonono", []),
+        ],
+    )
+    def test_chemical(self, query, expected_ids):
+        client = APIClient()
+        url = reverse("assessment:api:assessment-chemical-search")
+
+        assert client.login(username="admin@hawcproject.org", password="pw") is True
+        response = client.get(url, {"query": query})
+
+        assert response.status_code == 200
+        assert [obj["id"] for obj in response.json()] == expected_ids
+
+
+    def test_chemical_permissions(self):
         url = reverse("assessment:api:assessment-chemical-search")
 
         client = APIClient()
-        assert client.login(username="pm@hawcproject.org", password="pw") is True
-        response = client.get(url)
+        response = client.get(url, {"query": {"test"}})
         assert response.status_code == 403
 
         client = APIClient()
-        assert client.login(username="admin@hawcproject.org", password="pw") is True
-        response = client.get(url)
-        assert response.status_code == 400
-        assert "query" in response.json()
+        assert client.login(username="reviewer@hawcproject.org", password="pw") is True
+        response = client.get(url, {"query": {"test"}})
+        assert response.status_code == 403
 
-        response = client.get(url + "?query=58-08-2")
-        assert response.status_code == 200
-        assert len(response.json()) == 1
+        client = APIClient()
+        assert client.login(username="team@hawcproject.org", password="pw") is True
+        response = client.get(url, {"query": {"test"}})
+        assert response.status_code == 403
+
+        client = APIClient()
+        assert client.login(username="pm@hawcproject.org", password="pw") is True
+        response = client.get(url, {"query": {"test"}})
+        assert response.status_code == 403
 
     def test_endpoints(self, db_keys):
         url = reverse("assessment:api:assessment-endpoints", args=(db_keys.assessment_final,))

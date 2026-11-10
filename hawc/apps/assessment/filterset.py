@@ -13,7 +13,6 @@ from ..common.filterset import (
     PaginationFilter,
 )
 from ..common.helper import new_window_a
-from ..common.models import search_query
 from ..myuser.models import HAWCUser
 from . import models
 from .autocomplete import LabelAutocomplete
@@ -64,7 +63,9 @@ class AssessmentFilterSet(BaseFilterSet):
             | Q(year__icontains=value)
             | Q(authors__unaccent__icontains=value)
             | Q(cas__icontains=value)
-            | Q(dtxsids__search=search_query(value))
+            | Q(dtxsids__dtxsid__startswith=value)
+            | Q(dtxsids__preferred_name__icontains=value)
+            | Q(dtxsids__casrn__startswith=value)
             | Q(details__project_type__icontains=value)
             | Q(details__report_id__icontains=value)
         )
@@ -86,7 +87,13 @@ class GlobalChemicalsFilterSet(df.FilterSet):
     public_only = df.BooleanFilter(method="filter_public_only")  # public_only=true/false
 
     def filter_query(self, queryset, name, value):
-        query = Q(name__icontains=value) | Q(cas=value) | Q(dtxsids__search=search_query(value))
+        query = (
+            Q(name__icontains=value)
+            | Q(cas=value)
+            | Q(dtxsids__dtxsid__startswith=value)
+            | Q(dtxsids__preferred_name__icontains=value)
+            | Q(dtxsids__casrn__startswith=value)
+        )
         return queryset.filter(query).distinct()
 
     def filter_public_only(self, queryset, name, value):

@@ -1479,6 +1479,8 @@
       inchiString: 'InChI=1S/H2O/h1H2'
     created: 2020-08-12 19:34:12.687630+00:00
     last_updated: 2020-08-12 19:34:12.687630+00:00
+    casrn: 7732-18-5
+    preferred_name: Water
 - model: assessment.dsstox
   pk: DTXSID7020970
   fields:
@@ -1497,6 +1499,8 @@
       inchiString: 'InChI=1S/C12H7Cl2NO3/c13-8-1-6-12(11(14)7-8)18-10-4-2-9(3-5-10)15(16)17/h1-7H'
     created: 2020-08-12 19:45:56.718230+00:00
     last_updated: 2020-08-12 19:45:56.718230+00:00
+    casrn: 1836-75-5
+    preferred_name: Nitrofen
 - model: assessment.assessment
   pk: 1
   fields:
@@ -3590,7 +3594,7 @@
     has_multiple_generations: false
     chemical: flubber
     cas: ''
-    dtxsid: null
+    dtxsid: DTXSID7020970
     chemical_source: ''
     purity_available: false
     purity_qualifier: ''

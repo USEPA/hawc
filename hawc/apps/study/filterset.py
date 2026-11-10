@@ -1,8 +1,8 @@
 import django_filters as df
 from django.db.models import Q, Subquery
 
+from ..assessment.models import DSSTox
 from ..common.filterset import BaseFilterSet, InlineFilterForm, PaginationFilter
-from ..common.models import search_query
 from ..myuser.models import HAWCUser
 from . import constants, models
 
@@ -85,20 +85,22 @@ class StudyByChemicalFilterSet(df.FilterSet):
         return queryset.filter(published=value)
 
     def filter_query(self, queryset, name, value):
-        chem_query = search_query(value)
+        chemicals = DSSTox.objects.filter(
+            Q(dtxsid__startswith=value) | Q(casrn__startswith=value) | Q(preferred_name__icontains=value)
+        )
         return queryset.filter(
             # bioassay
             Q(experiments__chemical__icontains=value)
             | Q(experiments__cas=value)
-            | Q(experiments__dtxsid__search=chem_query)
+            | Q(experiments__dtxsid__in=chemicals)
             # epi
             | Q(study_populations__exposures__name__icontains=value)
-            | Q(study_populations__exposures__dtxsid__search=chem_query)
+            | Q(study_populations__exposures__dtxsid__in=chemicals)
             # epiv2
             | Q(designs__chemicals__name__icontains=value)
-            | Q(designs__chemicals__dsstox__search=chem_query)
+            | Q(designs__chemicals__dsstox__in=chemicals)
             # in vitro
             | Q(ivchemicals__name__icontains=value)
             | Q(ivchemicals__cas=value)
-            | Q(ivchemicals__dtxsid__search=chem_query)
+            | Q(ivchemicals__dtxsid__in=chemicals)
         )
