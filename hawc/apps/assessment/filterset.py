@@ -90,9 +90,9 @@ class GlobalChemicalsFilterSet(df.FilterSet):
         query = (
             Q(name__icontains=value)
             | Q(cas=value)
-            | Q(dtxsids__dtxsid__icontains=value)
+            | Q(dtxsids__dtxsid__startswith=value)
             | Q(dtxsids__preferred_name__icontains=value)
-            | Q(dtxsids__casrn__contains=value)
+            | Q(dtxsids__casrn__startswith=value)
         )
         return queryset.filter(query).distinct()
 
