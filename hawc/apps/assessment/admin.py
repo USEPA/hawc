@@ -276,6 +276,7 @@ class DSSXToxAdmin(admin.ModelAdmin):
         "get_experiments",
         "get_exposures",
         "get_ivchemicals",
+        "get_epiv2_chemicals",
     )
     list_filter = ("last_updated",)
     search_fields = ("dtxsid", "casrn", "preferred_name")
@@ -288,8 +289,20 @@ class DSSXToxAdmin(admin.ModelAdmin):
         lis = "".join([(func(obj)) for obj in iterable])
         return format_html("<ul>{}</ul>", mark_safe(lis)) if lis else "-"
 
-    def linked_name(self, obj):
-        return format_html("<li><a href='{}'>{}</a></li>", obj.get_absolute_url(), obj.name)
+    def linked_name(self, obj, link = None):
+        return format_html("<li><a href='{}'>{}</a></li>", link or obj.get_absolute_url(), obj.name)
+
+    def linked_ivchemical_name(self, obj):
+        return format_html(
+            "<li><a href='{}'>{}</a> in <a href='{}'>Study {}</a></li>",
+            obj.get_absolute_url(),
+            obj.name,
+            obj.study.get_absolute_url(),
+            obj.study_id,
+        )
+
+    def linked_epiv2_name(self, obj):
+        return format_html("<li>{} in <a href='{}'>Design {}</a></li>", obj.name, obj.design.get_absolute_url(), obj.design_id)
 
     @admin.display(description="Assessments")
     def get_assessments(self, obj):
@@ -299,13 +312,17 @@ class DSSXToxAdmin(admin.ModelAdmin):
     def get_experiments(self, obj):
         return self.get_ul(obj.experiments.all(), self.linked_name)
 
-    @admin.display(description="Epi exposures")
+    @admin.display(description="EpiV1 exposures")
     def get_exposures(self, obj):
         return self.get_ul(obj.exposures.all(), self.linked_name)
 
     @admin.display(description="IVChemicals")
     def get_ivchemicals(self, obj):
-        return self.get_ul(obj.ivchemicals.all(), self.linked_name)
+        return self.get_ul(obj.ivchemicals.all(), self.linked_ivchemical_name)
+
+    @admin.display(description="EpiV2 Chemicals")
+    def get_epiv2_chemicals(self, obj):
+        return self.get_ul(obj.chemical_set.all(), self.linked_epiv2_name)
 
 
 @admin.register(models.Content)

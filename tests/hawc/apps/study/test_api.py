@@ -275,38 +275,46 @@ class TestStudyViewSet:
             .exists()
         )
 
-    def test_chemical_search(self):
+    @pytest.mark.parametrize(
+        "query,expected_ids",
+        [
+            ("1746-01-6", [4]),
+            ("nitro", [1]),
+            ("DTXSID70209", [1]),
+            ("1836-", [1]),
+            ("nonono", []),
+        ],
+    )
+    def test_chemical_search(self, query, expected_ids):
         client = APIClient()
-
         url = reverse("study:api:study-chemical-search")
-        response = client.get(url)
-        assert response.status_code == 403
 
         assert client.login(username="admin@hawcproject.org", password="pw") is True
-        response = client.get(url)
-        assert response.status_code == 400
-        assert "query" in response.json()
+        response = client.get(url, {"query": query})
 
-        query_tests = [
-            ("1746-01-6", 1, "study id 4, has bioassay experiment 2 with CAS 1746-01-6"),
-            (
-                "nitrofen",
-                1,
-                "preferred name of dsstox DTXSID7020970 associated with animal experiment #1",
-            ),
-            (
-                "20970",
-                1,
-                "partial dtxsid of dsstox DTXSID7020970 associated with animal experiment #1",
-            ),
-            (
-                "1836-",
-                1,
-                "partial casrn of dsstox DTXSID7020970 associated with animal experiment #1",
-            ),
-            ("nonono", 0, "search that should fail"),
-        ]
-        for qt_text, qt_num_expected, _qt_descriptor in query_tests:
-            response = client.get(url + f"?query={qt_text}")
-            assert response.status_code == 200
-            assert len(response.json()) == qt_num_expected
+        assert response.status_code == 200
+        assert [obj["ID"] for obj in response.json()] == expected_ids
+
+    def test_global_search_permissions(self):
+
+        url = reverse("study:api:study-chemical-search")
+
+        client = APIClient()
+        response = client.get(url, {"query": {"test"}})
+        assert response.status_code == 403
+
+        client = APIClient()
+        assert client.login(username="reviewer@hawcproject.org", password="pw") is True
+        response = client.get(url, {"query": {"test"}})
+        assert response.status_code == 403
+
+        client = APIClient()
+        assert client.login(username="team@hawcproject.org", password="pw") is True
+        response = client.get(url, {"query": {"test"}})
+        assert response.status_code == 403
+
+        client = APIClient()
+        assert client.login(username="pm@hawcproject.org", password="pw") is True
+        response = client.get(url, {"query": {"test"}})
+        assert response.status_code == 403
+

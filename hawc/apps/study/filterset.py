@@ -86,7 +86,7 @@ class StudyByChemicalFilterSet(df.FilterSet):
 
     def filter_query(self, queryset, name, value):
         chemicals = DSSTox.objects.filter(
-            Q(dtxsid__iexact=value) | Q(casrn__iexact=value) | Q(preferred_name__icontains=value)
+            Q(dtxsid__startswith=value) | Q(casrn__startswith=value) | Q(preferred_name__icontains=value)
         )
         return queryset.filter(
             # bioassay
