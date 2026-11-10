@@ -289,8 +289,8 @@ class DSSXToxAdmin(admin.ModelAdmin):
         lis = "".join([(func(obj)) for obj in iterable])
         return format_html("<ul>{}</ul>", mark_safe(lis)) if lis else "-"
 
-    def linked_name(self, obj, link = None):
-        return format_html("<li><a href='{}'>{}</a></li>", link or obj.get_absolute_url(), obj.name)
+    def linked_name(self, obj):
+        return format_html("<li><a href='{}'>{}</a></li>", obj.get_absolute_url(), obj.name)
 
     def linked_ivchemical_name(self, obj):
         return format_html(
