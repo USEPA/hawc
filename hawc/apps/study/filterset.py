@@ -1,6 +1,7 @@
 import django_filters as df
 from django.db.models import Q, Subquery
 
+from ..assessment.models import DSSTox
 from ..common.filterset import BaseFilterSet, InlineFilterForm, PaginationFilter
 from ..myuser.models import HAWCUser
 from . import constants, models
@@ -84,27 +85,22 @@ class StudyByChemicalFilterSet(df.FilterSet):
         return queryset.filter(published=value)
 
     def filter_query(self, queryset, name, value):
+        chemicals = DSSTox.objects.filter(
+            Q(dtxsid__iexact=value) | Q(casrn__iexact=value) | Q(preferred_name__icontains=value)
+        )
         return queryset.filter(
             # bioassay
             Q(experiments__chemical__icontains=value)
             | Q(experiments__cas=value)
-            | Q(experiments__dtxsid__dtxsid__icontains=value)
-            | Q(experiments__dtxsid__preferred_name__icontains=value)
-            | Q(experiments__dtxsid__casrn__contains=value)
+            | Q(experiments__dtxsid__in=chemicals)
             # epi
             | Q(study_populations__exposures__name__icontains=value)
-            | Q(study_populations__exposures__dtxsid__dtxsid__icontains=value)
-            | Q(study_populations__exposures__dtxsid__preferred_name__icontains=value)
-            | Q(study_populations__exposures__dtxsid__casrn__contains=value)
+            | Q(study_populations__exposures__dtxsid__in=chemicals)
             # epiv2
             | Q(designs__chemicals__name__icontains=value)
-            | Q(designs__chemicals__dsstox__dtxsid__icontains=value)
-            | Q(designs__chemicals__dsstox__preferred_name__icontains=value)
-            | Q(designs__chemicals__dsstox__casrn__contains=value)
+            | Q(designs__chemicals__dsstox__in=chemicals)
             # in vitro
             | Q(ivchemicals__name__icontains=value)
             | Q(ivchemicals__cas=value)
-            | Q(ivchemicals__dtxsid__dtxsid__icontains=value)
-            | Q(ivchemicals__dtxsid__preferred_name__icontains=value)
-            | Q(ivchemicals__dtxsid__casrn__contains=value)
+            | Q(ivchemicals__dtxsid__in=chemicals)
         )

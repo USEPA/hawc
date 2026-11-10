@@ -12,6 +12,7 @@ from django.contrib.contenttypes import fields
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
+from django.core.validators import RegexValidator
 from django.db import models
 from django.http import HttpRequest
 from django.template import RequestContext, Template
@@ -53,23 +54,33 @@ class NoelNames(NamedTuple):
 
 class DSSTox(models.Model):
     dtxsid = models.CharField(
-        max_length=80,
+        # dtxsids max out at DTXSID + 9 digits; but not a given standard, so leaving buffer room
+        max_length=32,
         primary_key=True,
         verbose_name="DSSTox substance identifier (DTXSID)",
+        validators=[
+            RegexValidator(
+                regex=r"^DTXSID\d{7,}$",
+                message="Enter a valid DTXSID in the format DTXSID followed by at least 7 digits.",
+                code="invalid_dtxsid",
+            )
+        ],
     )
     content = models.JSONField(default=dict)
     preferred_name = models.CharField(
         max_length=128,
-        blank=True,
-        db_index=True,
     )
     casrn = models.CharField(
-        # 12 characters should be enough; according to https://www.cas.org/cas-data/cas-registry as of Oct 2026
+        # 12 characters should be enough; according to https://www.cas.org/cas-data/cas-registry as of Oct 2026:
         # "A CAS Registry Number is a numeric identifier that can contain up to 10 digits, divided by hyphens into three parts."
         max_length=12,
-        blank=True,
-        verbose_name="CASRN / Chemical Abstracts Service Registry Number",
-        db_index=True,
+        validators=[
+            RegexValidator(
+                regex=r"^\d{2,7}-\d{2}-\d$",
+                message="Enter a valid CAS Registry Number in the format XXXXXXX-XX-X.",
+                code="invalid_casrn",
+            )
+        ],
     )
 
     created = models.DateTimeField(auto_now_add=True)
@@ -79,6 +90,10 @@ class DSSTox(models.Model):
         ordering = ("dtxsid",)
         verbose_name = "DSSTox substance"
         verbose_name_plural = "DSSTox substances"
+        indexes = [
+            models.Index(fields=["casrn"]),
+        ]
+        unique_together = (("preferred_name", "casrn"),)
 
     def __str__(self):
         return self.dtxsid
@@ -97,12 +112,12 @@ class DSSTox(models.Model):
 
         # if casrn/preferred_name weren't set in some other way, and the
         # values are in content, then pull them from there
-        if not self.casrn and not self.preferred_name:
-            if "casrn" in self.content:
-                self.casrn = self.content["casrn"]
 
-            if "preferredName" in self.content:
-                self.preferred_name = self.content["preferredName"]
+        if (not self.preferred_name) and (casrn := self.content.get("casrn")):
+            self.casrn = casrn
+
+        if (not self.preferred_name) and (preferred_name := self.content.get("preferredName")):
+            self.preferred_name = preferred_name
 
         super().save(*args, **kwargs)
 

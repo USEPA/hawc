@@ -270,8 +270,8 @@ class ContentTypeAdmin(ReadOnlyAdmin):
 class DSSXToxAdmin(admin.ModelAdmin):
     list_display = (
         "dtxsid",
-        "get_casrns",
-        "get_names",
+        "casrn",
+        "preferred_name",
         "get_assessments",
         "get_experiments",
         "get_exposures",
@@ -290,14 +290,6 @@ class DSSXToxAdmin(admin.ModelAdmin):
 
     def linked_name(self, obj):
         return format_html("<li><a href='{}'>{}</a></li>", obj.get_absolute_url(), obj.name)
-
-    @admin.display(description="CASRN")
-    def get_casrns(self, obj):
-        return obj.casrn
-
-    @admin.display(description="Name")
-    def get_names(self, obj):
-        return obj.preferred_name
 
     @admin.display(description="Assessments")
     def get_assessments(self, obj):
