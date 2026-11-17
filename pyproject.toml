@@ -55,7 +55,7 @@ dependencies = [
   "pandas~=2.3.3",
   "openpyxl==3.1.5",
   "jinja2~=3.1.6",
-  "plotly==6.7.0",
+  "plotly==7.1.0",
   "scipy~=1.18.1",
   "pybmds==25.1",
   # exports
@@ -71,7 +71,8 @@ dev = [
   "poethepoet~=0.44",
   # lint and formatting tools
   "ruff==0.16.10",
-  "djhtml==3.0.11",
+  "djade~=1.10",
+  "djhtml~=3.0",
   # django development
   "django-debug-toolbar~=8.0.0",
   "django-browser-reload~=1.21.0",
@@ -80,10 +81,13 @@ dev = [
   "coverage~=7.16.2",
   "pytest~=9.1.1",
   "pytest-django~=4.14.0",
+  "pytest-xdist~=3.8",
+  "pytest-cov~=7.1",
   "vcrpy==8.3.0",
   "pytest-recording==0.14.0",
   "playwright~=1.63.0",
   "pytest-playwright~=0.9.0",
+  "model-bakery~=1.24",
   # docs
   "mkdocs-material~=9.7.0",
   # hawc client (testing)
@@ -151,14 +155,14 @@ testpaths = [
 
 [tool.coverage.run]
 omit = [
-  "*migrations*",
+  "**/migrations/**",
   "./build/",
   "./client/hawc_client/interactive.py",
   "./hawc/apps/*/management/*",
   "./hawc/main/*",
   "./scripts/private/*",
   "./tests/*",
-  "./venv/*",
+  "./.venv/*",
 ]
 
 [tool.coverage.report]
@@ -225,8 +229,11 @@ cmd = "npm --prefix ./frontend run format"
 
 [tool.poe.tasks.format-html]
 help = "Fix HTML formatting issues where possible"
-env = { PYTHONUTF8 = "1" }  # see https://github.com/rtts/djhtml/issues/122
-cmd = "djhtml --tabwidth 2 hawc/"
+verbosity = -1
+sequence = [
+  {cmd = "djade hawc/templates/**/*.html hawc/apps/**/*.html"},
+  {cmd = "djhtml --tabwidth 2 hawc/"},
+]
 
 [tool.poe.tasks.lint]
 help = "Check formatting issues"
@@ -245,7 +252,11 @@ cmd = "npm --prefix ./frontend run lint"
 
 [tool.poe.tasks.lint-html]
 help = "Check HTML formatting issues where possible"
-cmd = "djhtml --tabwidth 2 --check hawc/"
+verbosity = -1
+sequence = [
+  {cmd = "djade --check hawc/templates/**/*.html hawc/apps/**/*.html"},
+  {cmd = "djhtml --tabwidth 2 --check hawc/"},
+]
 
 [tool.poe.tasks.build]
 help = "Build package"
@@ -257,10 +268,7 @@ sequence = [
 
 [tool.poe.tasks.coverage]
 help = "Run python coverage and create HTML report"
-sequence = [
-  {cmd = "coverage run -m pytest"},
-  {cmd = "coverage html -d coverage_html -i"},
-]
+cmd = "pytest -n auto --maxprocesses=6 --dist=loadfile --cov=hawc --cov=client --cov-report html"
 
 [tool.poe.tasks.loc]
 help = "Generate lines of code report"
