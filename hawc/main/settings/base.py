@@ -54,7 +54,12 @@ storage_backend_json = os.environ.get(
 )
 storage_private_backend_json = os.environ.get(
     "STORAGE_PRIVATE_BACKEND_JSON",
-    f'{{"BACKEND": "django.core.files.storage.FileSystemStorage", "OPTIONS": {{"location": "{PRIVATE_DATA_ROOT}"}}}}',
+    json.dumps(
+        {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+            "OPTIONS": {"location": str(PRIVATE_DATA_ROOT)},
+        }
+    ),
 )
 STORAGES = {
     "default": json.loads(storage_backend_json),
