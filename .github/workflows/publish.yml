@@ -17,21 +17,20 @@ jobs:
       url: https://pypi.org/project/hawc-client/
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          python-version: '3.13'
+          python-version: '3.14'
           architecture: 'x64'
       - name: Install uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@v7
         with:
           cache-dependency-glob: "**/pyproject.toml"
       - name: Install environment
         run: |
-          uv pip install --system -e ".[dev,docs]"
-          uv pip install --system -e client
+          uv sync --all-groups
       - name: Build client
-        run: cd client && poe build
+        run: source .venv/bin/activate && cd client && poe build
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:

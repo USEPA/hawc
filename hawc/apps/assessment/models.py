@@ -1,8 +1,6 @@
-import json
 import logging
-import uuid
 from collections import namedtuple
-from typing import Any, Literal, NamedTuple
+from typing import Literal, NamedTuple
 
 import numpy as np
 import pandas as pd
@@ -14,6 +12,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVector, SearchVectorField
 from django.core.cache import cache
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from django.http import HttpRequest
 from django.template import RequestContext, Template
@@ -27,19 +26,13 @@ from treebeard.mp_tree import MP_Node
 
 from ...services.epa.dsstox import DssSubstance
 from ..common.exceptions import AssessmentNotFound
-from ..common.helper import (
-    HAWCDjangoJSONEncoder,
-    SerializerHelper,
-    cacheable,
-    get_contrasting_text_color,
-    new_window_a,
-)
+from ..common.helper import SerializerHelper, cacheable, get_contrasting_text_color, new_window_a
 from ..common.models import AssessmentRootMixin, ColorField, get_private_data_storage
 from ..common.validators import FlatJSON, validate_hyperlink
 from ..materialized.models import refresh_all_mvs
 from ..myuser.models import HAWCUser
 from ..vocab.constants import VocabularyNamespace
-from . import constants, jobs, managers
+from . import constants, managers
 from .permissions import AssessmentPermissions
 from .tasks import add_time_spent
 
@@ -864,17 +857,6 @@ class EffectTag(models.Model):
     def __str__(self):
         return self.name
 
-    def get_json(self, json_encode=False):
-        d = {}
-        fields = ("pk", "name")
-        for field in fields:
-            d[field] = getattr(self, field)
-
-        if json_encode:
-            return json.dumps(d, cls=HAWCDjangoJSONEncoder)
-        else:
-            return d
-
     @staticmethod
     def get_name_list(queryset):
         return "|".join(queryset.values_list("name", flat=True))
@@ -963,7 +945,7 @@ class TimeSpentEditing(models.Model):
 
     @classmethod
     def add_time_spent(cls, cache_name, object_id, assessment_id, content_type_id):
-        time_spent, created = cls.objects.get_or_create(
+        time_spent, _created = cls.objects.get_or_create(
             content_type_id=content_type_id,
             object_id=object_id,
             assessment_id=assessment_id,
@@ -1100,20 +1082,22 @@ class DatasetRevision(models.Model):
         return self.try_read_df(self.data, self.metadata["extension"], self.excel_worksheet_name)
 
     def data_exists(self) -> bool:
+        """Check if the dataset file exists in storage (works with filesystem and S3)."""
         try:
-            _ = self.data.file
-            return True
-        except FileNotFoundError:
-            logger.error(f"DatasetRevision {self.id} not found: {self.data.path}")
+            return self.data.storage.exists(self.data.name)
+        except Exception:
+            logger.error(f"DatasetRevision {self.id} not found: {self.data.name}")
             return False
 
     @classmethod
-    def try_read_df(cls, data, suffix: str, worksheet_name: str | None = None) -> pd.DataFrame:
+    def try_read_df(
+        cls, data: InMemoryUploadedFile, suffix: str, worksheet_name: str | None = None
+    ) -> pd.DataFrame:
         """
         Try to load and return a pandas dataframe.
 
         Args:
-            data: File-like object
+            data: InMemoryUploadedFile = File-like object
             suffix: str = File suffix
             worksheet_name: Optional[str] = Excel worksheet name, or empty string
 
@@ -1144,70 +1128,6 @@ class DatasetRevision(models.Model):
             raise ValueError("Dataframe contains no columns")
 
         return df
-
-
-class Job(models.Model):
-    JOB_TO_FUNC = {
-        constants.JobType.TEST: jobs.test,
-    }
-
-    task_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    assessment = models.ForeignKey(
-        Assessment, blank=True, null=True, on_delete=models.CASCADE, related_name="jobs"
-    )
-    status = models.PositiveSmallIntegerField(
-        choices=constants.JobStatus, default=constants.JobStatus.PENDING, editable=False
-    )
-    job = models.PositiveSmallIntegerField(
-        choices=constants.JobType, default=constants.JobType.TEST
-    )
-
-    kwargs = models.JSONField(default=dict, blank=True, null=True)
-    result = models.JSONField(default=dict, editable=False)
-
-    created = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ("-created",)
-
-    def execute(self) -> Any:
-        """
-        Executes the job. Function and kwargs are determined
-        by the instance's "job" and "kwargs" properties, respectively.
-
-        Returns:
-            Any: Any data returned by the function call.
-            {"data" : <return_value>} MUST be JSON serializable.
-        """
-        func = self.JOB_TO_FUNC[self.job]
-        return func(**self.kwargs)
-
-    def set_success(self, data):
-        """
-        Sets the status of the job to SUCCESS and sets the
-        data as the job's result, in the format:
-            {"data" : <data>}
-
-        Args:
-            data (Any): Data to be saved as the job's result.
-            {"data" : <data>} MUST be JSON serializable.
-        """
-        self.result = {"data": data}
-        self.status = constants.JobStatus.SUCCESS
-
-    def set_failure(self, exception: Exception):
-        """
-        Sets the status of the job to FAILURE and sets the
-        exception as the job's result, in the format:
-            {"error" : <exception>}
-
-        Args:
-            exception (Exception): Exception to be saved as the job's result.
-            MUST have a built in string representation.
-        """
-        self.result = {"error": str(exception)}
-        self.status = constants.JobStatus.FAILURE
 
 
 class Communication(models.Model):
@@ -1455,7 +1375,6 @@ reversion.register(Strain)
 reversion.register(BaseEndpoint)
 reversion.register(Dataset)
 reversion.register(DatasetRevision)
-reversion.register(Job)
 reversion.register(Communication)
 reversion.register(Content)
 reversion.register(Label)

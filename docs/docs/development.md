@@ -32,14 +32,7 @@ git clone https://github.com/shapiromatron/hawc.git
 
 # create virtual environment
 cd ~/dev/hawc
-uv venv --python=3.13
-
-# activate the environment
-source ./.venv/bin/activate
-
-# install requirements
-uv pip install -e ".[dev,docs]"
-uv pip install -e client
+uv sync --all-groups
 
 # create a PostgreSQL database and superuser
 createuser --superuser --no-password hawc
@@ -52,22 +45,19 @@ For Windows, using Anaconda or Miniconda is preferred for additional dependencie
 :: create a conda environment with our hard to get dependencies
 conda create --name hawc
 conda activate hawc
-conda install python=3.13 postgresql
+conda install python=3.14 postgresql
 conda install -c conda-forge nodejs
 conda install -c conda-forge yarn=1.22.19
+python -m pip install -U uv
 
 :: clone repository; we'll put in dev but you can put anywhere
 mkdir %HOMEPATH%\dev
 cd %HOMEPATH%\dev
 git clone https://github.com/shapiromatron/hawc.git
 
-:: (optional) if uv is not already installed
-python -m pip install -U uv
-
 :: install python requirements
 cd %HOMEPATH%\dev\hawc
-uv pip install -e ".[dev,docs]"
-uv pip install -e client
+uv sync --all-groups
 
 :: setup and start PostgreSQL; in this example we'll put it in dev
 cd %HOMEPATH%\dev
@@ -189,23 +179,6 @@ On Windows; if you created the pgdata folder in %HOMEPATH%\dev, there's a short 
 poe startdb
 ```
 
-### Pre commit hooks
-
-There are number of code quality checks that standardize and format code to make sure that our source code is consistent regardless of the developer. These checks are automatically run when the code is submitted for review, and the linting checks must pass to have a valid review. However, this can be a surprise if you don't run the linters prior to pushning a commit.
-
-The development environment includes [pre-commit](https://pre-commit.com/) to automatically check linters and formatters prior to committing changes.  This would prevent you from pushing code that hadn't been run through the linters. To set up pre-commit, run the following command:
-
-```bash
-pre-commit install
-
-# run on all files to make sure it is installed correctly
-pre-commit run --all-files
-```
-
-!!! note
-
-    This is completely optional; you can use if you wish but it's not required.
-
 ## Local Settings
 
 ### Django settings inheritance
@@ -253,12 +226,12 @@ This makes the test database useful when writing new features. There are multipl
 
 There are currently four assessments in the database:
 
-ID | Name | Editable | Public
----|---|---|---
-1 | Chemical Z | Yes | No
-2 | Chemical X | No | Yes
-3 | Chemical Y | Yes | Yes
-4 | Chemical A | Yes | No
+ID | Name       | Editable | Public
+---|------------|----------|-------
+1  | Chemical Z | Yes      | No
+2  | Chemical X | No       | Yes
+3  | Chemical Y | Yes      | Yes
+4  | Chemical A | Yes      | No
 
 As new features are added, adding and changing content in the test database will be required to test these features. Instructions for loading and dumping are described below.
 
@@ -459,16 +432,16 @@ When using the recommended settings below, your python and javascript code shoul
     "python.testing.pytestEnabled": true,
     "ruff.importStrategy": "fromEnvironment",
     "ruff.nativeServer": "on",
-    "[javascript]": {
-		"editor.formatOnSave": true,
-		"editor.defaultFormatter": "biomejs.biome",
+    "[javascript][javascriptreact]": {
+        "editor.defaultFormatter": "biomejs.biome",
+        "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-			"source.fixAll.biome": "explicit",
-			"source.organizeImports.biome": "explicit",
-		}
-	},
-	"biome.configurationPath": "frontend\\biome.json",  // windows only
-	"biome.lsp.bin": "frontend\\node_modules\\@biomejs\\cli-win32-x64\\biome.exe",  // windows only
+            "source.organizeImports.biome": "always",
+            "source.fixAll": "always"
+        }
+    },
+    "biome.lsp.bin": "./frontend/node_modules/.bin/biome",
+    "biome.configurationPath": "./frontend/biome.json",
     "[markdown]": {
         "editor.formatOnSave": true,
         "editor.wordWrap": "bounded",

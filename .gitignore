@@ -17,7 +17,6 @@ celerybeat*
 hawc/gitcommit.json
 hawc/main/settings/local.py
 package-lock.json
-uv.lock
 CLAUDE.md
 
 # folders
@@ -36,7 +35,7 @@ docs/site
 __pycache__/
 _build/
 build/
-coverage_html/
+htmlcov/
 dist/
 node_modules/
 private/

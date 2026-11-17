@@ -1,5 +1,4 @@
 import itertools
-import json
 import math
 from operator import xor
 from typing import Any
@@ -13,7 +12,7 @@ from reversion import revisions as reversion
 from scipy.stats import t
 
 from ..assessment.models import BaseEndpoint, DSSTox, EffectTag
-from ..common.helper import HAWCDjangoJSONEncoder, SerializerHelper, df_move_column
+from ..common.helper import SerializerHelper, df_move_column
 from ..study.models import Study
 from . import constants, managers
 
@@ -310,14 +309,6 @@ class Outcome(BaseEndpoint):
     def get_json(self, json_encode=True):
         return SerializerHelper.get_serialized(self, json=json_encode)
 
-    @staticmethod
-    def get_qs_json(queryset, json_encode=True):
-        outcomes = [outcome.get_json(json_encode=False) for outcome in queryset]
-        if json_encode:
-            return json.dumps(outcomes, cls=HAWCDjangoJSONEncoder)
-        else:
-            return outcomes
-
     @classmethod
     def delete_caches(cls, ids):
         SerializerHelper.delete_caches(cls, ids)
@@ -336,10 +327,10 @@ class ComparisonSet(models.Model):
     objects = managers.ComparisonSetManager()
 
     study_population = models.ForeignKey(
-        StudyPopulation, on_delete=models.SET_NULL, related_name="comparison_sets", null=True
+        StudyPopulation, on_delete=models.CASCADE, related_name="comparison_sets", null=True
     )
     outcome = models.ForeignKey(
-        Outcome, on_delete=models.SET_NULL, related_name="comparison_sets", null=True
+        Outcome, on_delete=models.CASCADE, related_name="comparison_sets", null=True
     )
     name = models.CharField(
         max_length=256,
